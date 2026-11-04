@@ -1,4 +1,4 @@
-# Planalto Moderno — Extensão para Leitura Jurídica & IA (Chrome & Firefox)
+# Planalto Plus — Extensão para Leitura Jurídica & IA (Chrome & Firefox)
 
 Extensão multiplataforma para **Google Chrome** e **Mozilla Firefox** que moderniza a visualização de legislações no portal [www.planalto.gov.br](https://www.planalto.gov.br).
 
@@ -13,8 +13,8 @@ npm run build
 ```
 
 O comando compila o projeto e gera automaticamente as versões completas e idênticas para ambos os navegadores na pasta `dist/`:
-* **Chrome**: pasta `dist/chrome/` (ou `dist/`) e pacote compactado `dist/planalto-moderno-chrome.zip`
-* **Firefox**: pasta `dist/firefox/` e pacotes `dist/planalto-moderno-firefox.zip` / `dist/planalto-moderno-firefox.xpi`
+* **Chrome**: pasta `dist/chrome/` (ou `dist/`) e pacote compactado `dist/planalto-plus.zip`
+* **Firefox**: pasta `dist/firefox/` e pacotes `dist/planalto-plus-firefox.zip` / `dist/planalto-plus.xpi`
 
 Você também pode compilar alvos específicos:
 ```bash
@@ -32,7 +32,7 @@ npm run build:all      # Ambas as versões
    about:debugging#/runtime/this-firefox
    ```
 2. Na seção **Extensões temporárias** (*Temporary Extensions*), clique em **Carregar extensão temporária...** (*Load Temporary Add-on...*).
-3. Selecione o arquivo `manifest.json` dentro da pasta **`dist/firefox`** (ou selecione diretamente o pacote **`dist/planalto-moderno-firefox.zip`** / **`.xpi`**).
+3. Selecione o arquivo `manifest.json` dentro da pasta **`dist/firefox`** (ou selecione diretamente o pacote **`dist/planalto-plus.zip`** / **`.xpi`**).
 4. Pronto! A extensão estará ativa no Firefox com todas as permissões, scripts e recursos WebAssembly configurados.
 
 ---

@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Planalto Moderno — Apresentação Chrome Web Store (6 Slides 1280x800)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: #0b0f19;
+      color: #f8fafc;
+      margin: 0;
+      padding: 24px;
+    }
+    .slide-canvas {
+      width: 1280px;
+      height: 800px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 16px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+    .glass-card {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+    .gradient-badge {
+      background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+    }
+    .amber-gradient-badge {
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+    }
+    .emerald-gradient-badge {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    }
+    .blue-gradient-badge {
+      background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    }
+    .rose-gradient-badge {
+      background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);
+    }
+    .font-serif-legal {
+      font-family: 'Merriweather', serif;
+    }
+  </style>
+</head>
+<body class="flex flex-col items-center justify-start min-h-screen">
+
+  <!-- Header & Slide Selector Controls -->
+  <header class="w-full max-w-[1280px] mb-6 flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <div class="flex items-center gap-2">
+        <span class="px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+          Chrome Web Store Kit
+        </span>
+        <span class="text-xs text-slate-400 font-mono">1280 x 800 px (16:10)</span>
+      </div>
+      <h1 class="text-2xl font-bold text-white mt-1">Apresentação Oficial da Extensão Planalto Moderno</h1>
+      <p class="text-sm text-slate-400">Use os botões abaixo para navegar entre as 6 telas promocionais prontas para captura ou divulgação.</p>
+    </div>
+
+    <!-- Navigation Pills -->
+    <div class="flex items-center gap-1.5 bg-slate-900/90 p-1.5 rounded-xl border border-slate-800">
+      <button onclick="goToSlide(0)" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-indigo-600 text-white shadow-sm" data-slide="0">1. Hero / Antes & Depois</button>
+      <button onclick="goToSlide(1)" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all" data-slide="1">2. Texto Compilado</button>
+      <button onclick="goToSlide(2)" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all" data-slide="2">3. Sumário & Busca</button>
+      <button onclick="goToSlide(3)" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all" data-slide="3">4. Grifos & Caderno</button>
+      <button onclick="goToSlide(4)" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all" data-slide="4">5. IA & Doutrina</button>
+      <button onclick="goToSlide(5)" class="nav-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all" data-slide="5">6. Simulados & Edital</button>
+    </div>
+  </header>
+
+  <!-- THE SLIDES CONTAINER -->
+  <main class="relative">
+
+    <!-- ==================== SLIDE 1: HERO / ANTES & DEPOIS ==================== -->
+    <div id="slide-0" class="slide-canvas bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 flex flex-col justify-between p-12">
+      <!-- Top Bar -->
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl gradient-badge flex items-center justify-center text-white font-black text-xl shadow-lg shadow-indigo-500/25">
+            §
+          </div>
+          <div>
+            <h2 class="text-xl font-extrabold text-white tracking-tight">Planalto Moderno</h2>
+            <p class="text-xs text-indigo-300 font-medium">Leitura Jurídica Inteligente & IA BYOKey</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> 100% Gratuito & Seguro
+          </span>
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-white/10 text-slate-300 border border-white/10">
+            Manifest V3 • Shadow DOM
+          </span>
+        </div>
+      </div>
+
+      <!-- Center Title -->
+      <div class="text-center max-w-3xl mx-auto my-2">
+        <span class="px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-indigo-500/20 text-indigo-300 border border-indigo-400/30 mb-3 inline-block">
+          A Revolução da Lei Seca
+        </span>
+        <h3 class="text-4xl font-extrabold text-white tracking-tight leading-tight">
+          O Planalto.gov.br como você <span class="bg-gradient-to-r from-indigo-400 via-sky-300 to-emerald-400 bg-clip-text text-transparent">sempre quis ler</span>.
+        </h3>
+        <p class="text-base text-slate-300 mt-2">
+          Diga adeus ao HTML dos anos 90. Tenha tipografia editorial, sumário interativo, notas, grifos e inteligência artificial no mesmo lugar.
+        </p>
+      </div>
+
+      <!-- Before / After Visual Comparison -->
+      <div class="grid grid-cols-2 gap-8 my-auto">
+        <!-- Before -->
+        <div class="rounded-xl overflow-hidden border border-red-500/30 bg-slate-900/90 shadow-2xl relative">
+          <div class="bg-red-950/60 border-b border-red-500/20 px-4 py-2.5 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-red-500/80"></span>
+              <span class="text-xs font-bold text-red-300 uppercase tracking-wider">Antes: HTML Legado do Planalto</span>
+            </div>
+            <span class="text-[10px] text-red-400 font-mono">Fonte Times 12px • Sem estrutura</span>
+          </div>
+          <div class="p-5 font-serif text-[11px] leading-relaxed text-slate-400 bg-white/5 space-y-2 select-none">
+            <p class="text-center font-bold text-slate-300">LEI Nº 10.406, DE 10 DE JANEIRO DE 2002</p>
+            <p class="italic text-slate-400 text-[10px]">Institui o Código Civil.</p>
+            <p class="mt-2 text-slate-400">
+              <span class="line-through text-red-400/80">Art. 186. Aquele que, por ação ou omissão voluntária...</span>
+              <font color="#800000"><small>(Redação dada pela Lei nº ...)</small></font>
+            </p>
+            <p class="text-slate-400">
+              Art. 927. Aquele que, por ato ilícito (arts. 186 e 187), causar dano a outrem, fica obrigado a repará-lo.
+            </p>
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent flex items-end justify-center pb-4">
+              <span class="px-3 py-1 rounded bg-red-900/80 text-red-200 text-xs font-medium border border-red-700/50">
+                Difícil de ler • Sem índice • Distrações revogadas
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- After -->
+        <div class="rounded-xl overflow-hidden border border-emerald-500/40 bg-slate-900/95 shadow-2xl relative">
+          <div class="bg-emerald-950/70 border-b border-emerald-500/30 px-4 py-2.5 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span>
+              <span class="text-xs font-bold text-emerald-300 uppercase tracking-wider">Depois: Planalto Moderno</span>
+            </div>
+            <span class="text-[10px] text-emerald-400 font-semibold">Tipografia Limpa • Modo Compilado • IA</span>
+          </div>
+          <div class="p-5 text-xs text-slate-200 space-y-3 bg-slate-900">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+              <span class="text-[11px] font-bold text-indigo-400 uppercase tracking-wider">Parte Especial › Livro I › Título III</span>
+              <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">Compilado Ativo</span>
+            </div>
+            <div class="p-3 rounded-lg bg-indigo-950/30 border border-indigo-500/30 space-y-1.5">
+              <div class="flex items-center gap-2">
+                <span class="px-1.5 py-0.5 rounded bg-indigo-600 text-white font-bold text-[10px]">Art. 186</span>
+                <span class="text-slate-400 text-[10px]">Dos Atos Ilícitos</span>
+              </div>
+              <p class="font-serif-legal text-xs leading-relaxed text-slate-100">
+                Aquele que, por ação ou omissão voluntária, negligência ou imprudência, violar direito e causar dano a outrem, ainda que exclusivamente moral, comete ato ilícito.
+              </p>
+              <div class="flex items-center gap-2 pt-1 text-[10px]">
+                <span class="px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 font-medium">Tag: OAB</span>
+                <span class="px-2 py-0.5 rounded-full bg-blue-400/20 text-blue-300 font-medium">Jurisprudência STJ</span>
+                <span class="text-indigo-400 font-medium ml-auto flex items-center gap-1">✨ Explicar com IA</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Badges -->
+      <div class="flex items-center justify-center gap-8 text-xs text-slate-400 border-t border-white/10 pt-4">
+        <span class="flex items-center gap-2"><strong class="text-white">✓</strong> Isolamento Seguro via Shadow DOM</span>
+        <span class="flex items-center gap-2"><strong class="text-white">✓</strong> Zero Rastreadores ou Anúncios</span>
+        <span class="flex items-center gap-2"><strong class="text-white">✓</strong> BYOKey: Suas chaves de IA ficam 100% no seu navegador</span>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 2: TEXTO COMPILADO & LEITURA LIMPA ==================== -->
+    <div id="slide-1" class="slide-canvas bg-gradient-to-br from-slate-950 via-slate-900 to-slate-900 hidden flex flex-col justify-between p-12">
+      <!-- Header -->
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div>
+          <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+            Foco Total no que Vigora
+          </span>
+          <h2 class="text-3xl font-extrabold text-white mt-1">Texto Compilado Inteligente</h2>
+          <p class="text-sm text-slate-400">Oculte dispositivos revogados com 1 clique e leia apenas o direito positivo atual.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-800 border border-slate-700">
+            <span class="text-xs font-semibold text-slate-300">Modo Compilado:</span>
+            <span class="px-2 py-0.5 rounded-full bg-emerald-500 text-slate-950 text-xs font-black">ATIVADO</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Visual Container -->
+      <div class="grid grid-cols-12 gap-6 my-auto items-center">
+        <!-- Feature Highlights Column -->
+        <div class="col-span-4 space-y-4">
+          <div class="p-4 rounded-xl glass-card border-l-4 border-emerald-500">
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <span class="text-emerald-400">❖</span> Ocultação de Dispositivos Revogados
+            </h4>
+            <p class="text-xs text-slate-300 mt-1">
+              Textos riscados (<code class="text-emerald-300">&lt;strike&gt;</code>) e artigos revogados são colapsados automaticamente, evitando que você perca tempo estudando normas sem vigência.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-xl glass-card border-l-4 border-indigo-500">
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <span class="text-indigo-400">❖</span> Pílulas de Remissão Clicáveis
+            </h4>
+            <p class="text-xs text-slate-300 mt-1">
+              Notas prolixas como <em>"(Redação dada pela Lei nº ...)"</em> viram pílulas elegantes e discretas que podem ser expandidas ou visitadas.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-xl glass-card border-l-4 border-amber-500">
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <span class="text-amber-400">❖</span> 3 Temas & Tipografia Personalizada
+            </h4>
+            <p class="text-xs text-slate-300 mt-1">
+              Alterne entre <strong>Claro</strong>, <strong>Sépia</strong> e <strong>Escuro</strong>. Ajuste tamanho da fonte, entrelinha e largura da coluna para não cansar a vista.
+            </p>
+          </div>
+        </div>
+
+        <!-- Simulated Reader Preview -->
+        <div class="col-span-8 rounded-2xl overflow-hidden border border-slate-700 bg-[#0f172a] shadow-2xl">
+          <!-- Reader Topbar -->
+          <div class="bg-slate-800/80 px-5 py-3 border-b border-slate-700 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <span class="font-bold text-sm text-white">Constituição da República de 1988</span>
+              <span class="text-xs text-slate-400 font-mono">Art. 5º</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-1 rounded bg-slate-700 text-slate-200 text-xs font-medium">Merriweather Serif</span>
+              <span class="px-2.5 py-1 rounded bg-slate-700 text-slate-200 text-xs font-medium">17px</span>
+              <span class="px-2.5 py-1 rounded bg-indigo-600 text-white text-xs font-bold">1 Clique: Ver Original</span>
+            </div>
+          </div>
+
+          <!-- Reader Body Content -->
+          <div class="p-6 space-y-4 max-h-[380px] overflow-hidden">
+            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-indigo-400">Art. 5º, Caput</span>
+                <span class="text-[10px] text-slate-400">Dos Direitos e Deveres Individuais e Coletivos</span>
+              </div>
+              <p class="font-serif-legal text-sm leading-relaxed text-slate-200">
+                Todos são iguais perante a lei, sem distinção de qualquer natureza, garantindo-se aos brasileiros e aos estrangeiros residentes no País a inviolabilidade do direito à vida, à liberdade, à igualdade, à segurança e à propriedade...
+              </p>
+            </div>
+
+            <!-- Struck example collapsed -->
+            <div class="p-2.5 rounded-lg bg-red-950/20 border border-red-500/20 flex items-center justify-between text-xs text-red-300/70">
+              <div class="flex items-center gap-2">
+                <span class="px-1.5 py-0.5 rounded bg-red-500/30 text-red-300 text-[10px] font-bold">Revogado</span>
+                <span class="line-through text-slate-400">Inciso anterior revogado pela EC nº 45/2004</span>
+              </div>
+              <span class="text-[10px] text-red-400 font-mono">(1 dispositivo ocultado no modo compilado)</span>
+            </div>
+
+            <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-indigo-400">Inciso XI — Inviolabilidade de Domicílio</span>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-semibold">Mais Cobrado em Provas</span>
+              </div>
+              <p class="font-serif-legal text-sm leading-relaxed text-slate-200">
+                a casa é asilo inviolável do indivíduo, ninguém nela podendo penetrar sem consentimento do morador, salvo em caso de flagrante delito ou desastre, ou para prestar socorro, ou, durante o dia, por determinação judicial;
+              </p>
+              <div class="flex items-center gap-2 pt-1">
+                <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-400 text-[10px] border border-slate-700">Pílula: (Vide Lei nº 13.869/19)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Info -->
+      <div class="flex items-center justify-between text-xs text-slate-400 border-t border-slate-800 pt-3">
+        <span>Compatível com Leis Ordinárias, Leis Complementares, Decretos-Leis, Códigos e a Constituição Federal.</span>
+        <span class="text-indigo-400 font-semibold">Alternância instantânea para o site original a qualquer momento.</span>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 3: SUMÁRIO HIERÁRQUICO & BUSCA RÁPIDA ==================== -->
+    <div id="slide-2" class="slide-canvas bg-gradient-to-br from-slate-950 via-indigo-950/40 to-slate-900 hidden flex flex-col justify-between p-12">
+      <!-- Header -->
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div>
+          <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-500/20 text-blue-400 border border-blue-500/30">
+            Navegação Relâmpago
+          </span>
+          <h2 class="text-3xl font-extrabold text-white mt-1">Sumário Hierárquico Completo (TOC)</h2>
+          <p class="text-sm text-slate-400">Encontre qualquer artigo em segundos com a árvore estrutural e busca instantânea.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-1 rounded-lg bg-slate-800 text-slate-300 text-xs font-mono">Atalho: Busca Artigo "186" ou termo</span>
+        </div>
+      </div>
+
+      <!-- Visual Section -->
+      <div class="grid grid-cols-12 gap-8 my-auto items-center">
+        <!-- Sidebar Mockup -->
+        <div class="col-span-5 rounded-2xl overflow-hidden border border-slate-700 bg-slate-900 shadow-2xl">
+          <!-- Sidebar Header -->
+          <div class="p-3.5 bg-slate-800/90 border-b border-slate-700 space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-blue-400"></span> Índice da Lei
+              </span>
+              <span class="text-[10px] text-slate-400">2.046 Artigos</span>
+            </div>
+            <!-- Search Input -->
+            <div class="relative">
+              <input type="text" value="927" readonly class="w-full bg-slate-950 border border-blue-500/50 rounded-lg px-3 py-1.5 text-xs text-white font-medium focus:outline-none">
+              <span class="absolute right-2.5 top-2 text-[10px] text-blue-400 font-bold">1 resultado</span>
+            </div>
+            <!-- Filters -->
+            <div class="flex items-center gap-1.5 pt-1">
+              <button class="px-2 py-0.5 rounded text-[10px] font-semibold bg-blue-600 text-white">Todos</button>
+              <button class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700">Com Notas (14)</button>
+              <button class="px-2 py-0.5 rounded text-[10px] font-semibold bg-slate-800 text-slate-300 border border-slate-700">Grifados (38)</button>
+            </div>
+          </div>
+
+          <!-- Tree View -->
+          <div class="p-3 space-y-1.5 text-xs text-slate-300 max-h-[340px] overflow-hidden font-sans">
+            <div class="flex items-center gap-2 text-slate-400 font-semibold py-1">
+              <span>▼</span>
+              <span>PARTE ESPECIAL</span>
+            </div>
+            <div class="pl-4 flex items-center gap-2 text-slate-400 font-semibold py-1">
+              <span>▼</span>
+              <span>LIVRO I — DO DIREITO DAS OBRIGAÇÕES</span>
+            </div>
+            <div class="pl-8 flex items-center gap-2 text-indigo-300 font-semibold py-1">
+              <span>▼</span>
+              <span>TÍTULO IX — DA RESPONSABILIDADE CIVIL</span>
+            </div>
+            <div class="pl-12 flex items-center gap-2 text-blue-400 font-semibold py-0.5">
+              <span>▼</span>
+              <span>Capítulo I — Da Obrigação de Indenizar</span>
+            </div>
+            <!-- Highlighted Article -->
+            <div class="pl-16 p-2 rounded-lg bg-blue-600/30 border border-blue-500/50 flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <span class="font-bold text-white">Art. 927</span>
+                <span class="text-[11px] text-blue-200 truncate max-w-[130px]">Aquele que, por ato ilícito...</span>
+              </div>
+              <span class="w-2 h-2 rounded-full bg-amber-400" title="Possui notas"></span>
+            </div>
+            <div class="pl-16 p-1.5 flex items-center justify-between text-slate-400 hover:text-white">
+              <div class="flex items-center gap-2">
+                <span class="font-medium">Art. 928</span>
+                <span class="text-[11px] text-slate-500 truncate max-w-[130px]">O incapaz responde pelos...</span>
+              </div>
+            </div>
+            <div class="pl-16 p-1.5 flex items-center justify-between text-slate-400 hover:text-white">
+              <div class="flex items-center gap-2">
+                <span class="font-medium">Art. 929</span>
+                <span class="text-[11px] text-slate-500 truncate max-w-[130px]">Se a pessoa lesada, ou o...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Features Side Description -->
+        <div class="col-span-7 space-y-5">
+          <div class="space-y-2">
+            <h3 class="text-2xl font-bold text-white">Chega de dar Ctrl+F sem rumo</h3>
+            <p class="text-sm text-slate-300 leading-relaxed">
+              Em leis gigantescas como o Código Civil (2.046 artigos) ou o Código de Processo Civil (1.072 artigos), a busca comum do navegador trava ou encontra centenas de menções dispersas.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="p-4 rounded-xl glass-card">
+              <div class="w-8 h-8 rounded-lg bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold mb-2">#</div>
+              <h4 class="text-sm font-bold text-white">Salto Numérico Direto</h4>
+              <p class="text-xs text-slate-400 mt-1">Digite apenas o número do artigo (ex: <code>186</code> ou <code>927</code>) para rolar instantaneamente até ele com destaque suave.</p>
+            </div>
+
+            <div class="p-4 rounded-xl glass-card">
+              <div class="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold mb-2">🌳</div>
+              <h4 class="text-sm font-bold text-white">Hierarquia Visual</h4>
+              <p class="text-xs text-slate-400 mt-1">Estrutura completa: Parte &rsaquo; Livro &rsaquo; Título &rsaquo; Capítulo &rsaquo; Seção &rsaquo; Subseção com expansão e recolhimento.</p>
+            </div>
+
+            <div class="p-4 rounded-xl glass-card">
+              <div class="w-8 h-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold mb-2">⭐</div>
+              <h4 class="text-sm font-bold text-white">Filtro de Anotações</h4>
+              <p class="text-xs text-slate-400 mt-1">Exiba apenas os artigos que você anotou ou grifou, transformando o sumário em um roteiro de revisão ativa.</p>
+            </div>
+
+            <div class="p-4 rounded-xl glass-card">
+              <div class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold mb-2">🔗</div>
+              <h4 class="text-sm font-bold text-white">Grafo de Remissões</h4>
+              <p class="text-xs text-slate-400 mt-1">Visualize o mapa interativo de conexões entre artigos citados para entender o ecossistema da lei.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="flex items-center justify-between text-xs text-slate-400 border-t border-slate-800 pt-3">
+        <span>Barra lateral expansível e recolhível com 1 clique para não ocupar espaço em telas menores.</span>
+        <span class="text-blue-400 font-semibold">Localização sincronizada conforme você rola a página.</span>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 4: GRIFOS & CADERNO DE ESTUDOS ==================== -->
+    <div id="slide-3" class="slide-canvas bg-gradient-to-br from-slate-950 via-slate-900 to-amber-950/30 hidden flex flex-col justify-between p-12">
+      <!-- Header -->
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div>
+          <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-amber-500/20 text-amber-400 border border-amber-500/30">
+            Estudo Ativo & Produtividade
+          </span>
+          <h2 class="text-3xl font-extrabold text-white mt-1">Grifos em Cores & Caderno de Estudos</h2>
+          <p class="text-sm text-slate-400">Destaque trechos, faça comentários pessoais e exporte seu resumo pronto para o Notion ou Obsidian.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-1.5 rounded-xl bg-amber-500/20 text-amber-300 font-semibold text-xs border border-amber-500/30">
+            📥 Exportar para Markdown (.md)
+          </span>
+        </div>
+      </div>
+
+      <!-- Visual Section -->
+      <div class="grid grid-cols-12 gap-8 my-auto items-center">
+        <!-- Main Annotated Article Mockup -->
+        <div class="col-span-7 space-y-3">
+          <!-- Article Card with Highlights -->
+          <div class="p-5 rounded-2xl bg-slate-900/90 border border-slate-700 shadow-2xl space-y-3">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-800">
+              <div class="flex items-center gap-2">
+                <span class="px-2 py-0.5 rounded bg-indigo-600 text-white font-bold text-xs">Art. 5º, XI</span>
+                <span class="text-xs text-slate-300 font-semibold">CF/88 — Inviolabilidade de Domicílio</span>
+              </div>
+              <div class="flex items-center gap-1.5">
+                <span class="w-3 h-3 rounded-full bg-amber-400" title="Importante"></span>
+                <span class="w-3 h-3 rounded-full bg-emerald-400" title="OAB"></span>
+                <span class="w-3 h-3 rounded-full bg-rose-400" title="Pegadinha"></span>
+              </div>
+            </div>
+
+            <!-- Annotated Text with Colored Spans -->
+            <p class="font-serif-legal text-sm leading-relaxed text-slate-100">
+              a casa é asilo inviolável do indivíduo, ninguém nela podendo penetrar sem consentimento do morador, salvo em caso de
+              <mark class="bg-amber-400/30 text-amber-200 px-1 rounded font-medium border-b-2 border-amber-400">flagrante delito ou desastre</mark>, ou para
+              <mark class="bg-emerald-400/30 text-emerald-200 px-1 rounded font-medium border-b-2 border-emerald-400">prestar socorro</mark>, ou,
+              <mark class="bg-rose-400/30 text-rose-200 px-1 rounded font-bold border-b-2 border-rose-400">durante o dia, por determinação judicial</mark>;
+            </p>
+
+            <!-- Embedded Sticky Note -->
+            <div class="p-3 rounded-xl bg-slate-800/90 border border-slate-700 space-y-1">
+              <div class="flex items-center justify-between text-[11px]">
+                <span class="font-bold text-amber-400 flex items-center gap-1">📝 Minha Nota de Estudo</span>
+                <span class="text-slate-400">Salvo automaticamente</span>
+              </div>
+              <p class="text-xs text-slate-300 leading-normal">
+                <em>"Cuidado: a determinação judicial só permite ingresso DURANTE O DIA. Flagrante, desastre e socorro valem a qualquer hora!"</em>
+              </p>
+            </div>
+          </div>
+
+          <!-- Color Tags Bar -->
+          <div class="flex items-center justify-between p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs">
+            <span class="text-slate-400 font-medium">Cores Semânticas:</span>
+            <span class="px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 font-semibold border border-amber-500/40">Amarelo: Importante</span>
+            <span class="px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 font-semibold border border-emerald-500/40">Verde: OAB</span>
+            <span class="px-2.5 py-1 rounded-full bg-blue-500/20 text-blue-300 font-semibold border border-blue-500/40">Azul: Concursos</span>
+            <span class="px-2.5 py-1 rounded-full bg-rose-500/20 text-rose-300 font-semibold border border-rose-500/40">Rosa: Pegadinha</span>
+          </div>
+        </div>
+
+        <!-- Export & Study Notebook Drawer Column -->
+        <div class="col-span-5 rounded-2xl overflow-hidden border border-slate-700 bg-slate-900 shadow-2xl p-5 space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-lg">📚</span>
+              <h3 class="text-sm font-bold text-white">Caderno de Estudos Integrado</h3>
+            </div>
+            <span class="px-2 py-0.5 rounded bg-indigo-500/20 text-indigo-300 text-xs font-bold">14 Anotações</span>
+          </div>
+
+          <p class="text-xs text-slate-300 leading-relaxed">
+            Todas as suas anotações e trechos grifados ficam organizados em uma central de revisão acessível em qualquer página da lei.
+          </p>
+
+          <div class="space-y-2.5">
+            <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-between">
+              <div>
+                <h5 class="text-xs font-bold text-white">Exportar para Markdown (.md)</h5>
+                <p class="text-[11px] text-slate-400">Importação perfeita para Notion, Obsidian e Logseq.</p>
+              </div>
+              <span class="px-2.5 py-1 rounded bg-indigo-600 text-white text-[11px] font-bold">Baixar</span>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-between">
+              <div>
+                <h5 class="text-xs font-bold text-white">Relatório de Grifos por Tag</h5>
+                <p class="text-[11px] text-slate-400">Agrupado por "OAB", "Pegadinha" e "Concursos".</p>
+              </div>
+              <span class="px-2.5 py-1 rounded bg-slate-700 text-slate-200 text-[11px] font-bold">Gerar</span>
+            </div>
+
+            <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700/80 flex items-center justify-between">
+              <div>
+                <h5 class="text-xs font-bold text-white">Backup & Restauração JSON</h5>
+                <p class="text-[11px] text-slate-400">Transfira seus estudos para qualquer outro computador.</p>
+              </div>
+              <span class="px-2.5 py-1 rounded bg-slate-700 text-slate-200 text-[11px] font-bold">Backup</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="flex items-center justify-between text-xs text-slate-400 border-t border-slate-800 pt-3">
+        <span>Seus dados ficam 100% seguros no armazenamento local do seu próprio navegador.</span>
+        <span class="text-amber-400 font-semibold">Sem risco de perda ao fechar a aba.</span>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 5: IA & DOUTRINA (BYOKEY) ==================== -->
+    <div id="slide-4" class="slide-canvas bg-gradient-to-br from-slate-950 via-indigo-950/60 to-purple-950/40 hidden flex flex-col justify-between p-12">
+      <!-- Header -->
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div>
+          <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-purple-500/20 text-purple-400 border border-purple-500/30">
+            Inteligência Artificial BYOKey
+          </span>
+          <h2 class="text-3xl font-extrabold text-white mt-1">Explicações Jurídicas & Chat Contextual</h2>
+          <p class="text-sm text-slate-400">Conecte sua própria chave (Gemini, OpenAI, Claude, Groq) e receba doutrina e exemplos práticos instantâneos.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+            🔐 Chave Privada • Sem Intermediários
+          </span>
+        </div>
+      </div>
+
+      <!-- Visual Section -->
+      <div class="grid grid-cols-12 gap-8 my-auto items-center">
+        <!-- AI Response Drawer Card -->
+        <div class="col-span-7 rounded-2xl overflow-hidden border border-indigo-500/40 bg-slate-900 shadow-2xl">
+          <!-- Card Header -->
+          <div class="p-4 bg-indigo-950/70 border-b border-indigo-500/30 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-3 h-3 rounded-full bg-indigo-400 animate-pulse"></span>
+              <span class="text-xs font-bold text-white">Análise Jurídica com IA • Art. 186 do Código Civil</span>
+            </div>
+            <span class="px-2 py-0.5 rounded bg-indigo-500/30 text-indigo-300 text-[10px] font-mono">Gemini 3.8 Flash</span>
+          </div>
+
+          <!-- Structured AI Content -->
+          <div class="p-5 space-y-3.5 text-xs text-slate-200">
+            <div class="p-3 rounded-xl bg-slate-800/80 border border-slate-700/60 space-y-1">
+              <span class="text-[11px] font-bold text-indigo-400 uppercase tracking-wider">📌 Resumo Didático</span>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                Fixa a cláusula geral da responsabilidade civil subjetiva. Exige 4 elementos essenciais: conduta culposa/dolosa, nexo causal, dano e violação de direito.
+              </p>
+            </div>
+
+            <div class="p-3 rounded-xl bg-rose-950/30 border border-rose-500/30 space-y-1">
+              <span class="text-[11px] font-bold text-rose-400 uppercase tracking-wider">⚠️ Pegadinhas Frequentes em Concursos & OAB</span>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                As bancas costumam trocar <em>"ainda que exclusivamente moral"</em> por <em>"desde que acompanhado de dano material"</em>. A Súmula 37 do STJ admite expressamente a cumulação de ambas as indenizações!
+              </p>
+            </div>
+
+            <div class="p-3 rounded-xl bg-emerald-950/30 border border-emerald-500/30 space-y-1">
+              <span class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">⚖️ Exemplo Prático de Aplicação</span>
+              <p class="text-xs text-slate-300 leading-relaxed">
+                Motorista que avança o sinal vermelho por distração (imprudência) e colide com veículo de terceiro: dever de indenizar tanto o conserto (material) quanto eventuais sequelas (estético/moral).
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Providers & Capabilities Info -->
+        <div class="col-span-5 space-y-4">
+          <div class="p-4 rounded-xl glass-card space-y-2">
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <span class="text-indigo-400">✦</span> Liberdade Total de Provedor
+            </h4>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Use a IA que você preferir com sua própria chave de API (Bring Your Own Key):
+            </p>
+            <div class="flex flex-wrap gap-1.5 pt-1">
+              <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-semibold border border-slate-700">Google Gemini</span>
+              <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-semibold border border-slate-700">OpenAI (GPT-4o)</span>
+              <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-semibold border border-slate-700">Anthropic Claude</span>
+              <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-300 text-[10px] font-semibold border border-slate-700">Groq & OpenRouter</span>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-xl glass-card space-y-1.5">
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <span class="text-emerald-400">✦</span> Chat Jurídico Interativo
+            </h4>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Faça perguntas sobre qualquer ponto controverso da lei, consulte jurisprudência consolidada ou peça para a IA redigir um parágrafo de tese jurídica.
+            </p>
+          </div>
+
+          <div class="p-4 rounded-xl glass-card space-y-1.5">
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <span class="text-amber-400">✦</span> Síntese de Súmulas & Teses
+            </h4>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Em cada artigo, descubra com 1 clique quais Súmulas do STF e STJ se aplicam àquele dispositivo legal.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="flex items-center justify-between text-xs text-slate-400 border-t border-slate-800 pt-3">
+        <span>Não requer assinaturas caras: pague apenas frações de centavo por uso direto na sua conta de API.</span>
+        <span class="text-purple-400 font-semibold">Zero dados compartilhados com terceiros.</span>
+      </div>
+    </div>
+
+    <!-- ==================== SLIDE 6: SIMULADO OAB & ANALISADOR DE EDITAL ==================== -->
+    <div id="slide-5" class="slide-canvas bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950/40 hidden flex flex-col justify-between p-12">
+      <!-- Header -->
+      <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div>
+          <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+            Aprovação em Foco
+          </span>
+          <h2 class="text-3xl font-extrabold text-white mt-1">Simulado Interativo OAB & Analisador de Edital em PDF</h2>
+          <p class="text-sm text-slate-400">Gere questões inéditas estilo FGV/Cebraspe sobre qualquer artigo e cruze o PDF do seu edital com a lei.</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="px-3 py-1.5 rounded-xl bg-emerald-500/20 text-emerald-300 font-semibold text-xs border border-emerald-500/30">
+            🎯 Placar: 100% de Acertos
+          </span>
+        </div>
+      </div>
+
+      <!-- Visual Section -->
+      <div class="grid grid-cols-12 gap-8 my-auto items-center">
+        <!-- Interactive Quiz Card -->
+        <div class="col-span-7 rounded-2xl overflow-hidden border border-emerald-500/40 bg-slate-900 shadow-2xl">
+          <!-- Quiz Header -->
+          <div class="p-3.5 bg-emerald-950/70 border-b border-emerald-500/30 flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-white">Questão Inédita • Estilo FGV / OAB</span>
+              <span class="px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">Art. 186 CC</span>
+            </div>
+            <span class="text-xs text-slate-400 font-mono">1 de 3 Questões</span>
+          </div>
+
+          <!-- Quiz Body -->
+          <div class="p-5 space-y-3">
+            <p class="text-xs text-slate-200 leading-relaxed font-medium">
+              João, motorista profissional, avançou cruzamento sinalizado por estar digitando no celular, abalroando o veículo de Maria, que não sofreu danos físicos mas teve seu carro avariado. À luz da disciplina da responsabilidade civil no Código Civil:
+            </p>
+
+            <!-- Options -->
+            <div class="space-y-2 text-xs">
+              <div class="p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/60 text-slate-400 flex items-center gap-2.5">
+                <span class="w-5 h-5 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center font-bold text-[10px]">A</span>
+                <span>Inexiste ato ilícito se não houve lesão física à vítima.</span>
+              </div>
+
+              <!-- Correct Option Selected -->
+              <div class="p-2.5 rounded-xl bg-emerald-500/20 border-2 border-emerald-400 text-emerald-200 flex items-center gap-2.5 shadow-sm">
+                <span class="w-5 h-5 rounded-full bg-emerald-400 text-slate-950 flex items-center justify-center font-black text-[10px]">✓</span>
+                <span class="font-bold">Houve ato ilícito decorrente de culpa (imprudência), gerando o dever de indenizar.</span>
+              </div>
+
+              <div class="p-2.5 rounded-xl bg-slate-800/60 border border-slate-700/60 text-slate-400 flex items-center gap-2.5">
+                <span class="w-5 h-5 rounded-full bg-slate-700 text-slate-300 flex items-center justify-center font-bold text-[10px]">C</span>
+                <span>A responsabilidade é puramente objetiva, dispensando aferição de negligência.</span>
+              </div>
+            </div>
+
+            <!-- Commented Feedback -->
+            <div class="p-2.5 rounded-lg bg-emerald-950/40 border border-emerald-500/30 text-[11px] text-emerald-300 leading-normal">
+              <strong>Gabarito Oficial Comentado:</strong> A conduta de dirigir distraído configura culpa na modalidade imprudência, preenchendo todos os requisitos do Art. 186 do Código Civil.
+            </div>
+          </div>
+        </div>
+
+        <!-- Edital Matcher & Jurisprudence Side -->
+        <div class="col-span-5 space-y-4">
+          <!-- Edital Matcher Card -->
+          <div class="p-4 rounded-xl glass-card border-l-4 border-emerald-500 space-y-2">
+            <div class="flex items-center justify-between">
+              <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                <span>📄</span> Analisador de Edital em PDF
+              </h4>
+              <span class="text-[10px] text-emerald-400 font-bold">Inovador</span>
+            </div>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Arraste o PDF do edital do seu concurso (Magistratura, MP, Defensoria, Delegado ou OAB). A IA cruza o conteúdo programático e marca automaticamente os artigos cobrados com a tag <strong>"Edital Prioritário"</strong>!
+            </p>
+          </div>
+
+          <!-- Jurisprudence Quick Search Card -->
+          <div class="p-4 rounded-xl glass-card border-l-4 border-blue-500 space-y-2">
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <span>⚖️</span> Jurisprudência com 1 Clique
+            </h4>
+            <p class="text-xs text-slate-300 leading-relaxed">
+              Acesso instantâneo a precedentes e julgados sobre o artigo em foco:
+            </p>
+            <div class="flex flex-wrap gap-1.5 pt-1">
+              <span class="px-2 py-0.5 rounded bg-slate-800 text-blue-300 text-[10px] font-semibold border border-slate-700">STF Jurisprudência</span>
+              <span class="px-2 py-0.5 rounded bg-slate-800 text-blue-300 text-[10px] font-semibold border border-slate-700">STJ Precedentes</span>
+              <span class="px-2 py-0.5 rounded bg-slate-800 text-blue-300 text-[10px] font-semibold border border-slate-700">Jusbrasil</span>
+              <span class="px-2 py-0.5 rounded bg-slate-800 text-blue-300 text-[10px] font-semibold border border-slate-700">QConcursos</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="flex items-center justify-between text-xs text-slate-400 border-t border-slate-800 pt-3">
+        <span>Pratique questões comentadas no próprio fluxo da leitura da lei sem trocar de janela.</span>
+        <span class="text-emerald-400 font-semibold">Instale agora na Chrome Web Store</span>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Instructions & Tips for capturing screenshots -->
+  <footer class="w-full max-w-[1280px] mt-6 p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-xs text-slate-400 flex flex-wrap items-center justify-between gap-4">
+    <div>
+      <strong class="text-slate-200">Dica para Captura das Imagens da Loja:</strong>
+      <span>Abra este arquivo no Chrome ou Edge, coloque o navegador em 100% de zoom e use a ferramenta de captura do sistema (Windows + Shift + S ou modo desenvolvedor do Chrome <code>Ctrl+Shift+P &gt; Capture node screenshot</code> na div <code>.slide-canvas</code>) para salvar cada tela exatamente em 1280x800 px.</span>
+    </div>
+    <div class="flex items-center gap-2">
+      <span class="text-indigo-400 font-semibold">Proporção oficial: 16:10 (1280x800)</span>
+    </div>
+  </footer>
+
+  <script>
+    let currentSlide = 0;
+    const totalSlides = 6;
+
+    function goToSlide(index) {
+      currentSlide = index;
+      for (let i = 0; i < totalSlides; i++) {
+        const slide = document.getElementById(`slide-${i}`);
+        if (slide) {
+          if (i === index) {
+            slide.classList.remove('hidden');
+          } else {
+            slide.classList.add('hidden');
+          }
+        }
+      }
+
+      // Update button active states
+      document.querySelectorAll('.nav-btn').forEach((btn, idx) => {
+        if (idx === index) {
+          btn.className = 'nav-btn px-3 py-1.5 rounded-lg text-xs font-semibold transition-all bg-indigo-600 text-white shadow-sm';
+        } else {
+          btn.className = 'nav-btn px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition-all';
+        }
+      });
+    }
+
+    // Keyboard navigation (Left / Right arrows)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') {
+        goToSlide((currentSlide + 1) % totalSlides);
+      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+        goToSlide((currentSlide - 1 + totalSlides) % totalSlides);
+      }
+    });
+  </script>
+</body>
+</html>

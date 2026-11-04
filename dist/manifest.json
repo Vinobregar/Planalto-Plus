@@ -1,0 +1,60 @@
+{
+  "manifest_version": 3,
+  "name": "Planalto Moderno — Leitura Jurídica & IA",
+  "short_name": "Planalto Moderno",
+  "version": "1.0.0",
+  "description": "Moderniza a visualização de leis no Planalto.gov.br com sumário hierárquico, grifos, notas, jurisprudência e IA para OAB e Concursos.",
+  "permissions": [
+    "storage",
+    "unlimitedStorage"
+  ],
+  "host_permissions": [
+    "*://*.planalto.gov.br/*",
+    "https://generativelanguage.googleapis.com/*",
+    "https://api.openai.com/*",
+    "https://api.anthropic.com/*",
+    "https://openrouter.ai/*",
+    "https://api.groq.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Planalto Moderno — Configurações & IA",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.planalto.gov.br/ccivil_03/*",
+        "*://*.planalto.gov.br/*lei*",
+        "*://*.planalto.gov.br/*decreto*",
+        "*://*.planalto.gov.br/*constituicao*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["sql-wasm.wasm"],
+      "matches": [
+        "*://*.planalto.gov.br/*",
+        "http://localhost/*",
+        "http://127.0.0.1/*"
+      ]
+    }
+  ]
+}

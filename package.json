@@ -1,0 +1,32 @@
+{
+  "name": "planalto-moderno-extension",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Modernizes www.planalto.gov.br legislation pages with a clean reader, hierarchical TOC, notes, highlights, jurisprudence search, and AI (Explanations, OAB/Concursos Quiz & Chat).",
+  "type": "module",
+  "scripts": {
+    "dev": "node ./node_modules/vite/bin/vite.js",
+    "build": "node ./node_modules/typescript/bin/tsc && node scripts/build.mjs",
+    "build:chrome": "node ./node_modules/typescript/bin/tsc && node scripts/build.mjs --target=chrome",
+    "build:firefox": "node ./node_modules/typescript/bin/tsc && node scripts/build.mjs --target=firefox",
+    "build:all": "node ./node_modules/typescript/bin/tsc && node scripts/build.mjs --target=all",
+    "preview": "node ./node_modules/vite/bin/vite.js preview"
+  },
+  "dependencies": {
+    "anki-apkg-export": "^5.0.0",
+    "lucide-react": "^0.454.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.278",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.3",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.47",
+    "tailwindcss": "^3.4.14",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10"
+  }
+}

@@ -1,6 +1,6 @@
 # Planalto Moderno — Extensão para Leitura Jurídica & IA (Chrome & Firefox)
 
-Extensão multiplataforma (Manifest V3 para **Google Chrome** e **Mozilla Firefox**) que moderniza a visualização de legislações no portal [www.planalto.gov.br](https://www.planalto.gov.br), substituindo o HTML legado por uma interface de leitura limpa, responsiva e sem distrações, isolada via **Shadow DOM**.
+Extensão multiplataforma para **Google Chrome** e **Mozilla Firefox** que moderniza a visualização de legislações no portal [www.planalto.gov.br](https://www.planalto.gov.br).
 
 ---
 
@@ -77,7 +77,7 @@ npm run build:all      # Ambas as versões
    - Pesquisa pré-formatada por dispositivo no STF, STJ, Jusbrasil e Google Acadêmico.
    - Busca em bancos externos de questões por citação de artigo ou trecho literal.
 
-6. **Inteligência Artificial Integrada**
-   - Suporte a múltiplos provedores (Google Gemini, OpenAI, Anthropic Claude, OpenRouter, Groq).
+6. **Inteligência Artificial**
+   - Suporte a múltiplos provedores por Chave API (Google Gemini, OpenAI, Anthropic Claude, OpenRouter, Groq).
    - Importação de **Edital de Concurso (PDF)** com grifo automatizado dos artigos mais incidentes.
    - Gerador de simulados e questões com parametrização de dificuldade e banca.

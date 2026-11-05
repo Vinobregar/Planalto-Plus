@@ -368,16 +368,32 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
   // Global Keyboard Shortcuts (J, K, /, C, [, ], ?, Esc)
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement | null;
-      if (
-        target &&
-        (target.tagName === 'INPUT' ||
-          target.tagName === 'TEXTAREA' ||
-          target.isContentEditable ||
-          target.closest('input, textarea, [contenteditable="true"]'))
-      ) {
+      const path = (typeof e.composedPath === 'function' ? e.composedPath() : []) as HTMLElement[];
+      const target = (path[0] || e.target) as HTMLElement | null;
+
+      // Check if target or any element in its event path is an input, textarea, or contentEditable
+      const isInputFocused =
+        (target &&
+          (target.tagName === 'INPUT' ||
+            target.tagName === 'TEXTAREA' ||
+            target.tagName === 'SELECT' ||
+            target.isContentEditable ||
+            target.closest?.('input, textarea, select, [contenteditable="true"]'))) ||
+        path.some(
+          (el) =>
+            el instanceof HTMLElement &&
+            (el.tagName === 'INPUT' ||
+              el.tagName === 'TEXTAREA' ||
+              el.tagName === 'SELECT' ||
+              el.isContentEditable)
+        );
+
+      if (isInputFocused) {
         if (e.key === 'Escape') {
-          target.blur();
+          target?.blur?.();
+          setShowTopSearchDropdown(false);
+          setShowLawsMenu(false);
+          setShowAppearancePopover(false);
         }
         return;
       }
@@ -1453,6 +1469,12 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
                     type="text"
                     value={lawSearchQuery}
                     onChange={(e) => setLawSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      e.stopPropagation();
+                      if (e.key === 'Escape') {
+                        setShowLawsMenu(false);
+                      }
+                    }}
                     placeholder="Buscar lei (ex: CLT, Penal, Civil, OAB)..."
                     className="w-full pl-8 pr-3 py-1.5 rounded-xl border border-current/15 bg-transparent text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
                   />

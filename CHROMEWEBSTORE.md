@@ -1,10 +1,13 @@
 # Chrome Web Store Listing — Planalto Plus
 
 > Last Updated: 2026-11-04  
-> Version: 1.0.5  
+> Version: 1.0.6  
 > Package: `dist/planalto-moderno-chrome.zip` (772 KB)
 
 ---
+
+## Changelog v1.0.6
+• Destaque Visual de Busca: termos pesquisados (e sinônimos) são automaticamente destacados com highlight no texto de cada artigo.
 
 ## Changelog v1.0.5
 • Atalhos de Teclado Globais: navegação rápida 'J'/'K' (próximo/artigo anterior), '/' (busca), 'C' (texto compilado), '[' e ']' (painéis) e '?' (guia de atalhos).

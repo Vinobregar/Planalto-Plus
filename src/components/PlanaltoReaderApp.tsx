@@ -122,6 +122,33 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
     setShowTopSearchDropdown(false);
   };
 
+  
+  // Words to highlight in the article text when a term search is performed
+  const searchHighlightWords = useMemo(() => {
+    const query = (appliedFilterQuery || searchQuery).trim();
+    if (!query) return [];
+    // Do not highlight pure article numbers (e.g. "155", "art. 155")
+    const cleanNum = query.replace(/[º°.]/g, '').trim();
+    if (/^(?:art(?:igo)?\s*)?\d+[\w-]*$/i.test(cleanNum)) {
+      return [];
+    }
+    const words = query.split(/\s+/).filter((w) => w.length >= 2);
+    const set = new Set<string>();
+    for (const w of words) {
+      set.add(w.toLowerCase());
+      if (searchWithSynonyms) {
+        const syns = getSynonymsForQuery(w);
+        for (const s of syns) {
+          if (s.length >= 3) set.add(s.toLowerCase());
+        }
+      }
+    }
+    if (words.length > 1) {
+      set.add(query.toLowerCase());
+    }
+    return Array.from(set).sort((a, b) => b.length - a.length);
+  }, [appliedFilterQuery, searchQuery, searchWithSynonyms]);
+
   const activeFilteredArticleIds = useMemo(() => {
     if (!appliedFilterQuery) return null;
     const q = appliedFilterQuery.toLowerCase().trim();
@@ -1620,6 +1647,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
                     annotation={annotations[article.id]}
                     highlightTags={highlightTags}
                     appearance={appearance}
+                    searchHighlightWords={searchHighlightWords}
                     crossRefGraph={crossRefGraph}
                     isFocused={focusedArticleId === article.id}
                     onFocus={() => setFocusedArticleId(article.id)}

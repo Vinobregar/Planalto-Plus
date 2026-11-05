@@ -41,6 +41,7 @@ interface ArticleItemProps {
   annotation?: ArticleAnnotation;
   highlightTags: HighlightTag[];
   appearance: AppearanceSettings;
+  searchHighlightWords?: string[];
   crossRefGraph: CrossReferenceGraph;
   isFocused: boolean;
   onFocus: () => void;
@@ -259,6 +260,34 @@ const ArticleMentionLink: React.FC<ArticleMentionLinkProps> = ({
  * Turns inline mentions of articles (e.g., "art. 5º", "arts. 186 e 187", "artigo anterior")
  * into interactive ArticleMentionLink hyperlinks.
  */
+
+function highlightSearchWords(text: string, words?: string[]): React.ReactNode {
+  if (!words || words.length === 0 || !text) return text;
+  const escaped = words
+    .map((w) => w.replace(/[.*+?^$\{}()|[\]\\]/g, '\\function linkifyArticleMentionsInSegment('))
+    .filter(Boolean);
+  if (escaped.length === 0) return text;
+
+  const regex = new RegExp(`(${escaped.join('|')})`, 'gi');
+  const tokens = text.split(regex);
+  if (tokens.length <= 1) return text;
+
+  return tokens.map((tok, i) => {
+    const isMatch = words.some((w) => w.toLowerCase() === tok.toLowerCase());
+    if (isMatch) {
+      return (
+        <mark
+          key={i}
+          className="bg-amber-300/40 text-amber-950 dark:bg-amber-400/35 dark:text-amber-100 font-semibold border-b-2 border-amber-500 rounded px-0.5"
+        >
+          {tok}
+        </mark>
+      );
+    }
+    return tok;
+  });
+}
+
 function linkifyArticleMentionsInSegment(
   segmentText: string,
   currentArticle: ArticleBlock,
@@ -266,7 +295,8 @@ function linkifyArticleMentionsInSegment(
   crossRefGraph: CrossReferenceGraph,
   theme: ThemeMode,
   onJumpToArticle: (articleId: string) => void,
-  onOpenCrossRefGraphForArticle: (targetArticle: ArticleBlock) => void
+  onOpenCrossRefGraphForArticle: (targetArticle: ArticleBlock) => void,
+  searchHighlightWords?: string[]
 ): React.ReactNode {
   if (!segmentText) return segmentText;
 
@@ -283,7 +313,7 @@ function linkifyArticleMentionsInSegment(
     const matchedStr = match[0];
 
     if (matchStart > lastIndex) {
-      parts.push(segmentText.slice(lastIndex, matchStart));
+      parts.push(highlightSearchWords(segmentText.slice(lastIndex, matchStart), searchHighlightWords));
     }
 
     // Case 1: "artigo anterior" / "art. anterior"
@@ -374,9 +404,9 @@ function linkifyArticleMentionsInSegment(
     lastIndex = matchStart + matchedStr.length;
   }
 
-  if (parts.length === 0) return segmentText;
+  if (parts.length === 0) return highlightSearchWords(segmentText, searchHighlightWords);
   if (lastIndex < segmentText.length) {
-    parts.push(segmentText.slice(lastIndex));
+    parts.push(highlightSearchWords(segmentText.slice(lastIndex), searchHighlightWords));
   }
   return parts;
 }
@@ -391,7 +421,8 @@ function renderHighlightedAndLinkedText(
   crossRefGraph: CrossReferenceGraph,
   theme: ThemeMode,
   onJumpToArticle: (articleId: string) => void,
-  onOpenCrossRefGraphForArticle: (targetArticle: ArticleBlock) => void
+  onOpenCrossRefGraphForArticle: (targetArticle: ArticleBlock) => void,
+  searchHighlightWords?: string[]
 ): React.ReactNode {
   let segments: Array<{ text: string; highlight?: TextHighlight }> = [{ text }];
 
@@ -435,7 +466,8 @@ function renderHighlightedAndLinkedText(
       crossRefGraph,
       theme,
       onJumpToArticle,
-      onOpenCrossRefGraphForArticle
+      onOpenCrossRefGraphForArticle,
+      searchHighlightWords
     );
 
     if (!seg.highlight) {
@@ -469,6 +501,7 @@ export const ArticleItem: React.FC<ArticleItemProps> = ({
   annotation,
   highlightTags,
   appearance,
+  searchHighlightWords,
   crossRefGraph,
   isFocused,
   onFocus,
@@ -1030,11 +1063,10 @@ export const ArticleItem: React.FC<ArticleItemProps> = ({
             crossRefGraph,
             appearance.theme,
             onJumpToArticle,
-            onOpenCrossRefGraphForArticle
-          )}
-        </span>
-
-        <ModificationNoteBadge
+            onOpenCrossRefGraphForArticle,
+            searchHighlightWords
+          )}</span>
+          <ModificationNoteBadge
           note={article.modificationNote}
           url={article.modificationUrl}
           compiledMode={appearance.compiledMode}
@@ -1092,10 +1124,10 @@ export const ArticleItem: React.FC<ArticleItemProps> = ({
                       crossRefGraph,
                       appearance.theme,
                       onJumpToArticle,
-                      onOpenCrossRefGraphForArticle
-                    )}
-                  </span>
-                  <ModificationNoteBadge
+                      onOpenCrossRefGraphForArticle,
+            searchHighlightWords
+          )}</span>
+          <ModificationNoteBadge
                     note={sc.modificationNote}
                     url={sc.modificationUrl}
                     compiledMode={appearance.compiledMode}

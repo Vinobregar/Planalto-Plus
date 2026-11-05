@@ -1,10 +1,15 @@
 # Chrome Web Store Listing — Planalto Plus
 
-> Last Updated: 2026-11-04  
-> Version: 1.0.8  
+> Last Updated: 2026-11-05  
+> Version: 1.0.9  
 > Package: `dist/planalto-moderno-chrome.zip` (772 KB)
 
 ---
+
+## Changelog v1.0.9
+• Ativação do Modal de Atalhos de Teclado: correção do botão no Sumário e tecla '?' para exibir o painel completo de atalhos rápidos de navegação.
+• Correção de Sobreposição na Impressão e PDF: reestruturação completa da folha de estilos `@media print`, eliminando bloqueios de viewport, ocultando toolbars/tooltips flutuantes com `.no-print` e permitindo que artigos longos quebrem naturalmente entre as páginas A4 sem truncamento ou sobreposição de texto.
+• Botão Direto de Imprimir / Salvar PDF: adicionado botão de 1 clique no menu de Aparência com atalho Ctrl+P para exportação limpa estilo livro jurídico.
 
 ## Changelog v1.0.8
 • Busca Booleana Completa: suporte nativo a expressões exatas entre aspas `""`, operadores lógicos `OU` / `OR`, `E` / `AND` e negação `NÃO` / `NAO` / `NOT` / `-`.

@@ -76,54 +76,113 @@
   background: var(--app-accent, rgba(99, 102, 241, 0.55));
 }
 
-
 /* ============================================================
    Print / PDF Export Formatting (Ctrl + P)
    ============================================================ */
+@page {
+  size: A4;
+  margin: 18mm 16mm 20mm 16mm;
+}
+
 @media print {
+  /* Complete eradication of UI chrome, controls, modals, popovers and tooltips */
   header,
   aside,
   button,
   input,
+  textarea,
   [role="dialog"],
-  .no-print {
+  .no-print,
+  [class*="group-hover"],
+  [class*="group/artref"],
+  [class*="group/mod"],
+  [class*="group/compilado"],
+  span[class*="pointer-events-none"],
+  div[class*="pointer-events-none"] {
     display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    width: 0 !important;
+    overflow: hidden !important;
   }
 
+  /* Reset document and viewport locks for seamless multi-page flow */
+  html,
   body,
   :host,
-  .planalto-app-root,
-  main {
+  .planalto-app-root {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
     background: #ffffff !important;
     color: #0f172a !important;
-    overflow: visible !important;
-    height: auto !important;
-    max-height: none !important;
+    font-size: 11pt !important;
+    line-height: 1.55 !important;
+    display: block !important;
+  }
+
+  /* Reader scroll container must expand freely across all pages */
+  main,
+  main > div,
+  .flex-1 {
+    position: static !important;
     width: 100% !important;
     max-width: 100% !important;
+    height: auto !important;
+    min-height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
     padding: 0 !important;
     margin: 0 !important;
-    position: static !important;
+    display: block !important;
   }
 
-  article {
+  /* Disable CSS containment / content-visibility to eliminate browser estimation shifts */
+  *,
+  *::before,
+  *::after {
     content-visibility: visible !important;
-    break-inside: avoid;
-    page-break-inside: avoid;
-    border: none !important;
+    contain: none !important;
+    contain-intrinsic-size: none !important;
     box-shadow: none !important;
-    background: transparent !important;
-    padding: 0.5rem 0 !important;
+    text-shadow: none !important;
+    filter: none !important;
   }
 
-  h1, h2, h3, h4 {
-    break-after: avoid;
-    page-break-after: avoid;
+  /* Articles flow naturally without being forced onto a single page */
+  article {
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    page-break-inside: auto !important;
+    break-inside: auto !important;
+    margin: 0 0 1.25rem 0 !important;
+    padding: 0.35rem 0 !important;
+    border: none !important;
+    background: transparent !important;
+  }
+
+  /* Keep individual subclauses intact when possible without forcing overflow */
+  article > div {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  /* Headings must not be orphaned at the bottom of a page */
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid !important;
+    break-after: avoid !important;
     color: #000000 !important;
   }
 
+  /* Explicit page break helper */
   .print-page-break {
-    page-break-before: always;
-    break-before: page;
+    page-break-before: always !important;
+    break-before: page !important;
   }
 }

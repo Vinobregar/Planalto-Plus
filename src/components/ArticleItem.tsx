@@ -110,7 +110,7 @@ export const ModificationNoteBadge: React.FC<{
           badgeContent
         )}
         <span
-          className={`pointer-events-none opacity-0 group-hover/mod:opacity-100 transition-opacity duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-max max-w-xs px-2.5 py-1.5 rounded-lg border shadow-xl text-[11px] font-sans leading-snug z-40 ${tooltipBg}`}
+          className={`pointer-events-none opacity-0 group-hover/mod:opacity-100 transition-opacity duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-max max-w-xs px-2.5 py-1.5 rounded-lg border shadow-xl text-[11px] font-sans leading-snug z-40 no-print ${tooltipBg}`}
         >
           ({note})
           {url && (
@@ -189,7 +189,7 @@ const ArticleMentionLink: React.FC<ArticleMentionLinkProps> = ({
       </a>
 
       {/* Hover Popover Card with Bridge Padding so mouse can enter buttons */}
-      <span className="pointer-events-none opacity-0 group-hover/artref:opacity-100 group-hover/artref:pointer-events-auto transition-opacity duration-150 absolute bottom-full left-1/2 -translate-x-1/2 pb-2 w-80 sm:w-96 z-[70] select-none text-left font-normal not-italic">
+      <span className="pointer-events-none opacity-0 group-hover/artref:opacity-100 group-hover/artref:pointer-events-auto transition-opacity duration-150 absolute bottom-full left-1/2 -translate-x-1/2 pb-2 w-80 sm:w-96 z-[70] select-none text-left font-normal not-italic no-print">
         <span
           onClick={(e) => e.stopPropagation()}
           className={`block p-3.5 rounded-2xl border shadow-2xl space-y-2.5 text-xs leading-relaxed ${popoverBg}`}
@@ -773,7 +773,7 @@ export const ArticleItem: React.FC<ArticleItemProps> = ({
     >
       {/* Floating Action Toolbar (visible on hover, focus, or when popovers are open) */}
       <div
-        className={`flex items-center gap-1 absolute -top-3 right-3 px-2 py-1 rounded-full border shadow-md text-xs transition-all z-20 ${
+        className={`flex items-center gap-1 absolute -top-3 right-3 px-2 py-1 rounded-full border shadow-md text-xs transition-all z-20 no-print ${
           appearance.theme === 'dark'
             ? 'bg-zinc-900 border-zinc-700 text-zinc-200'
             : appearance.theme === 'sepia'

@@ -1750,6 +1750,15 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
           onClose={() => setShowCrossRefModal(false)}
         />
       )}
+
+      {/* Keyboard Shortcuts Modal */}
+      {showShortcutsModal && (
+        <ShortcutsModal
+          isOpen={showShortcutsModal}
+          onClose={() => setShowShortcutsModal(false)}
+          appearance={appearance}
+        />
+      )}
     </div>
   );
 };

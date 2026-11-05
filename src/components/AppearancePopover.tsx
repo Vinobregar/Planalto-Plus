@@ -7,6 +7,7 @@ import {
   Moon,
   Palette,
   Plus,
+  Printer,
   RotateCcw,
   Sliders,
   Sparkles,
@@ -531,6 +532,34 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
             className="w-full"
           />
         </div>
+      </div>
+
+      {/* Botão de Exportar / Imprimir PDF */}
+      <div className="pt-2.5 border-t border-current/10">
+        <button
+          type="button"
+          onClick={() => {
+            onClose();
+            setTimeout(() => window.print(), 120);
+          }}
+          className="w-full py-2 px-3 rounded-xl border border-current/15 hover:bg-black/5 dark:hover:bg-white/5 opacity-85 hover:opacity-100 text-xs font-semibold flex items-center justify-between gap-2.5 transition-colors cursor-pointer"
+          title="Imprime a norma limpa ou salva em PDF sem barras ou botões (Ctrl+P)"
+        >
+          <div className="flex items-center gap-2.5 min-w-0 flex-1">
+            <Printer className="w-4 h-4 text-indigo-500 shrink-0" />
+            <div className="text-left min-w-0 flex-1">
+              <div className="font-semibold text-xs leading-tight">
+                Imprimir ou Salvar PDF
+              </div>
+              <p className="text-[10px] font-normal opacity-70 leading-snug">
+                Formatação limpa estilo livro jurídico
+              </p>
+            </div>
+          </div>
+          <kbd className="px-1.5 py-0.5 rounded border border-current/20 bg-black/5 dark:bg-white/10 font-mono text-[10px] font-bold">
+            Ctrl+P
+          </kbd>
+        </button>
       </div>
 
       {/* Opção para Ocultar / Exibir Recursos de IA (exclusiva do menu Aparência) */}

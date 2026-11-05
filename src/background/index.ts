@@ -14,6 +14,19 @@ if (extensionAPI?.runtime?.onMessage) {
       _sender: any,
       sendResponse: (res: any) => void
     ) => {
+      if (message && message.type === 'OPEN_PRO_PAGE') {
+        try {
+          const url = extensionAPI.runtime.getURL('docs/pro.html');
+          if (extensionAPI.tabs?.create) {
+            extensionAPI.tabs.create({ url });
+          }
+        } catch {
+          // ignore
+        }
+        sendResponse({ ok: true });
+        return false;
+      }
+
       if (message && message.type === 'PLANALTO_AI_COMPLETION' && message.payload) {
         callProviderDirectly(message.payload)
           .then((text) => {

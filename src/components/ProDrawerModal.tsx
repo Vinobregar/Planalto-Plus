@@ -15,6 +15,7 @@ import {
   Sparkles,
   UserCheck,
   Volume2,
+  VolumeX,
 } from 'lucide-react';
 import { AppearanceSettings, AuthSession } from '../types/legislation';
 import { computeThemeColors } from './AppearancePopover';
@@ -67,6 +68,7 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
   const [audioCurrentTime, setAudioCurrentTime] = useState(0);
   const [audioDuration, setAudioDuration] = useState(29);
   const [audioPlaybackRate, setAudioPlaybackRate] = useState(1);
+  const [audioVolume, setAudioVolume] = useState<number>(1);
 
   const audioDemoUrl =
     typeof chrome !== 'undefined' && chrome.runtime?.getURL
@@ -87,22 +89,24 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
   };
 
   const handleTogglePlaybackRate = () => {
-    const rates = [1, 1.25, 1.5, 2];
+    const rates = [0.8, 1, 1.25, 1.5];
     const nextRate = rates[(rates.indexOf(audioPlaybackRate) + 1) % rates.length];
     setAudioPlaybackRate(nextRate);
     if (audioRef.current) {
       audioRef.current.playbackRate = nextRate;
+      try {
+        (audioRef.current as any).preservesPitch = true;
+      } catch {
+        // ignore
+      }
     }
   };
 
-  const handleSeekAudio = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!audioRef.current || audioDuration <= 0) return;
-    const rect = e.currentTarget.getBoundingClientRect();
-    const clickX = e.clientX - rect.left;
-    const ratio = Math.max(0, Math.min(1, clickX / rect.width));
-    const newTime = ratio * audioDuration;
-    audioRef.current.currentTime = newTime;
-    setAudioCurrentTime(newTime);
+  const handleVolumeChange = (vol: number) => {
+    setAudioVolume(vol);
+    if (audioRef.current) {
+      audioRef.current.volume = vol;
+    }
   };
 
   if (!isOpen) return null;
@@ -117,19 +121,33 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
 
   const handleOpenProLandingPage = () => {
     try {
+      if (typeof chrome !== 'undefined' && chrome.runtime?.sendMessage) {
+        chrome.runtime.sendMessage({ type: 'OPEN_PRO_PAGE' }, (res) => {
+          if (chrome.runtime.lastError || !res?.ok) {
+            const url = chrome.runtime.getURL('docs/pro.html');
+            window.open(url, '_blank');
+          }
+        });
+        return;
+      }
+      if (typeof (globalThis as any).browser?.runtime?.sendMessage === 'function') {
+        (globalThis as any).browser.runtime.sendMessage({ type: 'OPEN_PRO_PAGE' });
+        return;
+      }
+    } catch {
+      // Fallback
+    }
+    try {
       const getUrl =
         typeof chrome !== 'undefined' && chrome.runtime?.getURL
           ? chrome.runtime.getURL.bind(chrome.runtime)
-          : typeof (globalThis as any).browser?.runtime?.getURL === 'function'
-          ? (globalThis as any).browser.runtime.getURL.bind((globalThis as any).browser.runtime)
           : null;
-
       if (getUrl) {
         window.open(getUrl('docs/pro.html'), '_blank');
         return;
       }
     } catch {
-      // Fallback abaixo
+      // Fallback
     }
     window.open('https://planalto-plus.com.br/pro', '_blank');
   };
@@ -278,7 +296,7 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
               </p>
 
               {/* Player Interativo com Áudio */}
-              <div className="p-3 rounded-xl bg-black/[0.03] dark:bg-white/[0.04] border border-current/10 space-y-2">
+              <div className="p-3 rounded-xl bg-black/[0.03] dark:bg-white/[0.04] border border-current/10 space-y-2.5">
                 <div className="flex items-center justify-between gap-2.5">
                   <button
                     type="button"
@@ -293,27 +311,57 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
                     )}
                   </button>
 
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between text-[10.5px] font-semibold mb-1">
+                  <div className="flex-1 min-w-0 space-y-1">
+                    <div className="flex items-center justify-between text-[10.5px] font-semibold">
                       <span className="truncate">Art. 1º (CF/88) • Narração Neural</span>
                       <span className="font-mono text-[10px] opacity-70">
                         {formatAudioTime(audioCurrentTime)} / {formatAudioTime(audioDuration)}
                       </span>
                     </div>
 
-                    {/* Barra de Progresso Clicável */}
-                    <div
-                      onClick={handleSeekAudio}
-                      className="w-full h-2 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden cursor-pointer relative"
-                      title="Clique para avançar/retroceder no áudio"
+                    {/* Seekbar Interativo */}
+                    <input
+                      type="range"
+                      min={0}
+                      max={audioDuration || 1}
+                      step={0.1}
+                      value={audioCurrentTime}
+                      onChange={(e) => {
+                        const time = Number(e.target.value);
+                        setAudioCurrentTime(time);
+                        if (audioRef.current) audioRef.current.currentTime = time;
+                      }}
+                      style={{ accentColor: '#8b5cf6' }}
+                      className="w-full h-1.5 rounded-full cursor-pointer accent-indigo-600 block"
+                      title="Arrastar para avançar / retroceder"
+                    />
+                  </div>
+
+                  {/* Controle de Volume */}
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button
+                      type="button"
+                      onClick={() => handleVolumeChange(audioVolume === 0 ? 1 : 0)}
+                      className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/5 opacity-70 hover:opacity-100"
+                      title={audioVolume === 0 ? 'Desmutar' : 'Mutar'}
                     >
-                      <div
-                        className="h-full bg-indigo-600 transition-all duration-100"
-                        style={{
-                          width: `${audioDuration > 0 ? (audioCurrentTime / audioDuration) * 100 : 0}%`,
-                        }}
-                      />
-                    </div>
+                      {audioVolume === 0 ? (
+                        <VolumeX className="w-3.5 h-3.5" />
+                      ) : (
+                        <Volume2 className="w-3.5 h-3.5" />
+                      )}
+                    </button>
+                    <input
+                      type="range"
+                      min={0}
+                      max={1}
+                      step={0.05}
+                      value={audioVolume}
+                      onChange={(e) => handleVolumeChange(Number(e.target.value))}
+                      style={{ accentColor: '#8b5cf6' }}
+                      className="w-12 h-1.5 rounded-full cursor-pointer accent-indigo-600"
+                      title={`Volume: ${Math.round(audioVolume * 100)}%`}
+                    />
                   </div>
 
                   {/* Seletor de Velocidade */}
@@ -321,7 +369,7 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
                     type="button"
                     onClick={handleTogglePlaybackRate}
                     className="px-2 py-1 rounded-lg border border-current/15 hover:bg-black/5 dark:hover:bg-white/5 font-mono text-[10px] font-bold shrink-0 cursor-pointer"
-                    title="Alterar velocidade de reprodução"
+                    title="Alterar velocidade de reprodução (preserva tom de voz)"
                   >
                     {audioPlaybackRate}x
                   </button>
@@ -333,6 +381,17 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
                   preload="metadata"
                   onTimeUpdate={(e) => setAudioCurrentTime(e.currentTarget.currentTime)}
                   onLoadedMetadata={(e) => setAudioDuration(e.currentTarget.duration || 29)}
+                  onPlay={() => {
+                    if (audioRef.current) {
+                      audioRef.current.playbackRate = audioPlaybackRate;
+                      try {
+                        (audioRef.current as any).preservesPitch = true;
+                      } catch {
+                        // ignore
+                      }
+                      audioRef.current.volume = audioVolume;
+                    }
+                  }}
                   onEnded={() => {
                     setIsPlayingAudioDemo(false);
                     setAudioCurrentTime(0);
@@ -367,15 +426,21 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
                 Consulte a IA sobre toda a norma jurídica de uma só vez, cruzando capítulos, exceções e prazos espalhados.
               </p>
 
-              <div className="p-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-current/10 space-y-1.5 text-[11px]">
+              <div className="p-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-current/10 space-y-2 text-[11px]">
                 <div className="font-semibold text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
                   <span>💬 Pergunta de exemplo:</span>
                 </div>
-                <p className="opacity-90 italic text-[10.5px]">
-                  "Quais são todos os prazos em dias úteis previstos nesta lei e suas regras de contagem?"
+                <p className="opacity-95 italic text-[11px] font-medium">
+                  "Quais são todos os prazos em dias previstos para a sanção e o veto presidencial nesta Constituição?"
                 </p>
-                <div className="p-2 rounded-lg bg-indigo-500/10 text-indigo-950 dark:text-indigo-200 text-[10px] leading-relaxed">
-                  <strong>⚡ Resposta da IA com visão panorâmica:</strong> Localiza e compila instantaneamente todos os prazos dispersos em artigos distintos da norma em formato de tabela didática.
+                <div className="p-2.5 rounded-xl border border-current/15 bg-black/[0.03] dark:bg-white/[0.04] text-[11px] leading-relaxed space-y-1">
+                  <div className="font-bold flex items-center gap-1 text-indigo-600 dark:text-indigo-400">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Resposta da IA (visão panorâmica da norma):</span>
+                  </div>
+                  <p className="opacity-90">
+                    Conforme o <strong>Art. 66, § 1º</strong>, o Presidente dispõe de <strong>15 dias úteis</strong> para vetar o projeto, comunicando os motivos em <strong>48 horas</strong> ao Presidente do Senado. Se não se manifestar em 15 dias, opera-se a sanção tácita (<strong>§ 3º</strong>). O veto será apreciado pelo Congresso em <strong>30 dias</strong> (<strong>§ 4º</strong>).
+                  </p>
                 </div>
               </div>
             </div>
@@ -406,25 +471,29 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
 
           {/* Ativação Direta e Gratuita de Acessibilidade PcD */}
           <div
-            className="p-3.5 rounded-2xl border-2 border-emerald-700 dark:border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-100 space-y-2 whitespace-normal break-words"
+            style={{
+              backgroundColor: surface.cardBg,
+              borderColor: surface.borderColor,
+            }}
+            className="p-4 rounded-2xl border-2 shadow-sm space-y-2.5 whitespace-normal break-words"
           >
-            <div className="flex items-center gap-1.5 font-bold text-emerald-900 dark:text-emerald-200">
-              <Volume2 className="w-4 h-4 shrink-0" />
+            <div className="flex items-center gap-2 font-bold text-[16px]">
+              <Volume2 className="w-5 h-5 text-indigo-500 shrink-0" />
               <span>Acessibilidade Gratuita</span>
             </div>
-            <p className="text-[11px] leading-relaxed font-medium">
+            <p className="text-[15px] leading-relaxed opacity-90 font-medium">
               Pessoas com deficiência visual têm acesso gratuito e ilimitado à
               leitura por áudio de qualquer artigo utilizando síntese nativa de
               latência zero.
             </p>
-            <label className="flex items-start gap-2.5 pt-1 cursor-pointer select-none">
+            <label className="flex items-start gap-3 pt-1 cursor-pointer select-none">
               <input
                 type="checkbox"
                 checked={isPcd}
                 onChange={(e) => handleTogglePcd(e.target.checked)}
-                className="mt-0.5 rounded accent-emerald-600 w-4 h-4 shrink-0 cursor-pointer"
+                className="mt-1 rounded accent-indigo-600 w-5 h-5 shrink-0 cursor-pointer"
               />
-              <span className="text-xs font-bold leading-snug break-words">
+              <span className="text-[15px] font-bold leading-snug break-words">
                 Sou pessoa com deficiência visual e necessito de leitura por
                 áudio
               </span>
@@ -437,18 +506,18 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
               backgroundColor: surface.cardBg,
               borderColor: surface.borderColor,
             }}
-            className="p-3.5 rounded-2xl border border-dashed border-amber-500/40 bg-amber-500/5 space-y-2"
+            className="p-3.5 rounded-2xl border border-dashed border-indigo-500/30 bg-indigo-500/5 space-y-2 shadow-sm"
           >
             <div className="flex items-center justify-between">
-              <span className="font-bold text-xs flex items-center gap-1.5 text-amber-600 dark:text-amber-400">
+              <span className="font-bold text-xs flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400">
                 <span>🛠️ Modo de Teste PRO (Debug)</span>
               </span>
               <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                 isPro
-                  ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300'
-                  : 'bg-black/5 dark:bg-white/10 opacity-70'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'bg-black/10 dark:bg-white/10 opacity-70'
               }`}>
-                {isPro ? 'ATIVO' : 'DESATIVADO'}
+                {isPro ? 'PRO ATIVO' : 'DESATIVADO'}
               </span>
             </div>
             <p className="text-[11px] opacity-80 leading-relaxed">
@@ -460,10 +529,10 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
                 await setDebugProOverride(!isPro);
                 onAuthChange();
               }}
-              className={`w-full py-1.5 px-3 rounded-xl border font-semibold text-[11px] flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+              className={`w-full py-2 px-3 rounded-xl border font-semibold text-[11px] flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
                 isPro
-                  ? 'border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400'
-                  : 'border-emerald-500/40 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300'
+                  ? 'border-rose-600 bg-rose-600 hover:bg-rose-500 text-white shadow-sm'
+                  : 'border-indigo-600 bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm'
               }`}
             >
               <Sparkles className="w-3.5 h-3.5" />

@@ -1011,9 +1011,6 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                   <div className="flex items-center gap-1.5 text-indigo-500 font-semibold">
                     <FileUp className="w-4 h-4" />
                     <span>Importar Edital & Grifar com IA</span>
-                    <span className="px-1.5 py-0.2 rounded text-[9px] font-bold uppercase bg-indigo-500/15 text-indigo-600 dark:text-indigo-400">
-                      {isPro ? 'PRO Multi-Leis Ativo' : 'Lei Atual'}
-                    </span>
                     <span className="relative group/edtip inline-flex items-center">
                       <HelpCircle className="w-3.5 h-3.5 opacity-60 hover:opacity-100 cursor-pointer" />
                       <span

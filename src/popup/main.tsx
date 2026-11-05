@@ -218,12 +218,40 @@ const PopupApp: React.FC = () => {
         </button>
       </form>
 
-      {/* Acessibilidade PcD */}
-      <div className="p-3 rounded-xl bg-slate-800/60 border border-slate-800 space-y-2 text-xs">
-        <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-          Acessibilidade
+      {/* Acessibilidade & Inclusão */}
+      <div className="p-3.5 rounded-xl bg-slate-800/80 border border-slate-700/80 space-y-3 text-xs">
+        <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-300 flex items-center justify-between">
+          <span>Acessibilidade & Inclusão</span>
         </div>
-        <label className="flex items-start gap-2 cursor-pointer">
+
+        {/* VLibras Widget Reexibir / Ocultar com Ícone de Libras */}
+        <div className="flex items-center justify-between gap-2 pt-0.5">
+          <div className="flex items-center gap-2">
+            <span className="text-base select-none" role="img" aria-label="Libras">🤟</span>
+            <div>
+              <div className="font-semibold text-slate-100 text-xs">Botão do VLibras</div>
+              <div className="text-[10.5px] text-slate-400">Tradução em Libras 3D oficial</div>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              const next = { ...appearance, enableVlibras: !appearance.enableVlibras };
+              setAppearance(next);
+              saveAppearanceSettings(next);
+            }}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
+              appearance.enableVlibras !== false
+                ? 'bg-indigo-600 text-white border-indigo-500 shadow-sm'
+                : 'bg-slate-700/60 text-slate-300 border-slate-600 hover:bg-slate-700'
+            }`}
+          >
+            {appearance.enableVlibras !== false ? 'Exibido' : 'Desocultar'}
+          </button>
+        </div>
+
+        {/* Leitura por Áudio PcD (Alto Contraste) */}
+        <label className="flex items-start gap-2.5 pt-2 border-t border-slate-700/60 cursor-pointer select-none">
           <input
             type="checkbox"
             checked={Boolean(appearance.isPcdAudioAccess)}
@@ -234,12 +262,42 @@ const PopupApp: React.FC = () => {
               saveAppearanceSettings(next);
               setPcdUserStatus(flag);
             }}
-            className="mt-0.5 w-4 h-4 rounded accent-emerald-500 cursor-pointer shrink-0"
+            className="mt-0.5 w-4 h-4 rounded accent-indigo-500 cursor-pointer shrink-0"
           />
-          <span className="text-emerald-300 font-bold leading-snug whitespace-normal break-words">
-            Sou pessoa com deficiência visual e necessito de leitura por áudio (Gratuito)
-          </span>
+          <div className="space-y-0.5">
+            <span className="text-slate-100 font-bold text-xs leading-snug block">
+              Sou pessoa com deficiência visual e necessito de leitura por áudio
+            </span>
+            <span className="text-[10.5px] text-slate-400 block">
+              Leitura por voz nativa ilimitada e gratuita em todos os artigos
+            </span>
+          </div>
         </label>
+      </div>
+
+      {/* Preferências Rápidas de Leitura */}
+      <div className="p-3 rounded-xl bg-slate-800/60 border border-slate-800 space-y-2 text-xs">
+        <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+          Preferências Rápidas
+        </div>
+        <div className="flex items-center justify-between">
+          <span className="text-slate-200">Texto Compilado por padrão</span>
+          <button
+            type="button"
+            onClick={() => {
+              const next = { ...appearance, compiledMode: !appearance.compiledMode };
+              setAppearance(next);
+              saveAppearanceSettings(next);
+            }}
+            className={`px-2.5 py-1 rounded-lg text-xs font-semibold border transition-colors ${
+              appearance.compiledMode
+                ? 'bg-indigo-600 text-white border-indigo-500 shadow-sm'
+                : 'bg-slate-700/60 text-slate-300 border-slate-600 hover:bg-slate-700'
+            }`}
+          >
+            {appearance.compiledMode ? 'Ativado' : 'Desativado'}
+          </button>
+        </div>
       </div>
 
       {/* Quick Planalto Links */}

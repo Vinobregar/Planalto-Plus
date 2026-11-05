@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planalto Plus — Política de Privacidade & Termos de Uso</title>
+  <meta name="description" content="Política de Privacidade, Termos de Uso e Isenções de Responsabilidade da extensão Planalto Plus para Chrome e Firefox." />
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-subtle: #334155;
+      --border: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-badge: rgba(79, 70, 229, 0.15);
+      --accent-badge-text: #a5b4fc;
+      --success-badge: rgba(16, 185, 129, 0.15);
+      --success-text: #6ee7b7;
+      --warn-badge: rgba(245, 158, 11, 0.15);
+      --warn-text: #fcd34d;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f8fafc;
+        --surface: #ffffff;
+        --surface-subtle: #f1f5f9;
+        --border: #e2e8f0;
+        --text: #0f172a;
+        --text-muted: #64748b;
+        --accent-badge: #eef2ff;
+        --accent-badge-text: #4f46e5;
+        --success-badge: #ecfdf5;
+        --success-text: #059669;
+        --warn-badge: #fffbeb;
+        --warn-text: #d97706;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      padding: 2rem 1rem 4rem;
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+
+    header {
+      margin-bottom: 2.5rem;
+      padding-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+    }
+
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #4f46e5, #3730a3);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 14px rgba(79, 70, 229, 0.3);
+    }
+
+    .brand-icon svg {
+      width: 24px;
+      height: 24px;
+      fill: #ffffff;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+    }
+
+    .nav-tabs {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+
+    .nav-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.45rem 0.9rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-decoration: none;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      transition: all 0.2s;
+    }
+
+    .nav-tab:hover {
+      background: var(--primary);
+      color: #ffffff;
+      border-color: var(--primary);
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2.5rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+
+    .badge-bar {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .badge {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 0.3rem 0.65rem;
+      border-radius: 6px;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+
+    .badge-accent {
+      background: var(--accent-badge);
+      color: var(--accent-badge-text);
+    }
+
+    .badge-success {
+      background: var(--success-badge);
+      color: var(--success-text);
+    }
+
+    .badge-warn {
+      background: var(--warn-badge);
+      color: var(--warn-text);
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-top: 1.75rem;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.01em;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.4rem;
+    }
+
+    h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-top: 1.25rem;
+      margin-bottom: 0.4rem;
+      color: var(--text);
+    }
+
+    p, ul {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    ul {
+      padding-left: 1.4rem;
+    }
+
+    li {
+      margin-bottom: 0.4rem;
+    }
+
+    strong {
+      color: var(--text);
+    }
+
+    .callout {
+      padding: 1rem 1.25rem;
+      border-radius: 12px;
+      margin: 1.25rem 0;
+      border-left: 4px solid var(--primary);
+      background: var(--surface-subtle);
+    }
+
+    .callout-warn {
+      border-left-color: #f59e0b;
+    }
+
+    .callout p {
+      margin-bottom: 0;
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.85em;
+      background: var(--surface-subtle);
+      padding: 0.15rem 0.35rem;
+      border-radius: 4px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 3rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+    }
+
+    footer a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <img src="icons/icon-128.png" alt="Planalto Plus" style="width: 44px; height: 44px;" />
+        <div>
+          <h1>Planalto Plus</h1>
+          <p class="subtitle">Documento Legal Unificado: Política de Privacidade & Termos de Uso</p>
+        </div>
+      </div>
+
+      <nav class="nav-tabs">
+        <a href="pro.html" class="nav-tab" style="background: rgba(139, 92, 246, 0.15); border-color: #8b5cf6; color: #a78bfa; font-weight: 700;">⭐ Conheça o Plano PRO</a>
+        <a href="#privacidade" class="nav-tab">🛡️ Política de Privacidade</a>
+        <a href="#termos" class="nav-tab">⚖️ Termos de Uso & Isenções</a>
+        <a href="#english" class="nav-tab">🌐 English Summary (CWS/AMO)</a>
+      </nav>
+    </header>
+
+    <!-- SEÇÃO 1: POLÍTICA DE PRIVACIDADE -->
+    <main class="card" id="privacidade">
+      <div class="badge-bar">
+        <span class="badge badge-success">✓ 100% Client-Side</span>
+        <span class="badge badge-accent">Sem Rastreamento</span>
+        <span class="badge badge-accent">LGPD & GDPR Compliant</span>
+        <span class="badge badge-warn">Última atualização: 02/11/2026</span>
+      </div>
+
+      <h2>1. Política de Privacidade</h2>
+
+      <p>
+        O <strong>Planalto Moderno</strong> é uma extensão de navegador de código aberto desenvolvida para proporcionar uma leitura estruturada, limpa e ferramentas de estudo interativas no portal oficial <code>www.planalto.gov.br</code>.
+      </p>
+
+      <div class="callout">
+        <p>
+          <strong>Princípio Central:</strong> Esta extensão <strong>NÃO</strong> coleta, não armazena, não rastreia, não vende e não repassa informações de identificação pessoal, dados analíticos, endereços IP ou histórico de navegação a nenhum servidor central próprio.
+        </p>
+      </div>
+
+      <h3>1.1. Armazenamento e Tratamento Local de Dados</h3>
+      <p>
+        Todas as informações de uso permanecem estritamente no armazenamento local do dispositivo do usuário através da API segura <code>storage.local</code>:
+      </p>
+      <ul>
+        <li><strong>Anotações e Grifos da Lei:</strong> Suas notas de estudo, cores de grifo personalizadas e tags atribuídas aos artigos de lei são salvas localmente e nunca enviadas para servidores de terceiros.</li>
+        <li><strong>Preferências de Aparência:</strong> Suas escolhas de tema (claro, sépia, escuro), tipografia, espaçamento e configurações de leitura ficam no seu computador.</li>
+        <li><strong>Chaves de API de Inteligência Artificial (Modelo BYOKey):</strong> Se você optar por utilizar recursos de IA, sua chave de API pessoal (Google Gemini, OpenAI, Anthropic Claude, OpenRouter ou Groq) é guardada localmente de forma isolada no seu navegador. Ela <strong>nunca</strong> trafega por servidores intermediários do desenvolvedor.</li>
+      </ul>
+
+      <h3>1.2. Comunicações com Serviços Externos de Terceiros</h3>
+      <p>A extensão realiza conexões de rede exclusivamente nas seguintes hipóteses expressas:</p>
+      <ul>
+        <li><strong>Chamadas de IA sob Demanda do Usuário:</strong> Somente quando o usuário clica ativamente para solicitar a explicação de um artigo, resolver questões ou analisar um edital, o trecho específico da norma é enviado diretamente pelo navegador aos endpoints oficiais do provedor de IA contratado pelo próprio usuário.</li>
+        <li><strong>Pesquisas Externas de Jurisprudência:</strong> Ao clicar nos botões de pesquisa (STF, STJ, Jusbrasil, Google Acadêmico, Gran, Tec Concursos), a extensão apenas abre uma nova aba do navegador com a consulta pública pré-preenchida.</li>
+        <li><strong>Fontes Tipográficas Seguras:</strong> Fontes de alta legibilidade (como Atkinson Hyperlegible e OpenDyslexic) são requisitadas via CDNs oficiais confiáveis durante a renderização inicial.</li>
+      </ul>
+
+      <h3>1.3. Permissões Solicitadas e Justificativas</h3>
+      <ul>
+        <li><code>storage</code> e <code>unlimitedStorage</code>: Utilizadas estritamente para gravar suas notas, grifos e preferências locais sem risco de perda de dados.</li>
+        <li><code>host_permissions</code> para <code>*.planalto.gov.br</code>: Necessária para que a extensão possa ler a estrutura da legislação oficial e apresentar a interface moderna.</li>
+        <li><code>host_permissions</code> para provedores de IA: Necessárias exclusivamente para permitir que o navegador do usuário envie as consultas diretas às APIs de inteligência artificial.</li>
+      </ul>
+
+      <h3>1.4. Controle e Exclusão de Dados</h3>
+      <p>
+        O usuário possui autonomia total sobre seus dados: é possível exportar o caderno de notas em Markdown/JSON a qualquer instante. A desinstalação da extensão do navegador remove automática e permanentemente todos os dados armazenados localmente.
+      </p>
+    </main>
+
+    <!-- SEÇÃO 2: TERMOS DE USO & ISENÇÕES -->
+    <section class="card" id="termos">
+      <div class="badge-bar">
+        <span class="badge badge-accent">Código Aberto</span>
+        <span class="badge badge-warn">Finalidade Exclusivamente Educacional</span>
+      </div>
+
+      <h2>2. Termos de Uso & Isenções de Responsabilidade</h2>
+
+      <h3>2.1. Finalidade Educacional & Ausência de Consultoria Jurídica</h3>
+      <p>
+        O Planalto Moderno é uma ferramenta de auxílio ao estudo, pesquisa acadêmica e preparação para exames (OAB e concursos públicos). 
+      </p>
+      <div class="callout callout-warn">
+        <p>
+          <strong>Aviso Legal Importante:</strong> O uso da extensão <strong>NÃO constitui consultoria ou assessoria jurídica profissional</strong> de qualquer espécie. As sínteses, anotações e respostas geradas não substituem a atuação técnica de advogados, defensores ou magistrados, tampouco a consulta direta aos textos oficiais publicados no Diário Oficial da União.
+        </p>
+      </div>
+
+      <h3>2.2. Ausência de Vínculo Governamental</h3>
+      <p>
+        A extensão Planalto Moderno é um projeto independente de código aberto. <strong>A extensão não possui qualquer filiação, vínculo oficial, parceria ou endosso da Presidência da República, do Governo Federal do Brasil ou do portal Planalto.gov.br.</strong>
+      </p>
+
+      <h3>2.3. Ressalvas sobre Conteúdo Gerado por Inteligência Artificial</h3>
+      <p>
+        As funcionalidades de IA geram conteúdo automaticamente com base em modelos de linguagem estatísticos de terceiros. Tais modelos estão sujeitos a imprecisões pontuais, variações doutrinárias ou interpretações desatualizadas. O usuário deve sempre conferir a literalidade do texto legal e a jurisprudência sumulada dos tribunais superiores.
+      </p>
+
+      <h3>2.4. Custos de Terceiros e Chaves de API (BYOKey)</h3>
+      <p>
+        A extensão é gratuita. Contudo, eventuais custos decorrentes do consumo de tokens nas contas dos provedores de IA (Google, OpenAI, Anthropic, OpenRouter, Groq) são de responsabilidade exclusiva do titular da respectiva chave de API.
+      </p>
+
+      <h3>2.5. Licença de Uso e Limitação de Responsabilidade</h3>
+      <p>
+        O software é distribuído sob a licença <strong>PolyForm Noncommercial License 1.0.0</strong> com cláusula de transição para a licença <strong>MIT</strong> em <strong>1º de janeiro de 2036</strong>. O uso pessoal, acadêmico e de estudos é livre e irrestrito. É vedada a comercialização, sublicenciamento ou revenda sem autorização. O software é fornecido <em>"no estado em que se encontra"</em> (<em>as is</em>), sem garantias de qualquer natureza.
+      </p>
+    </section>
+
+    <!-- SEÇÃO 3: ENGLISH SUMMARY FOR STORE REVIEWERS -->
+    <section class="card" id="english">
+      <div class="badge-bar">
+        <span class="badge badge-accent">English Summary</span>
+        <span class="badge badge-success">For Reviewers & International Users</span>
+      </div>
+
+      <h2>3. Privacy Policy & Terms of Service (English Summary)</h2>
+
+      <p>
+        <strong>Planalto Plus</strong> is a browser extension designed to modernize the reading experience and study workflow on the official Brazilian federal legislation website (<code>planalto.gov.br</code>).
+      </p>
+
+      <h3>3.1. Privacy Policy Summary</h3>
+      <ul>
+        <li><strong>No Personal Data Collection:</strong> The extension does not collect, track, transmit, or sell any personal data, IP addresses, or browsing history.</li>
+        <li><strong>Local-Only Storage:</strong> Study notes, custom highlight tags, and theme preferences are stored exclusively on the user's local device using <code>storage.local</code>.</li>
+        <li><strong>Client-Side BYOKey AI:</strong> User-supplied API keys (Gemini, OpenAI, Anthropic, OpenRouter, Groq) are stored locally in the user's browser and communicated directly with the respective AI provider only upon explicit user action. No intermediary server exists.</li>
+        <li><strong>Permissions:</strong> Permissions are strictly scoped to local storage and domain matching on Planalto and user-selected AI endpoints (Least Privilege Principle).</li>
+      </ul>
+
+      <h3>3.2. Terms of Use Summary</h3>
+      <ul>
+        <li><strong>Educational Purposes Only:</strong> The extension is provided solely for study and reading assistance. It does not provide legal advice.</li>
+        <li><strong>Independent Project:</strong> Planalto Plus is not affiliated with, endorsed by, or sponsored by the Brazilian Presidency or the official Planalto.gov.br portal.</li>
+        <li><strong>Software License:</strong> Licensed under PolyForm Noncommercial 1.0.0 with automatic sunset transition to MIT on January 1, 2036. Free for personal and academic use. Commercial redistribution and sale prohibited.</li>
+      </ul>
+    </section>
+
+    <footer>
+      <p>Planalto Plus — Leitura Jurídica & Inteligência Artificial.</p>
+      <p>Dúvidas, sugestões ou solicitações? Abra uma issue no repositório oficial do projeto.</p>
+    </footer>
+  </div>
+</body>
+</html>

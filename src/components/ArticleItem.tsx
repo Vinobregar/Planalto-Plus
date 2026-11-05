@@ -120,16 +120,26 @@ export const ModificationNoteBadge: React.FC<{
         ) : (
           badgeContent
         )}
-        <span
-          className={`pointer-events-none opacity-0 group-hover/mod:opacity-100 transition-opacity duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-max max-w-xs px-2.5 py-1.5 rounded-lg border shadow-xl text-[11px] font-sans leading-snug z-40 no-print ${tooltipBg}`}
-        >
-          ({note})
-          {url && (
-            <span className="block text-[10px] opacity-75 underline mt-0.5">
+        {url ? (
+          <a
+            href={url}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className={`invisible opacity-0 group-hover/mod:visible group-hover/mod:opacity-100 transition-all duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-max max-w-xs px-2.5 py-1.5 rounded-lg border shadow-xl text-[11px] font-sans leading-snug z-50 pointer-events-auto cursor-pointer before:absolute before:-bottom-2.5 before:left-0 before:right-0 before:h-3 no-print hover:ring-1 hover:ring-indigo-500/50 ${tooltipBg}`}
+          >
+            <span className="block">({note})</span>
+            <span className="block text-[10px] font-semibold text-indigo-400 dark:text-indigo-300 underline mt-0.5">
               Clique para abrir a norma alteradora ↗
             </span>
-          )}
-        </span>
+          </a>
+        ) : (
+          <span
+            className={`invisible opacity-0 group-hover/mod:visible group-hover/mod:opacity-100 transition-all duration-150 absolute bottom-full left-1/2 -translate-x-1/2 mb-1.5 w-max max-w-xs px-2.5 py-1.5 rounded-lg border shadow-xl text-[11px] font-sans leading-snug z-50 pointer-events-auto before:absolute before:-bottom-2.5 before:left-0 before:right-0 before:h-3 no-print ${tooltipBg}`}
+          >
+            ({note})
+          </span>
+        )}
       </span>
     );
   }
@@ -853,8 +863,14 @@ export const ArticleItem: React.FC<ArticleItemProps> = ({
           onClick={(e) => {
             e.stopPropagation();
             onFocus();
-            setShowJurisprudence((v) => !v);
+            const nextState = !showJurisprudence;
+            setShowJurisprudence(nextState);
             setShowHighlightPicker(false);
+            if (nextState) {
+              setTimeout(() => {
+                articleRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+              }, 120);
+            }
           }}
           className={`flex items-center gap-1 px-2 py-0.5 rounded-full hover:bg-black/5 dark:hover:bg-white/10 transition-colors ${
             showJurisprudence ? 'text-indigo-500 font-semibold' : ''

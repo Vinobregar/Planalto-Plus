@@ -170,6 +170,13 @@ async function buildExtension() {
       copyDirSync(iconsSrc, resolve(targetDir, 'icons'));
     }
 
+    // Copy docs folder (contains pro.html)
+    const docsSrc = resolve(rootDir, 'docs');
+    if (fs.existsSync(docsSrc)) {
+      copyDirSync(docsSrc, resolve(targetDir, 'docs'));
+      copyDirSync(docsSrc, resolve(distDir, 'docs'));
+    }
+
     // Copy specific manifest as manifest.json
     fs.copyFileSync(manifestSrc, resolve(targetDir, 'manifest.json'));
 

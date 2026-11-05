@@ -20,7 +20,7 @@ import {
   isProUser,
 } from '../services/auth.js';
 
-export const PODCAST_SPEED_OPTIONS = [0.75, 1.0, 1.25, 1.5, 1.75, 2.0];
+export const PODCAST_SPEED_OPTIONS = [0.8, 1.0, 1.25, 1.5];
 
 /**
  * Normaliza o identificador da lei para o caminho padronizado no Supabase Storage (ex: `podcasts/lei-8112-90.mp3`)

@@ -1,0 +1,1113 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Planalto Plus PRO — Planos & Recursos Inteligentes</title>
+  <meta name="description" content="Conheça os planos e recursos profissionais do Planalto Plus: Podcast da Lei, Pergunte à Lei, Mapeador de Incidência OAB, Trilha do Edital e Sincronização em Nuvem." />
+  <link rel="icon" type="image/png" href="icons/icon-32.png" />
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-subtle: #f1f5f9;
+      --surface-hover: #e2e8f0;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --text-dim: #94a3b8;
+      --btn-bg: #0f172a;
+      --btn-hover: #1e293b;
+      --btn-text: #ffffff;
+      --tag-bg: #f1f5f9;
+      --tag-text: #334155;
+      --accent: #2563eb;
+      --accent-soft: #eff6ff;
+      --gold: #b45309;
+      --gold-bg: #fef3c7;
+      --green: #047857;
+      --green-bg: #ecfdf5;
+      --radius: 10px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Inter", Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      padding-bottom: 5rem;
+    }
+
+    .container {
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 1.25rem;
+    }
+
+    /* TOP BAR NAVEGAÇÃO */
+    nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 3rem;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      text-decoration: none;
+      color: var(--text);
+      font-weight: 700;
+      font-size: 1.1rem;
+      letter-spacing: -0.01em;
+    }
+
+    .nav-brand img {
+      width: 32px;
+      height: 32px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+      align-items: center;
+    }
+
+    .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+    }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      padding: 1.5rem 0 3.5rem;
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.25rem 0.75rem;
+      background: var(--surface);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 1.25rem;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.2rem;
+      color: var(--text);
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    /* PRICING GRID */
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+      gap: 1.15rem;
+      margin-bottom: 5rem;
+      align-items: stretch;
+    }
+
+    .plan-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+
+    .plan-card.featured {
+      border: 2px solid var(--text);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+    }
+
+    .plan-tag {
+      position: absolute;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--text);
+      color: #ffffff;
+      padding: 0.2rem 0.75rem;
+      border-radius: 999px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .plan-name {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 0.35rem;
+    }
+
+    .plan-description {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      min-height: 2.5rem;
+      line-height: 1.5;
+    }
+
+    .plan-price-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 0.35rem;
+      margin: 1.25rem 0;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .plan-currency {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .plan-price {
+      font-size: 2.75rem;
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      color: var(--text);
+    }
+
+    .plan-period {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .plan-badge-saving {
+      display: inline-block;
+      margin-left: auto;
+      background: var(--green-bg);
+      color: var(--green);
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+
+    .plan-features {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+      flex-grow: 1;
+    }
+
+    .plan-features li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.55rem;
+      font-size: 0.88rem;
+      color: var(--text);
+    }
+
+    .plan-features li.disabled {
+      color: var(--text-dim);
+      text-decoration: line-through;
+    }
+
+    .plan-features .icon-check {
+      color: var(--green);
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .plan-features .icon-cross {
+      color: var(--text-dim);
+      flex-shrink: 0;
+    }
+
+    .btn-plan {
+      display: block;
+      width: 100%;
+      text-align: center;
+      padding: 0.8rem 1.25rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      color: var(--text);
+    }
+
+    .btn-plan:hover {
+      background: var(--surface-subtle);
+    }
+
+    .btn-plan.btn-primary {
+      background: var(--btn-bg);
+      color: var(--btn-text);
+      border-color: var(--btn-bg);
+    }
+
+    .btn-plan.btn-primary:hover {
+      background: var(--btn-hover);
+    }
+
+    /* SEÇÃO DE RECURSOS */
+    .section-title-wrap {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .section-title {
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    .section-subtitle {
+      font-size: 1rem;
+      color: var(--text-muted);
+      max-width: 620px;
+      margin: 0 auto;
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2rem;
+      margin-bottom: 5rem;
+    }
+
+    .demo-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 2.25rem;
+      align-items: center;
+    }
+
+    @media (max-width: 820px) {
+      .demo-card {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+      }
+    }
+
+    .demo-badge {
+      display: inline-block;
+      background: var(--surface-subtle);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 0.2rem 0.55rem;
+      border-radius: 4px;
+      margin-bottom: 0.65rem;
+      letter-spacing: 0.04em;
+    }
+
+    .demo-heading {
+      font-size: 1.35rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      line-height: 1.35;
+      color: var(--text);
+    }
+
+    .demo-text {
+      color: var(--text-muted);
+      font-size: 0.92rem;
+      line-height: 1.65;
+      margin-bottom: 1.25rem;
+    }
+
+    .demo-bullets {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.45rem;
+      font-size: 0.88rem;
+      color: var(--text);
+    }
+
+    .demo-bullets li::before {
+      content: "• ";
+      color: var(--text-muted);
+      font-weight: bold;
+    }
+
+    /* MOCKUPS VISUAIS (ESTILO LEITOR JURÍDICO) */
+    .mockup-frame {
+      background: var(--surface-subtle);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      font-size: 0.84rem;
+    }
+
+    .mockup-header {
+      background: var(--surface);
+      padding: 0.55rem 0.85rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .mockup-body {
+      padding: 1.15rem;
+    }
+
+    /* Mockup 1: Audio / Podcast */
+    .player-widget {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .player-top {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .play-circle {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--btn-bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      font-size: 0.95rem;
+    }
+
+    .player-info h4 {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .player-info p {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .player-progress {
+      width: 100%;
+      height: 5px;
+      background: var(--border);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .player-bar {
+      width: 48%;
+      height: 100%;
+      background: var(--text);
+    }
+
+    .player-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+    }
+
+    /* Mockup 2: Pergunte a Lei */
+    .search-mockup-bar {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--surface);
+      border: 1px solid var(--border-strong);
+      padding: 0.55rem 0.75rem;
+      border-radius: 6px;
+      margin-bottom: 0.75rem;
+      font-size: 0.82rem;
+    }
+
+    .search-result-item {
+      background: var(--surface);
+      border-left: 3px solid var(--text);
+      padding: 0.6rem 0.75rem;
+      border-radius: 0 4px 4px 0;
+      margin-bottom: 0.5rem;
+      border-top: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .search-result-title {
+      font-weight: 700;
+      font-size: 0.8rem;
+      color: var(--text);
+      margin-bottom: 0.2rem;
+    }
+
+    .search-result-body {
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* Mockup 3: OAB Preset */
+    .article-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.85rem;
+    }
+
+    .oab-tag {
+      display: inline-block;
+      background: #fef08a;
+      color: #713f12;
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      margin-bottom: 0.45rem;
+    }
+
+    .law-text-highlight {
+      background: #fef9c3;
+      padding: 0.1rem 0.25rem;
+      border-radius: 3px;
+    }
+
+    /* Mockup 4: Trilha Edital */
+    .trail-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.5rem;
+      margin-bottom: 0.65rem;
+    }
+
+    .trail-stat-card {
+      background: var(--surface);
+      padding: 0.6rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .trail-stat-num {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .trail-stat-label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+    }
+
+    .trail-task {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 0.55rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.76rem;
+    }
+
+    /* Mockup 5: Cloud Sync */
+    .sync-devices {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      padding: 0.6rem 0;
+    }
+
+    .sync-device {
+      text-align: center;
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    .sync-line {
+      height: 1px;
+      background: var(--border-strong);
+      flex-grow: 1;
+      margin: 0 0.5rem;
+    }
+
+    /* Mockup 6: Multi-PDF Edital */
+    .edital-dropzone {
+      border: 1px dashed var(--border-strong);
+      border-radius: 6px;
+      padding: 1rem;
+      text-align: center;
+      background: var(--surface);
+      margin-bottom: 0.65rem;
+      font-size: 0.8rem;
+    }
+
+    .edital-law-pill {
+      display: inline-block;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 0.15rem 0.45rem;
+      border-radius: 4px;
+      font-size: 0.68rem;
+      margin: 0.15rem;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* VIABILITY & LEGAL ANALYSIS SECTION */
+    .legal-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2.25rem;
+      margin-top: 4rem;
+    }
+
+    .legal-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1.25rem;
+      font-size: 0.86rem;
+    }
+
+    .legal-table th, .legal-table td {
+      padding: 0.8rem 0.9rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      line-height: 1.5;
+    }
+
+    .legal-table th {
+      background: var(--surface-subtle);
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      font-size: 0.72rem;
+      letter-spacing: 0.04em;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.15rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+
+    .status-green { background: var(--green-bg); color: var(--green); }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      margin-top: 5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      color: var(--text-muted);
+      font-size: 0.82rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- NAVEGAÇÃO -->
+    <nav>
+      <a href="index.html" class="nav-brand">
+        <img src="icons/icon-128.png" alt="Planalto Plus" />
+        <span>Planalto Plus</span>
+      </a>
+      <div class="nav-links">
+        <a href="#planos">Planos & Preços</a>
+        <a href="#recursos">Recursos PRO</a>
+        <a href="index.html">Termos & Privacidade</a>
+      </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="badge-pill">
+        <span>⚖️</span> Otimizado para o portal Planalto.gov.br
+      </div>
+      <h1>Seu Leitor Jurídico com Produtividade Profissional</h1>
+      <p>
+        Organize seus estudos para a OAB e concursos diretamente na legislação federal oficial. Acesso imediato a áudio da lei, busca por significado, presets de incidência da OAB e controle de metas.
+      </p>
+    </section>
+
+    <!-- TABELA DE PREÇOS -->
+    <section id="planos">
+      <div class="section-title-wrap">
+        <h2 class="section-title">Planos Transparentes e Diretos</h2>
+        <p class="section-subtitle">Sem renovações forçadas. Liberação imediata via PIX ou Cartão.</p>
+      </div>
+
+      <div class="pricing-grid">
+
+        <!-- PLANO 1: GRATUITO -->
+        <div class="plan-card">
+          <div class="plan-header">
+            <h3 class="plan-name">Gratuito</h3>
+            <p class="plan-description">Leitura moderna, tipografia acessível e anotações locais.</p>
+          </div>
+          <div class="plan-price-wrap">
+            <span class="plan-currency">R$</span>
+            <span class="plan-price">0</span>
+            <span class="plan-period">/ mês</span>
+          </div>
+          <ul class="plan-features">
+            <li><span class="icon-check">✓</span> Leitor moderno com temas</li>
+            <li><span class="icon-check">✓</span> Sumário hierárquico</li>
+            <li><span class="icon-check">✓</span> Grifos e notas locais</li>
+            <li><span class="icon-check">✓</span> Exportação Anki e Markdown</li>
+            <li><span class="icon-check">✓</span> IA com chave própria</li>
+            <li class="disabled"><span class="icon-cross">✕</span> Podcast/Resumo em Áudio Cloud TTS</li>
+            <li class="disabled"><span class="icon-cross">✕</span> "Pergunte à Lei"</li>
+            <li class="disabled"><span class="icon-cross">✕</span> Mapeador de Incidência OAB</li>
+            <li class="disabled"><span class="icon-cross">✕</span> Trilha do Edital</li>
+            <li class="disabled"><span class="icon-cross">✕</span> Sincronização em Nuvem</li>
+            <li class="disabled"><span class="icon-cross">✕</span> Analisador de Editais em PDF</li>
+          </ul>
+          <a href="https://chromewebstore.google.com" class="btn-plan">Instalar Gratuitamente</a>
+        </div>
+
+        <!-- PLANO 2: PRO MENSAL -->
+        <div class="plan-card">
+          <div class="plan-header">
+            <h3 class="plan-name">Pro Mensal</h3>
+            <p class="plan-description">Acesso completo a todas as ferramentas com renovação mensal flexível.</p>
+          </div>
+          <div class="plan-price-wrap">
+            <span class="plan-currency">R$</span>
+            <span class="plan-price">15</span>
+            <span class="plan-period">/ mês</span>
+          </div>
+          <ul class="plan-features">
+            <li><span class="icon-check">✓</span> <strong>Tudo do Plano Gratuito</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Podcast/Resumo por Áudio Cloud TTS</strong></li>
+            <li><span class="icon-check">✓</span> <strong>"Pergunte à Lei"</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Mapeador de Incidência OAB</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Trilha do Edital</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Sincronização em Nuvem</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Analisador de Editais em PDF</strong></li>
+            <li><span class="icon-check">✓</span> <strong>IA Pronta sem Configuração</strong></li>
+          </ul>
+          <a href="#assinar" class="btn-plan">Assinar Mensal por R$ 15</a>
+        </div>
+
+        <!-- PLANO 3: PRO ANUAL -->
+        <div class="plan-card featured">
+          <span class="plan-tag">Mais Escolhido • Economize 33%</span>
+          <div class="plan-header">
+            <h3 class="plan-name">Pro Anual</h3>
+            <p class="plan-description">Acesso completo com a melhor relação custo-benefício anual.</p>
+          </div>
+          <div class="plan-price-wrap">
+            <span class="plan-currency">R$</span>
+            <span class="plan-price">120</span>
+            <span class="plan-period">/ ano</span>
+            <span class="plan-badge-saving">R$ 10 / mês</span>
+          </div>
+          <ul class="plan-features">
+            <li><span class="icon-check">✓</span> <strong>Tudo do Plano Gratuito</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Podcast/Resumo por Áudio Cloud TTS</strong></li>
+            <li><span class="icon-check">✓</span> <strong>"Pergunte à Lei"</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Mapeador de Incidência OAB</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Trilha do Edital</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Sincronização em Nuvem</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Analisador de Editais em PDF</strong></li>
+            <li><span class="icon-check">✓</span> <strong>IA Pronta sem Configuração</strong></li>
+          </ul>
+          <a href="#assinar" class="btn-plan btn-primary">Assinar Anual (R$ 10/mês)</a>
+        </div>
+
+        <!-- PLANO 4: PRO VITALÍCIO -->
+        <div class="plan-card">
+          <span class="plan-tag" style="background: #334155;">Acesso Único • Sem Mensalidades</span>
+          <div class="plan-header">
+            <h3 class="plan-name">Pro Vitalício</h3>
+            <p class="plan-description">Acesso permanente a todas as funções atuais e futuras, sem renovações.</p>
+          </div>
+          <div class="plan-price-wrap">
+            <span class="plan-currency">R$</span>
+            <span class="plan-price">300</span>
+            <span class="plan-period">/ pagamento único</span>
+            <span class="plan-badge-saving">Em até 12x</span>
+          </div>
+          <ul class="plan-features">
+            <li><span class="icon-check">✓</span> <strong>Tudo do Plano Gratuito</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Podcast/Resumo por Áudio Cloud TTS</strong></li>
+            <li><span class="icon-check">✓</span> <strong>"Pergunte à Lei"</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Mapeador de Incidência OAB</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Trilha do Edital</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Sincronização em Nuvem</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Analisador de Editais em PDF</strong></li>
+            <li><span class="icon-check">✓</span> <strong>IA Pronta sem Configuração</strong></li>
+          </ul>
+          <a href="#assinar" class="btn-plan">Garantir Acesso Vitalício (R$ 300)</a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- VITRINE DOS RECURSOS PRO -->
+    <section id="recursos">
+      <div class="section-title-wrap">
+        <h2 class="section-title">Recursos Desenvolvidos para o Estudo da Lei Seca</h2>
+        <p class="section-subtitle">Ferramentas funcionais desenhadas para otimizar tempo e memorização sem firulas visuais.</p>
+      </div>
+
+      <div class="demo-grid">
+
+        <!-- 1. PODCAST DA LEI -->
+        <div class="demo-card">
+          <div>
+            <span class="demo-badge">Áudio Cloud TTS</span>
+            <h3 class="demo-heading">1. Podcast & Resumo da Lei (Cloud TTS)</h3>
+            <p class="demo-text">
+              Escute os artigos na íntegra e resumos comentados sintetizados em alta fidelidade com vozes neurais brasileiras do Google Cloud TTS. Ideal para transformar horas de deslocamento e descanso de tela em rendimento de estudo.
+            </p>
+            <ul class="demo-bullets">
+              <li>Vozes neurais WaveNet brasileiras com pontuação e cadência jurídica precisa</li>
+              <li>Resumo em áudio com explicação dos termos-chave do artigo</li>
+              <li>Controle de velocidade (0.75x a 2.0x) e player minimalista integrado</li>
+            </ul>
+          </div>
+          <div class="mockup-frame">
+            <div class="mockup-header">
+              <span>Podcast da Lei • Player Integrado</span>
+            </div>
+            <div class="mockup-body">
+              <div class="player-widget" id="demo-player-box">
+                <audio id="demo-neural-audio" src="../assets/audio/demo-art1-neural.m4a" preload="metadata"></audio>
+                <div class="player-top">
+                  <button type="button" class="play-circle" id="demo-audio-play-btn" style="border:none; cursor:pointer;" title="Reproduzir / Pausar áudio">▶</button>
+                  <div class="player-info">
+                    <h4>Art. 1º — Princípios Fundamentais</h4>
+                    <p>Constituição Federal • Narração Neural Realista</p>
+                  </div>
+                </div>
+                <div class="player-progress" id="demo-audio-progress-bar" style="cursor:pointer;" title="Clique para avançar">
+                  <div class="player-bar" id="demo-audio-bar" style="width: 0%;"></div>
+                </div>
+                <div class="player-meta">
+                  <span id="demo-audio-time">00:00</span>
+                  <span id="demo-audio-speed" style="cursor:pointer;" title="Alternar velocidade">Velocidade: 1.0x</span>
+                  <span id="demo-audio-duration">00:29</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2. PERGUNTE À LEI -->
+        <div class="demo-card">
+          <div>
+            <span class="demo-badge">Busca Conceitual</span>
+            <h3 class="demo-heading">2. "Pergunte à Lei" (Busca por Significado)</h3>
+            <p class="demo-text">
+              Vá além do <code>Ctrl + F</code> tradicional que exige a palavra exata. Pergunte em linguagem comum e a ferramenta encontra os artigos pelo conceito jurídico.
+            </p>
+            <ul class="demo-bullets">
+              <li>Pesquise por hipóteses: <em>"quando cabe prisão sem requerimento?"</em></li>
+              <li>Localiza sinônimos e termos técnicos correlatos no código inteiro</li>
+              <li>Compilação rápida de prazos, exceções e requisitos legais</li>
+            </ul>
+          </div>
+          <div class="mockup-frame">
+            <div class="mockup-header">
+              <span>Pergunte à Lei • Busca por Conceito</span>
+            </div>
+            <div class="mockup-body">
+              <div class="search-mockup-bar">
+                <span>quando o juiz pode decretar medidas de ofício?</span>
+              </div>
+              <div class="search-result-item">
+                <div class="search-result-title">Art. 311, CPP (Relevância: 98%)</div>
+                <div class="search-result-body">"Em qualquer fase da investigação policial ou do processo penal, caberá a prisão preventiva decretada pelo juiz..." [Vedação de ofício pela Lei 13.964/19]</div>
+              </div>
+              <div class="search-result-item">
+                <div class="search-result-title">Art. 156, I, CPP (Relevância: 89%)</div>
+                <div class="search-result-body">"A prova da alegação incumbirá a quem a fizer, sendo, porém, facultado ao juiz de ofício: I - ordenar produção antecipada..."</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. MAPEADOR DE INCIDÊNCIA OAB -->
+        <div class="demo-card">
+          <div>
+            <span class="demo-badge">OAB 1ª Fase • FGV</span>
+            <h3 class="demo-heading">3. Mapeador de Incidência OAB (Preset Oficial)</h3>
+            <p class="demo-text">
+              Mapeamento direto dos cadernos oficiais de provas da OAB dos últimos anos. Ative o preset com 1 clique para destacar na legislação os artigos mais cobrados pela FGV.
+            </p>
+            <ul class="demo-bullets">
+              <li>Preset pronto cobrindo Ética, CF/88, Civil, CPC, Penal, CPP e CLT</li>
+              <li>Contagem exata de vezes que o artigo foi exigido em exames anteriores</li>
+              <li>Destaque nas expressões mais visadas pelas pegadinhas da banca</li>
+            </ul>
+          </div>
+          <div class="mockup-frame">
+            <div class="mockup-header">
+              <span>Preset OAB • Exame de Ordem</span>
+            </div>
+            <div class="mockup-body">
+              <div class="article-box">
+                <span class="oab-tag">OAB/FGV: Cobrado 18x nos últimos 5 anos</span>
+                <p style="font-size: 0.82rem; line-height: 1.5; margin-bottom: 0.5rem;">
+                  <strong>Art. 7º, II (Lei 8.906/94 — Estatuto)</strong> — São direitos do advogado: <span class="law-text-highlight">a inviolabilidade de seu escritório ou local de trabalho, bem como de seus instrumentos de trabalho, de sua correspondência escrita, eletrônica, telefônica e telemática...</span>
+                </p>
+                <div style="font-size: 0.72rem; color: var(--text-muted);">
+                  Status: <strong>Preset OAB Ativo</strong> • 482 artigos prioritários
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. TRILHA DO EDITAL & META DIÁRIA -->
+        <div class="demo-card">
+          <div>
+            <span class="demo-badge">Planejamento</span>
+            <h3 class="demo-heading">4. Trilha do Edital & Meta Diária de Leitura</h3>
+            <p class="demo-text">
+              Organização prática do volume de leitura da lei seca. O sistema divide os artigos exigidos pelo número de dias restantes até a sua prova.
+            </p>
+            <ul class="demo-bullets">
+              <li>Contagem regressiva automática até a data da prova</li>
+              <li>Meta diária de artigos calculada com base na sua rotina</li>
+              <li>Barra de progresso visual de cobertura do edital lido</li>
+            </ul>
+          </div>
+          <div class="mockup-frame">
+            <div class="mockup-header">
+              <span>Trilha do Edital • Planejamento</span>
+            </div>
+            <div class="mockup-body">
+              <div class="trail-stats">
+                <div class="trail-stat-card">
+                  <div class="trail-stat-num">38 dias</div>
+                  <div class="trail-stat-label">Até a Prova</div>
+                </div>
+                <div class="trail-stat-card">
+                  <div class="trail-stat-num">62%</div>
+                  <div class="trail-stat-label">Edital Coberto</div>
+                </div>
+              </div>
+              <div class="trail-task">
+                <strong>Meta de Hoje:</strong> Ler Arts. 293 a 305 do Código Penal (Crimes Funcionais)
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. SINCRONIZAÇÃO EM NUVEM -->
+        <div class="demo-card">
+          <div>
+            <span class="demo-badge">Multi-Dispositivos</span>
+            <h3 class="demo-heading">5. Sincronização em Nuvem (Cloud Sync)</h3>
+            <p class="demo-text">
+              Mantenha seu caderno de estudos unificado. Grife no computador do trabalho e continue a leitura no notebook de casa com os mesmos grifos e notas.
+            </p>
+            <ul class="demo-bullets">
+              <li>Sincronização contínua de grifos, notas e tags</li>
+              <li>Cópia de segurança permanente contra formatações de máquina</li>
+              <li>Privacidade preservada sob os preceitos da LGPD</li>
+            </ul>
+          </div>
+          <div class="mockup-frame">
+            <div class="mockup-header">
+              <span>Cloud Sync • Status da Conta</span>
+            </div>
+            <div class="mockup-body">
+              <div class="sync-devices">
+                <div class="sync-device">
+                  <strong>Computador 1</strong><br />Trabalho
+                </div>
+                <div class="sync-line"></div>
+                <div class="sync-device" style="color: var(--green); font-weight: 700;">
+                  Nuvem Ativa
+                </div>
+                <div class="sync-line"></div>
+                <div class="sync-device">
+                  <strong>Computador 2</strong><br />Notebook
+                </div>
+              </div>
+              <p style="text-align: center; font-size: 0.74rem; color: var(--text-muted); margin-top: 0.5rem;">
+                Sincronizado • 482 anotações ativas
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 6. ANALISADOR DE EDITAIS EM PDF MULTI-LEGISLAÇÃO -->
+        <div class="demo-card">
+          <div>
+            <span class="demo-badge">Processamento em Lote</span>
+            <h3 class="demo-heading">6. Analisador de Editais em PDF Completo</h3>
+            <p class="demo-text">
+              Envie o PDF do edital da sua prova. A ferramenta mapeia os tópicos de legislação cobrados e marca os artigos no Planalto em lote em múltiplas leis.
+            </p>
+            <ul class="demo-bullets">
+              <li>Lê editais extensos e complexos sem limite de páginas</li>
+              <li>Detecta leis federais, códigos e atos normativos cobrados</li>
+              <li>Grifa automaticamente os dispositivos no portal com a tag do certame</li>
+            </ul>
+          </div>
+          <div class="mockup-frame">
+            <div class="mockup-header">
+              <span>Analisador de Edital • PDF Multi-Legislação</span>
+            </div>
+            <div class="mockup-body">
+              <div class="edital-dropzone">
+                <strong>Edital_Concurso_PF_2026.pdf</strong> (142 páginas processadas)
+              </div>
+              <p style="font-size: 0.74rem; color: var(--text-muted); margin-bottom: 0.35rem;">Leis mapeadas:</p>
+              <div>
+                <span class="edital-law-pill">CF/88 (84 arts)</span>
+                <span class="edital-law-pill">CP (112 arts)</span>
+                <span class="edital-law-pill">CPP (68 arts)</span>
+                <span class="edital-law-pill">Lei 8.112/90</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <p>
+        <strong>Planalto Plus</strong> — Extensão independente para leitura e estudo de legislação federal. Não possui afiliação, vínculo ou endosso da Presidência da República ou do portal oficial Planalto.gov.br.
+      </p>
+      <p style="margin-top: 0.35rem; font-size: 0.78rem;">
+        Código-fonte sob licença PolyForm Noncommercial 1.0.0 (com transição para MIT em 2036). Em conformidade com a LGPD e Lei de Direitos Autorais.
+      </p>
+    </footer>
+
+  </div>
+
+  <script>
+    (function() {
+      const audio = document.getElementById('demo-neural-audio');
+      const playBtn = document.getElementById('demo-audio-play-btn');
+      const progressBar = document.getElementById('demo-audio-progress-bar');
+      const bar = document.getElementById('demo-audio-bar');
+      const timeSpan = document.getElementById('demo-audio-time');
+      const durationSpan = document.getElementById('demo-audio-duration');
+      const speedSpan = document.getElementById('demo-audio-speed');
+
+      if (!audio || !playBtn) return;
+
+      const speeds = [1.0, 1.25, 1.5, 2.0];
+      let speedIdx = 0;
+
+      function fmtTime(sec) {
+        if (isNaN(sec) || sec < 0) return '00:00';
+        const m = Math.floor(sec / 60);
+        const s = Math.floor(sec % 60);
+        return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+      }
+
+      playBtn.addEventListener('click', function() {
+        if (audio.paused) {
+          audio.play().then(function() {
+            playBtn.textContent = '⏸';
+          }).catch(function(err) {
+            console.warn('Erro ao tocar áudio:', err);
+          });
+        } else {
+          audio.pause();
+          playBtn.textContent = '▶';
+        }
+      });
+
+      audio.addEventListener('timeupdate', function() {
+        if (audio.duration) {
+          const pct = (audio.currentTime / audio.duration) * 100;
+          if (bar) bar.style.width = pct + '%';
+          if (timeSpan) timeSpan.textContent = fmtTime(audio.currentTime);
+        }
+      });
+
+      audio.addEventListener('loadedmetadata', function() {
+        if (durationSpan && audio.duration) {
+          durationSpan.textContent = fmtTime(audio.duration);
+        }
+      });
+
+      audio.addEventListener('ended', function() {
+        playBtn.textContent = '▶';
+        if (bar) bar.style.width = '0%';
+        if (timeSpan) timeSpan.textContent = '00:00';
+      });
+
+      if (progressBar) {
+        progressBar.addEventListener('click', function(e) {
+          if (!audio.duration) return;
+          const rect = progressBar.getBoundingClientRect();
+          const clickX = e.clientX - rect.left;
+          const ratio = Math.max(0, Math.min(1, clickX / rect.width));
+          audio.currentTime = ratio * audio.duration;
+        });
+      }
+
+      if (speedSpan) {
+        speedSpan.addEventListener('click', function() {
+          speedIdx = (speedIdx + 1) % speeds.length;
+          const spd = speeds[speedIdx];
+          audio.playbackRate = spd;
+          speedSpan.textContent = 'Velocidade: ' + spd.toFixed(1) + 'x';
+        });
+      }
+    })();
+  </script>
+
+</body>
+</html>

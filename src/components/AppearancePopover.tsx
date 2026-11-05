@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import {
   AlignJustify,
+  AlignLeft,
   Eye,
   EyeOff,
+  Lock,
   Minus,
   Moon,
   Palette,
@@ -13,6 +15,8 @@ import {
   Sun,
   Sunset,
   Type,
+  Unlock,
+  Volume2,
   X,
 } from 'lucide-react';
 import {
@@ -155,12 +159,12 @@ const THEME_OPTIONS: Array<{
 ];
 
 const ACCENT_PRESETS = [
+  { color: '#8b5cf6', label: 'Violeta' },
   { color: '#6366f1', label: 'Índigo' },
   { color: '#10b981', label: 'Esmeralda' },
   { color: '#0ea5e9', label: 'Azul' },
   { color: '#f59e0b', label: 'Âmbar' },
   { color: '#f43f5e', label: 'Rubi' },
-  { color: '#8b5cf6', label: 'Violeta' },
 ];
 
 export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
@@ -496,28 +500,70 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
         />
       </div>
 
-      {/* Line Height & Column Width */}
+      {/* Alinhamento de Texto & Largura da Coluna */}
       <div className="grid grid-cols-2 gap-3 pt-1">
         <div className="space-y-1">
           <div className="flex items-center justify-between text-[11px]">
-            <span className="opacity-75">Altura Linha</span>
-            <span className="font-semibold">{settings.lineHeight}</span>
+            <span className="opacity-75">Alinhamento</span>
+            <span className="font-semibold text-[10px]">
+              {settings.textAlign === 'left' ? 'À Esquerda' : 'Justificado'}
+            </span>
           </div>
-          <input
-            type="range"
-            min={1.2}
-            max={2.2}
-            step={0.05}
-            value={settings.lineHeight}
-            onChange={(e) => update({ lineHeight: Number(e.target.value) })}
-            style={{ accentColor: currentAccent }}
-            className="w-full"
-          />
+          <div className="grid grid-cols-2 gap-1 p-0.5 rounded-lg border border-current/15 bg-black/[0.03] dark:bg-white/[0.03]">
+            <button
+              type="button"
+              onClick={() => update({ textAlign: 'justify' })}
+              className={`py-1 px-1.5 rounded text-[10.5px] font-semibold flex items-center justify-center gap-1 transition-all ${
+                (settings.textAlign ?? 'justify') === 'justify'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'opacity-70 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5'
+              }`}
+              title="Texto justificado (alinhamento uniforme clássico)"
+            >
+              <AlignJustify className="w-3 h-3" />
+              <span>Justificado</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => update({ textAlign: 'left' })}
+              className={`py-1 px-1.5 rounded text-[10.5px] font-semibold flex items-center justify-center gap-1 transition-all ${
+                settings.textAlign === 'left'
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'opacity-70 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5'
+              }`}
+              title="Texto alinhado à esquerda (leitura rápida)"
+            >
+              <AlignLeft className="w-3 h-3" />
+              <span>Esquerda</span>
+            </button>
+          </div>
         </div>
 
         <div className="space-y-1">
           <div className="flex items-center justify-between text-[11px]">
-            <span className="opacity-75">Largura Coluna</span>
+            <div className="flex items-center gap-1">
+              <span className="opacity-75">Largura Coluna</span>
+              <button
+                type="button"
+                onClick={() => update({ lockColumnWidth: !settings.lockColumnWidth })}
+                className={`p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/10 transition-colors ${
+                  settings.lockColumnWidth
+                    ? 'text-indigo-600 dark:text-indigo-400'
+                    : 'opacity-50 hover:opacity-100'
+                }`}
+                title={
+                  settings.lockColumnWidth
+                    ? `Largura fixada em ${settings.maxWidth}px. Clique para tornar adaptativa aos painéis.`
+                    : 'Largura adaptativa automática aos painéis. Clique para fixar tamanho atual.'
+                }
+              >
+                {settings.lockColumnWidth ? (
+                  <Lock className="w-3 h-3" />
+                ) : (
+                  <Unlock className="w-3 h-3" />
+                )}
+              </button>
+            </div>
             <span className="font-semibold">{settings.maxWidth}px</span>
           </div>
           <input
@@ -526,7 +572,7 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
             max={1200}
             step={20}
             value={settings.maxWidth}
-            onChange={(e) => update({ maxWidth: Number(e.target.value) })}
+            onChange={(e) => update({ maxWidth: Number(e.target.value), lockColumnWidth: true })}
             style={{ accentColor: currentAccent }}
             className="w-full"
           />
@@ -539,19 +585,19 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
           Acessibilidade
         </div>
 
-        {/* Checkbox Ética PcD (Alto Contraste e Quebra de Linha Conforme Acessibilidade) */}
-        <label className="flex items-start gap-2.5 p-2.5 rounded-xl border-2 border-emerald-700 dark:border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-100 hover:bg-emerald-100/70 dark:hover:bg-emerald-950/60 cursor-pointer transition-colors whitespace-normal break-words">
+        {/* Checkbox Ética PcD (Alto Contraste, Segue o Tema Escolhido e Fonte 4px Maior) */}
+        <label className="flex items-start gap-3 p-3.5 rounded-xl border border-current/20 bg-black/[0.03] dark:bg-white/[0.04] hover:bg-black/[0.06] dark:hover:bg-white/[0.08] cursor-pointer transition-colors whitespace-normal break-words shadow-sm">
           <input
             type="checkbox"
             checked={Boolean(settings.isPcdAudioAccess)}
             onChange={(e) => update({ isPcdAudioAccess: e.target.checked })}
-            className="mt-0.5 w-4 h-4 rounded accent-emerald-600 cursor-pointer shrink-0"
+            className="mt-1 w-5 h-5 rounded accent-indigo-600 cursor-pointer shrink-0"
           />
-          <div className="min-w-0 flex-1">
-            <div className="font-bold text-xs leading-snug text-emerald-950 dark:text-emerald-100 break-words">
+          <div className="min-w-0 flex-1 space-y-1">
+            <div className="font-bold text-[15px] leading-snug break-words">
               Sou pessoa com deficiência visual e necessito de leitura por áudio
             </div>
-            <p className="text-[10.5px] font-medium opacity-85 leading-snug mt-0.5 text-emerald-900 dark:text-emerald-200">
+            <p className="text-[13px] font-medium opacity-80 leading-snug">
               Ativa leitura gratuita e ilimitada por voz nativa
             </p>
           </div>
@@ -565,7 +611,7 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
           onClick={() => update({ hideAITools: !settings.hideAITools })}
           className={`w-full py-2 px-3 rounded-xl border text-xs font-semibold flex items-center justify-between gap-2.5 transition-colors ${
             settings.hideAITools
-              ? 'border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400'
+              ? 'border-indigo-600 bg-indigo-600 text-white shadow-sm'
               : 'border-current/15 hover:bg-black/5 dark:hover:bg-white/5 opacity-85 hover:opacity-100'
           }`}
           title={

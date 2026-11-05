@@ -58,7 +58,13 @@ const VLIBRAS_APP_ROOT = 'https://vlibras.gov.br/app';
 
 function attachVlibrasCloseButton(onCloseCallback) {
   if (typeof document === 'undefined') return;
-  if (document.getElementById(VLIBRAS_CLOSE_BTN_ID)) return;
+  const existing = document.getElementById(VLIBRAS_CLOSE_BTN_ID);
+  if (existing) {
+    if (typeof onCloseCallback === 'function') {
+      existing._onCloseCallback = onCloseCallback;
+    }
+    return;
+  }
 
   const btn = document.createElement('button');
   btn.id = VLIBRAS_CLOSE_BTN_ID;
@@ -66,6 +72,7 @@ function attachVlibrasCloseButton(onCloseCallback) {
   btn.title = 'Ocultar botão do VLibras';
   btn.setAttribute('aria-label', 'Ocultar botão do VLibras');
   btn.innerHTML = '✕';
+  btn._onCloseCallback = onCloseCallback;
 
   Object.assign(btn.style, {
     position: 'fixed',
@@ -103,8 +110,8 @@ function attachVlibrasCloseButton(onCloseCallback) {
     e.preventDefault();
     e.stopPropagation();
     syncVlibrasWidget(false);
-    if (typeof onCloseCallback === 'function') {
-      onCloseCallback();
+    if (typeof btn._onCloseCallback === 'function') {
+      btn._onCloseCallback();
     }
   };
 

@@ -1,4 +1,4 @@
-import React, { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import {
   BookMarked,
   Check,
@@ -22,6 +22,8 @@ import {
   Search,
   Sparkles,
   Type,
+  Volume2,
+  VolumeX,
   X,
 } from 'lucide-react';
 import {
@@ -150,6 +152,34 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
   const [rightDrawerOpen, setRightDrawerOpen] = useState(false);
   const [rightDrawerTab, setRightDrawerTab] = useState<RightDrawerTab>('notes');
   const [cadernoSubTab, setCadernoSubTab] = useState<CadernoSubTab>('grifos');
+
+  const [windowWidth, setWindowWidth] = useState<number>(() =>
+    typeof window !== 'undefined' ? window.innerWidth : 1360
+  );
+
+  useEffect(() => {
+    const onResize = () => setWindowWidth(window.innerWidth);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  const effectiveColumnWidth = useMemo(() => {
+    if (appearance.lockColumnWidth) {
+      return appearance.maxWidth;
+    }
+    const leftW = !isPrinting && leftSidebarOpen ? 280 : 0;
+    const rightW = !isPrinting && rightDrawerOpen ? 410 : 0;
+    const sidePadding = 80;
+    const available = windowWidth - leftW - rightW - sidePadding;
+    return Math.max(560, Math.min(1200, available));
+  }, [
+    appearance.lockColumnWidth,
+    appearance.maxWidth,
+    leftSidebarOpen,
+    rightDrawerOpen,
+    windowWidth,
+    isPrinting,
+  ]);
 
   // Shared search query between Sumário (left sidebar) and Centered Top Search Bar
   const [searchQuery, setSearchQuery] = useState('');
@@ -503,15 +533,19 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
     return matchingArticles.slice(0, 20);
   }, [matchingArticles]);
 
+  const handleHideVlibras = useCallback(() => {
+    setAppearance((prev) => {
+      const updated = { ...prev, enableVlibras: false };
+      saveAppearanceSettings(updated);
+      return updated;
+    });
+  }, []);
+
   // Load saved state on mount
   useEffect(() => {
     loadAppearanceSettings().then((loaded) => {
       setAppearance(loaded);
-      syncVlibrasWidget(loaded.enableVlibras !== false, () => {
-        const next = { ...loaded, enableVlibras: false };
-        setAppearance(next);
-        saveAppearanceSettings(next);
-      });
+      syncVlibrasWidget(loaded.enableVlibras !== false, handleHideVlibras);
       if (loaded.hideAITools) {
         setRightDrawerTab('notes');
       }
@@ -637,11 +671,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
   }, [showAppearancePopover, showLawsMenu, showTopSearchDropdown]);
 
   const handleUpdateAppearance = (next: AppearanceSettings) => {
-    syncVlibrasWidget(next.enableVlibras !== false, () => {
-      const updated = { ...next, enableVlibras: false };
-      setAppearance(updated);
-      saveAppearanceSettings(updated);
-    });
+    syncVlibrasWidget(next.enableVlibras !== false, handleHideVlibras);
     if (next.isPcdAudioAccess !== appearance.isPcdAudioAccess) {
       const enabled = Boolean(next.isPcdAudioAccess);
       setPcdUserStatus(enabled);
@@ -692,6 +722,27 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
     setPodcastPlaying(false);
   };
 
+  const [podcastVolume, setPodcastVolume] = useState<number>(1);
+
+  const handleChangePodcastVolume = (vol: number) => {
+    setPodcastVolume(vol);
+    if (podcastAudioRef.current) {
+      podcastAudioRef.current.volume = vol;
+    }
+  };
+
+  const handleTogglePodcastMute = () => {
+    const next = podcastVolume === 0 ? 1 : 0;
+    handleChangePodcastVolume(next);
+  };
+
+  const handleSeekPodcast = (pct: number) => {
+    setPodcastProgress(pct);
+    if (podcastAudioRef.current && podcastAudioRef.current.duration) {
+      podcastAudioRef.current.currentTime = (pct / 100) * podcastAudioRef.current.duration;
+    }
+  };
+
   const handleTogglePodcastPlay = async () => {
     if (podcastPlaying) {
       stopPodcastPlayback();
@@ -705,6 +756,12 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
       try {
         const audio = new Audio(podcastData.audioUrl);
         audio.playbackRate = podcastSpeed;
+        try {
+          (audio as any).preservesPitch = true;
+        } catch {
+          // ignore
+        }
+        audio.volume = podcastVolume;
         podcastAudioRef.current = audio;
         audio.ontimeupdate = () => {
           if (audio.duration) {
@@ -736,10 +793,21 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
     const transcript =
       podcastData?.script?.fullTranscript ||
       `Panorama da norma ${doc.epigraph}.`;
+
+    // Mapeamento seguro para voz sintetizada nativa nunca soar como robô/esquilo distorcido
+    const safeRate =
+      podcastSpeed === 0.8
+        ? 0.85
+        : podcastSpeed === 1.0
+        ? 1.0
+        : podcastSpeed === 1.25
+        ? 1.15
+        : 1.25;
+
     await speakWithNativeWebSpeech(
       transcript,
       `podcast-${doc.lawId}`,
-      podcastSpeed
+      safeRate
     );
     if (podcastProgressTimerRef.current) {
       window.clearInterval(podcastProgressTimerRef.current);
@@ -753,6 +821,11 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
     setPodcastSpeed(speed);
     if (podcastAudioRef.current) {
       podcastAudioRef.current.playbackRate = speed;
+      try {
+        (podcastAudioRef.current as any).preservesPitch = true;
+      } catch {
+        // ignore
+      }
     }
   };
 
@@ -1583,11 +1656,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
               }
               className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors shrink-0 whitespace-nowrap ${
                 appearance.compiledMode
-                  ? appearance.theme === 'dark'
-                    ? 'border-emerald-400/50 bg-emerald-400/15 text-emerald-300 shadow-sm font-semibold'
-                    : appearance.theme === 'sepia'
-                    ? 'border-emerald-800/40 bg-emerald-800/15 text-emerald-950 shadow-sm font-semibold'
-                    : 'border-emerald-700/50 bg-emerald-700/15 text-emerald-800 shadow-sm font-semibold'
+                  ? 'border-indigo-600 bg-indigo-600 text-white shadow-sm font-semibold'
                   : 'border-current/15 opacity-75 hover:opacity-100'
               }`}
             >
@@ -1604,15 +1673,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
               }}
               className={`pointer-events-none opacity-0 group-hover/compilado:opacity-100 transition-opacity duration-150 absolute right-0 sm:right-auto sm:left-0 top-full mt-2 w-72 sm:w-80 p-3 rounded-xl border shadow-xl text-[11px] leading-relaxed whitespace-normal break-words z-[60] ${dropdownThemeClass}`}
             >
-              <div
-                className={`font-bold mb-1 flex items-center gap-1 ${
-                  appearance.theme === 'dark'
-                    ? 'text-emerald-400'
-                    : appearance.theme === 'sepia'
-                    ? 'text-emerald-900'
-                    : 'text-emerald-700'
-                }`}
-              >
+              <div className="font-bold mb-1 flex items-center gap-1 text-indigo-600 dark:text-indigo-400">
                 <CheckCheck className="w-3.5 h-3.5" />
                 <span>O que é o Texto Compilado?</span>
               </div>
@@ -1635,7 +1696,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
               }}
               className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors shrink-0 whitespace-nowrap ${
                 showAppearancePopover
-                  ? 'border-indigo-500 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400'
+                  ? 'border-indigo-600 bg-indigo-600 text-white shadow-sm font-semibold'
                   : 'border-current/15 hover:bg-black/5 dark:hover:bg-white/5'
               }`}
               title="Tema (Claro/Sépia/Escuro), Cor de Destaque, Fonte e Espaçamento"
@@ -1666,15 +1727,19 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
             }}
             className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors shrink-0 whitespace-nowrap ${
               rightDrawerOpen && rightDrawerTab === 'notes'
-                ? 'border-amber-500 bg-amber-500/15 text-amber-700 dark:text-amber-300 font-semibold'
+                ? 'border-indigo-600 bg-indigo-600 text-white shadow-sm font-semibold'
                 : 'border-current/15 hover:bg-black/5 dark:hover:bg-white/5 opacity-85 hover:opacity-100'
             }`}
             title="Caderno (Grifos & Tags e Anotações)"
           >
-            <BookMarked className="w-3.5 h-3.5 text-amber-500" />
+            <BookMarked className="w-3.5 h-3.5" />
             <span className="hidden lg:inline">Caderno</span>
             {annotationCount > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-400 text-[10px] font-bold">
+              <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                rightDrawerOpen && rightDrawerTab === 'notes'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-black/10 dark:bg-white/10 opacity-75'
+              }`}>
                 {annotationCount}
               </span>
             )}
@@ -1692,9 +1757,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
               }}
               className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors shrink-0 whitespace-nowrap ${
                 rightDrawerOpen && rightDrawerTab === 'chat'
-                  ? appearance.theme === 'sepia'
-                    ? 'border-indigo-800/40 bg-indigo-800/15 text-indigo-950 font-semibold'
-                    : 'border-indigo-500 bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-semibold'
+                  ? 'border-indigo-600 bg-indigo-600 text-white shadow-sm font-semibold'
                   : 'border-current/15 hover:bg-black/5 dark:hover:bg-white/5 opacity-85 hover:opacity-100'
               }`}
               title="Abrir IA Chat (Conversa, Importar Edital e Chave API)"
@@ -1721,12 +1784,12 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
             onClick={() => handleOpenProDrawer('default')}
             className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium border transition-colors shrink-0 whitespace-nowrap ${
               isPro
-                ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold'
+                ? 'border-indigo-600 bg-indigo-600 text-white font-semibold shadow-sm'
                 : 'border-current/15 opacity-75 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5'
             }`}
             title="Conta, Sincronização em Nuvem, Acessibilidade PcD e Recursos PRO"
           >
-            <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+            <Sparkles className="w-3.5 h-3.5 text-inherit" />
             <span>{isPro ? 'PRO Ativo' : 'PRO'}</span>
           </button>
 
@@ -1788,12 +1851,12 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
         >
           <div
             style={{
-              maxWidth: `${appearance.maxWidth}px`,
+              maxWidth: `${effectiveColumnWidth}px`,
               fontSize: `${appearance.fontSize}px`,
               lineHeight: appearance.lineHeight,
               fontFamily: activeFontCss,
             }}
-            className="mx-auto pb-28"
+            className={`mx-auto pb-28 ${appearance.textAlign === 'left' ? 'text-left' : 'text-justify'}`}
           >
             {/* Law Epigraph, Article Count Above Ementa & Serif Quote Boxes (Ementa + Preâmbulo) */}
             <div
@@ -1831,7 +1894,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
                 </div>
               </div>
 
-              {/* Dedicated Law Podcast Player (Progress Bar + Speed Selector 0.75x to 2x) */}
+              {/* Dedicated Law Podcast Player (Progress Bar + Speed Selector 0.8x to 1.5x) */}
               {podcastOpen && isPro && (
                 <div
                   style={{
@@ -1850,11 +1913,6 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
                           <span>
                             {podcastData?.script?.title ||
                               `Panorama da Lei — ${doc.epigraph}`}
-                          </span>
-                          <span className="px-1.5 py-0.2 rounded text-[9px] font-bold uppercase bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
-                            {podcastData?.cached
-                              ? 'Cache Global (0ms)'
-                              : 'WaveNet pt-BR'}
                           </span>
                         </div>
                         <p className="text-[11px] opacity-70">
@@ -1879,8 +1937,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
 
                   {podcastLoading ? (
                     <div className="py-3 text-center text-xs opacity-75">
-                      Verificando Cache Global no Supabase Storage (`
-                      {podcastData?.storagePath || 'podcasts/lei.mp3'}`)...
+                      Carregando áudio do Panorama da Lei...
                     </div>
                   ) : (
                     <>
@@ -1903,21 +1960,53 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
                           )}
                         </button>
 
-                        {/* Barra de Progresso Dedicada */}
+                        {/* Seekbar Interativo do Podcast */}
                         <div className="flex-1 min-w-[140px] space-y-1">
-                          <div className="w-full h-2 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
-                            <div
-                              className="h-full bg-indigo-600 transition-all duration-300"
-                              style={{ width: `${podcastProgress}%` }}
-                            />
-                          </div>
+                          <input
+                            type="range"
+                            min={0}
+                            max={100}
+                            step={1}
+                            value={podcastProgress}
+                            onChange={(e) => handleSeekPodcast(Number(e.target.value))}
+                            style={{ accentColor: appearance.accentColor || '#8b5cf6' }}
+                            className="w-full h-1.5 rounded-full cursor-pointer accent-indigo-600 block"
+                            title="Avançar / Retroceder áudio do podcast"
+                          />
                           <div className="flex items-center justify-between text-[10px] opacity-65">
                             <span>Progresso: {podcastProgress}%</span>
                             <span>Duração estimada: ~15 min</span>
                           </div>
                         </div>
 
-                        {/* Seletor de Velocidade (0.75x a 2x) */}
+                        {/* Controle de Volume */}
+                        <div className="flex items-center gap-1 shrink-0">
+                          <button
+                            type="button"
+                            onClick={handleTogglePodcastMute}
+                            className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/5 opacity-70 hover:opacity-100"
+                            title={podcastVolume === 0 ? 'Desmutar' : 'Mutar'}
+                          >
+                            {podcastVolume === 0 ? (
+                              <VolumeX className="w-3.5 h-3.5" />
+                            ) : (
+                              <Volume2 className="w-3.5 h-3.5" />
+                            )}
+                          </button>
+                          <input
+                            type="range"
+                            min={0}
+                            max={1}
+                            step={0.05}
+                            value={podcastVolume}
+                            onChange={(e) => handleChangePodcastVolume(Number(e.target.value))}
+                            style={{ accentColor: appearance.accentColor || '#8b5cf6' }}
+                            className="w-12 h-1.5 rounded-full cursor-pointer accent-indigo-600"
+                            title={`Volume: ${Math.round(podcastVolume * 100)}%`}
+                          />
+                        </div>
+
+                        {/* Seletor de Velocidade Calibrado */}
                         <div className="flex items-center gap-1 shrink-0">
                           <span className="text-[10px] opacity-70 mr-0.5">
                             Velocidade:
@@ -1939,10 +2028,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
                         </div>
                       </div>
 
-                      <div className="pt-1 border-t border-current/10 flex items-center justify-between">
-                        <span className="text-[10px] opacity-65">
-                          Arquivo: `{podcastData?.storagePath}`
-                        </span>
+                      <div className="pt-1 border-t border-current/10 flex items-center justify-end">
                         <button
                           type="button"
                           onClick={() => setShowPodcastTranscript((v) => !v)}

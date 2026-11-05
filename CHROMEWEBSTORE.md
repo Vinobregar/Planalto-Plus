@@ -1,10 +1,13 @@
 # Chrome Web Store Listing — Planalto Plus
 
 > Last Updated: 2026-11-04  
-> Version: 1.0.6  
+> Version: 1.0.7  
 > Package: `dist/planalto-moderno-chrome.zip` (772 KB)
 
 ---
+
+## Changelog v1.0.7
+• Ajuste Fino de Contraste no Highlight de Busca: cores adaptadas dinamicamente aos temas Claro, Sépia e Escuro, garantindo legibilidade perfeita e sem contraste lavado.
 
 ## Changelog v1.0.6
 • Destaque Visual de Busca: termos pesquisados (e sinônimos) são automaticamente destacados com highlight no texto de cada artigo.

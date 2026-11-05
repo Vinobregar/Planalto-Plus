@@ -261,10 +261,14 @@ const ArticleMentionLink: React.FC<ArticleMentionLinkProps> = ({
  * into interactive ArticleMentionLink hyperlinks.
  */
 
-function highlightSearchWords(text: string, words?: string[]): React.ReactNode {
+function highlightSearchWords(
+  text: string,
+  words?: string[],
+  theme: ThemeMode = 'light'
+): React.ReactNode {
   if (!words || words.length === 0 || !text) return text;
   const escaped = words
-    .map((w) => w.replace(/[.*+?^$\{}()|[\]\\]/g, '\\function linkifyArticleMentionsInSegment('))
+    .map((w) => w.replace(/[.*+?^$\{}()|[\]\\]/g, (m) => '\\' + m))
     .filter(Boolean);
   if (escaped.length === 0) return text;
 
@@ -272,13 +276,33 @@ function highlightSearchWords(text: string, words?: string[]): React.ReactNode {
   const tokens = text.split(regex);
   if (tokens.length <= 1) return text;
 
+  const highlightStyle =
+    theme === 'dark'
+      ? {
+          backgroundColor: 'rgba(245, 158, 11, 0.28)',
+          color: '#fef3c7',
+          borderBottom: '2px solid #fbbf24',
+        }
+      : theme === 'sepia'
+      ? {
+          backgroundColor: 'rgba(217, 119, 6, 0.22)',
+          color: '#2e2a25',
+          borderBottom: '2px solid #b45309',
+        }
+      : {
+          backgroundColor: 'rgba(254, 240, 138, 0.65)',
+          color: '#0f172a',
+          borderBottom: '2px solid #d97706',
+        };
+
   return tokens.map((tok, i) => {
     const isMatch = words.some((w) => w.toLowerCase() === tok.toLowerCase());
     if (isMatch) {
       return (
         <mark
           key={i}
-          className="bg-amber-300/40 text-amber-950 dark:bg-amber-400/35 dark:text-amber-100 font-semibold border-b-2 border-amber-500 rounded px-0.5"
+          style={highlightStyle}
+          className="font-bold px-1 py-0.5 rounded shadow-sm"
         >
           {tok}
         </mark>
@@ -313,7 +337,7 @@ function linkifyArticleMentionsInSegment(
     const matchedStr = match[0];
 
     if (matchStart > lastIndex) {
-      parts.push(highlightSearchWords(segmentText.slice(lastIndex, matchStart), searchHighlightWords));
+      parts.push(highlightSearchWords(segmentText.slice(lastIndex, matchStart), searchHighlightWords, theme));
     }
 
     // Case 1: "artigo anterior" / "art. anterior"
@@ -404,9 +428,9 @@ function linkifyArticleMentionsInSegment(
     lastIndex = matchStart + matchedStr.length;
   }
 
-  if (parts.length === 0) return highlightSearchWords(segmentText, searchHighlightWords);
+  if (parts.length === 0) return highlightSearchWords(segmentText, searchHighlightWords, theme);
   if (lastIndex < segmentText.length) {
-    parts.push(highlightSearchWords(segmentText.slice(lastIndex), searchHighlightWords));
+    parts.push(highlightSearchWords(segmentText.slice(lastIndex), searchHighlightWords, theme));
   }
   return parts;
 }

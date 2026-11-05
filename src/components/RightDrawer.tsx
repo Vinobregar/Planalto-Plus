@@ -583,57 +583,57 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
           {/* Sub-Navigation Inside IA Chat */}
           <div
             style={{ borderColor: surface.borderColor }}
-            className="px-3.5 py-2.5 border-b flex items-center justify-between gap-2 shrink-0 bg-black/[0.02] dark:bg-white/[0.02]"
+            className="px-3.5 pt-2.5 pb-2 border-b flex items-center justify-between gap-2 shrink-0 bg-black/[0.02] dark:bg-white/[0.02]"
           >
-            <div className="flex items-center gap-1.5 min-w-0">
+            <div className="grid grid-cols-3 gap-1 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-current/10 flex-1">
               <button
                 type="button"
                 onClick={() => setAiSection('conversation')}
-                className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold flex items-center gap-1.5 transition-colors ${
+                className={`py-1.5 px-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                   aiSection === 'conversation'
                     ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'hover:bg-black/5 dark:hover:bg-white/5 opacity-75 hover:opacity-100'
+                    : 'opacity-75 hover:opacity-100'
                 }`}
               >
-                <Sparkles className="w-3 h-3" />
-                <span>Chat</span>
+                <Sparkles className="w-3 h-3 shrink-0" />
+                <span className="truncate">Chat</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setAiSection('edital')}
-                className={`px-2.5 py-1.5 rounded-lg text-[11px] font-semibold flex items-center gap-1.5 transition-colors ${
+                className={`py-1.5 px-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all cursor-pointer ${
                   aiSection === 'edital'
                     ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'hover:bg-black/5 dark:hover:bg-white/5 opacity-75 hover:opacity-100'
+                    : 'opacity-75 hover:opacity-100'
                 }`}
               >
-                <FileUp className="w-3 h-3" />
-                <span>Importar Edital</span>
+                <FileUp className="w-3 h-3 shrink-0" />
+                <span className="truncate">Importar Edital</span>
               </button>
 
               <div
-                className={`relative inline-flex items-center rounded-lg transition-colors ${
+                className={`relative flex items-center justify-center rounded-lg transition-all ${
                   aiSection === 'apikey'
                     ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'hover:bg-black/5 dark:hover:bg-white/5 opacity-75 hover:opacity-100'
+                    : 'opacity-75 hover:opacity-100'
                 }`}
               >
                 <button
                   type="button"
                   onClick={() => setAiSection('apikey')}
-                  className="pl-2.5 pr-1.5 py-1.5 text-[11px] font-semibold flex items-center gap-1.5"
+                  className="flex-1 py-1.5 px-1.5 text-[11px] font-semibold flex items-center justify-center gap-1 cursor-pointer truncate"
                   title="Configurar Chave API e Modelo"
                 >
-                  <KeyRound className="w-3 h-3" />
-                  <span>Chave API</span>
+                  <KeyRound className="w-3 h-3 shrink-0" />
+                  <span className="truncate">Chave API</span>
                   {!hasConfiguredKey && (
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shrink-0" />
                   )}
                 </button>
 
                 {/* Tooltip explicativo ao lado do botão de Chave API */}
-                <span className="relative group/apikeytip inline-flex items-center pr-1.5">
+                <span className="relative group/apikeytip inline-flex items-center pr-1 shrink-0">
                   <button
                     type="button"
                     aria-label="Informações sobre a Chave API e Segurança"
@@ -641,7 +641,7 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                       e.stopPropagation();
                       setAiSection('apikey');
                     }}
-                    className={`p-1 rounded-md transition-colors cursor-pointer ${
+                    className={`p-0.5 rounded transition-colors cursor-pointer ${
                       aiSection === 'apikey'
                         ? 'text-white/80 hover:text-white hover:bg-white/10'
                         : 'text-indigo-500 dark:text-indigo-400 hover:bg-black/5 dark:hover:bg-white/5'
@@ -710,17 +710,14 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
               </div>
             </div>
 
-            <div className="flex items-center gap-1 shrink-0">
-              {/* Close / Collapse Drawer Button */}
-              <button
-                type="button"
-                onClick={onClose}
-                className="p-1.5 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 opacity-70 hover:opacity-100 transition-colors"
-                title="Recolher painel lateral direito"
-              >
-                <PanelRightClose className="w-3.5 h-3.5" />
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1.5 rounded-lg border border-current/15 hover:bg-black/10 dark:hover:bg-white/10 opacity-75 hover:opacity-100 transition-colors shrink-0"
+              title="Recolher painel lateral direito"
+            >
+              <PanelRightClose className="w-3.5 h-3.5" />
+            </button>
           </div>
 
           {/* Error or Missing Key Prompt */}

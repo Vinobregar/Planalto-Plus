@@ -580,9 +580,9 @@ export function parsePlanaltoDom(
         continue;
       }
 
-      // Inciso (Roman numerals: I - , II - , IV – )
+      // Inciso (Roman numerals 1-100: I - , II - , IV – , or with space only: I um quinto..., II os demais...)
       const incisoMatch = rawText.match(
-        /^([IVXLCDM]{1,7}(?:-\d+|-[A-Z](?![a-zA-ZáàâãéêíóôõúçÁÀÂÃÉÊÍÓÔÕÚÇ]))?)\s*[-–—.]\s*(.*)$/
+        /^((?:(?:C|XC|XL|L)?X{0,3}(?:IX|IV|V?I{1,3}|V)|(?:C|XC|XL|L?X{1,3})|L)(?:-[A-Z](?![a-zA-ZáàâãéêíóôõúçÁÀÂÃÉÊÍÓÔÕÚÇ]))?)(?:(?:\s*[-–—.]\s*)|(?:\s+))([\s\S]*)$/
       );
       if (incisoMatch) {
         flushPendingRubricsToSubClauses(currentArticle);
@@ -758,8 +758,41 @@ export function parsePlanaltoDom(
         }
         continue;
       }
-      // Buffer short rubric lines so they attach to the exact next Article or SubClause
-      if (cleanText.length <= 220) {
+      // If we are currently inside an article and this is not a short standalone rubric title, keep it inside the article as a subclause
+      if (currentArticle) {
+        const isShortRubricTitle =
+          cleanText.length <= 60 &&
+          !/[;.]\s*$/.test(cleanText) &&
+          !cleanText.includes(',') &&
+          !/^(a|o|os|as|um|uma|deste|desta|com|para|pelo|pela)\b/i.test(cleanText);
+
+        if (isShortRubricTitle) {
+          pendingRubrics.push({
+            id: `rub-${blocks.length + pendingRubrics.length + 1}`,
+            text: cleanText,
+            html: sanitizeInlineHtml(el, pageUrl),
+            isRevoked: revoked,
+            modificationNote: note,
+            modificationUrl: url,
+          });
+        } else {
+          flushPendingRubricsToSubClauses(currentArticle);
+          currentArticle.subClauses.push({
+            id: `${currentArticle.id}-sc-${currentArticle.subClauses.length + 1}`,
+            type: 'paragrafo',
+            label: '',
+            text: cleanText,
+            html: sanitizeInlineHtml(el, pageUrl),
+            isRevoked: revoked,
+            modificationNote: note,
+            modificationUrl: url,
+          });
+        }
+        continue;
+      }
+
+      // Buffer short rubric lines outside articles so they attach to the exact next Article
+      if (cleanText.length <= 160) {
         pendingRubrics.push({
           id: `rub-${blocks.length + pendingRubrics.length + 1}`,
           text: cleanText,

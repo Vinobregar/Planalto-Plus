@@ -62,6 +62,23 @@ export function computeThemeColors(settings: AppearanceSettings): {
   cardBg: string;
   borderColor: string;
 } {
+  if (settings.highContrast) {
+    if (settings.theme === 'dark') {
+      return {
+        mainBg: '#000000',
+        panelBg: '#050505',
+        cardBg: '#000000',
+        borderColor: '#ffffff',
+      };
+    }
+    return {
+      mainBg: '#ffffff',
+      panelBg: '#f8fafc',
+      cardBg: '#ffffff',
+      borderColor: '#000000',
+    };
+  }
+
   if (settings.theme === 'sepia') {
     const t = (settings.sepiaIntensity ?? 50) / 100;
     // Interpolate from very light warm ivory (0%) to deep warm parchment (100%)
@@ -619,31 +636,6 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
             className="w-full"
           />
         </div>
-      </div>
-
-      {/* Acessibilidade Universal (Leitura por Áudio PcD) */}
-      <div className="pt-2.5 border-t border-current/10 space-y-2">
-        <div className="text-[11px] font-medium opacity-75 uppercase tracking-wider">
-          Acessibilidade
-        </div>
-
-        {/* Checkbox Ética PcD (Alto Contraste, Segue o Tema Escolhido e Fonte 4px Maior) */}
-        <label className="flex items-start gap-3 p-3.5 rounded-xl border border-current/20 bg-black/[0.03] dark:bg-white/[0.04] hover:bg-black/[0.06] dark:hover:bg-white/[0.08] cursor-pointer transition-colors whitespace-normal break-words shadow-sm">
-          <input
-            type="checkbox"
-            checked={Boolean(settings.isPcdAudioAccess)}
-            onChange={(e) => update({ isPcdAudioAccess: e.target.checked })}
-            className="mt-1 w-5 h-5 rounded accent-indigo-600 cursor-pointer shrink-0"
-          />
-          <div className="min-w-0 flex-1 space-y-1">
-            <div className="font-bold text-[15px] leading-snug break-words">
-              Sou pessoa com deficiência visual e necessito de leitura por áudio
-            </div>
-            <p className="text-[13px] font-medium opacity-80 leading-snug">
-              Ativa leitura gratuita e ilimitada por voz nativa
-            </p>
-          </div>
-        </label>
       </div>
 
       {/* Opção para Ocultar / Exibir Recursos de IA (exclusiva do menu Aparência) */}

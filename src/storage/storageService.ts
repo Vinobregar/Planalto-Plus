@@ -26,6 +26,7 @@ export const DEFAULT_APPEARANCE: AppearanceSettings = {
   darkIntensity: 100,
   enableVlibras: true,
   isPcdAudioAccess: false,
+  highContrast: false,
   lockColumnWidth: false,
   textAlign: 'justify',
 };

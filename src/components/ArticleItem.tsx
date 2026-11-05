@@ -1249,11 +1249,19 @@ export const ArticleItem: React.FC<ArticleItemProps> = ({
             }
 
             if (sc.type === 'rubrica') {
+              const isShortTitle =
+                (sc.text || '').length <= 70 &&
+                !/[;.]\s*$/.test(sc.text || '') &&
+                !(sc.text || '').includes(',');
               return (
                 <div
                   key={sc.id}
-                  className={`pt-1.5 font-bold text-[0.94em] tracking-tight ${
-                    sc.isRevoked ? 'line-through opacity-50' : 'opacity-95'
+                  className={`pt-1.5 ${
+                    isShortTitle
+                      ? 'font-bold text-[0.95em] tracking-tight opacity-95'
+                      : 'leading-relaxed font-normal opacity-90'
+                  } ${
+                    sc.isRevoked ? 'line-through opacity-50' : ''
                   }`}
                 >
                   <span>

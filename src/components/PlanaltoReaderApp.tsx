@@ -1308,14 +1308,22 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
   const themeColors = computeThemeColors(appearance);
 
   const rootThemeClass =
-    appearance.theme === 'dark'
+    appearance.highContrast
+      ? appearance.theme === 'dark'
+        ? 'dark text-white bg-black select-text planalto-high-contrast'
+        : 'text-black bg-white select-text planalto-high-contrast'
+      : appearance.theme === 'dark'
       ? 'dark text-zinc-100'
       : appearance.theme === 'sepia'
       ? 'text-[#2c2825]'
       : 'text-slate-900';
 
   const dropdownThemeClass =
-    appearance.theme === 'dark'
+    appearance.highContrast
+      ? appearance.theme === 'dark'
+        ? 'bg-black border-white text-white'
+        : 'bg-white border-black text-black'
+      : appearance.theme === 'dark'
       ? 'bg-zinc-950 border-zinc-800 text-zinc-100'
       : appearance.theme === 'sepia'
       ? 'bg-[#faf8f4] border-[#e2ddd3] text-[#2c2825]'

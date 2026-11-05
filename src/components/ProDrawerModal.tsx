@@ -469,37 +469,6 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
             </div>
           </div>
 
-          {/* Ativação Direta e Gratuita de Acessibilidade PcD */}
-          <div
-            style={{
-              backgroundColor: surface.cardBg,
-              borderColor: surface.borderColor,
-            }}
-            className="p-4 rounded-2xl border-2 shadow-sm space-y-2.5 whitespace-normal break-words"
-          >
-            <div className="flex items-center gap-2 font-bold text-[16px]">
-              <Volume2 className="w-5 h-5 text-indigo-500 shrink-0" />
-              <span>Acessibilidade Gratuita</span>
-            </div>
-            <p className="text-[15px] leading-relaxed opacity-90 font-medium">
-              Pessoas com deficiência visual têm acesso gratuito e ilimitado à
-              leitura por áudio de qualquer artigo utilizando síntese nativa de
-              latência zero.
-            </p>
-            <label className="flex items-start gap-3 pt-1 cursor-pointer select-none">
-              <input
-                type="checkbox"
-                checked={isPcd}
-                onChange={(e) => handleTogglePcd(e.target.checked)}
-                className="mt-1 rounded accent-indigo-600 w-5 h-5 shrink-0 cursor-pointer"
-              />
-              <span className="text-[15px] font-bold leading-snug break-words">
-                Sou pessoa com deficiência visual e necessito de leitura por
-                áudio
-              </span>
-            </label>
-          </div>
-
           {/* Modo Desenvolvedor / Debug PRO */}
           <div
             style={{

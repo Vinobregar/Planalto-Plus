@@ -159,6 +159,7 @@ export interface AppearanceSettings {
   darkIntensity?: number; // 0 - 100 (default 100 for OLED black)
   enableVlibras?: boolean; // Exibir botão do VLibras na página (default true)
   isPcdAudioAccess?: boolean; // Sou pessoa com deficiência visual e necessito de leitura por áudio
+  highContrast?: boolean; // Modo Alto Contraste (preto/branco puro com máxima taxa de contraste)
   lockColumnWidth?: boolean; // Fixar largura da coluna manualmente (desativa expansão adaptativa)
   textAlign?: 'justify' | 'left'; // Alinhamento do texto da norma (substitui altura de linha)
 }

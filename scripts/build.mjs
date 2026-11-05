@@ -136,6 +136,7 @@ async function buildExtension() {
     'popup.html',
     'index.html',
     'sql-wasm.wasm',
+    'rules.json',
   ];
 
   const buildChrome = target === 'chrome' || target === 'all';

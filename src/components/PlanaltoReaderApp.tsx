@@ -1685,12 +1685,22 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
               }}
               className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors shrink-0 whitespace-nowrap ${
                 rightDrawerOpen && rightDrawerTab === 'chat'
-                  ? 'border-indigo-500 bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-semibold'
+                  ? appearance.theme === 'sepia'
+                    ? 'border-indigo-800/40 bg-indigo-800/15 text-indigo-950 font-semibold'
+                    : 'border-indigo-500 bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-semibold'
                   : 'border-current/15 hover:bg-black/5 dark:hover:bg-white/5 opacity-85 hover:opacity-100'
               }`}
               title="Abrir IA Chat (Conversa, Importar Edital e Chave API)"
             >
-              <MessageSquare className="w-3.5 h-3.5 text-indigo-500" />
+              <MessageSquare
+                className={`w-3.5 h-3.5 ${
+                  rightDrawerOpen && rightDrawerTab === 'chat'
+                    ? appearance.theme === 'sepia'
+                      ? 'text-indigo-900'
+                      : 'text-indigo-600 dark:text-indigo-400'
+                    : 'text-indigo-500'
+                }`}
+              />
               <span className="hidden lg:inline">IA Chat</span>
             </button>
           )}

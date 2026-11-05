@@ -116,14 +116,24 @@
   :host,
   #planalto-moderno-host,
   #planalto-moderno-root,
-  .planalto-app-root {
+  .planalto-content-wrapper,
+  .planalto-app-root,
+  .planalto-app-root > div,
+  main,
+  main > div,
+  div[class*="overflow-"],
+  div[class*="min-h-0"],
+  div[class*="flex-1"] {
     position: static !important;
     inset: auto !important;
     width: 100% !important;
+    max-width: 100% !important;
     height: auto !important;
-    min-height: auto !important;
+    min-height: 0 !important;
     max-height: none !important;
     overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
     background: #ffffff !important;
     color: #0f172a !important;
     font-size: 11pt !important;

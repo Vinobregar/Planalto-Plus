@@ -1,10 +1,15 @@
 # Chrome Web Store Listing — Planalto Plus
 
 > Last Updated: 2026-11-05  
-> Version: 1.0.14  
+> Version: 1.0.15  
 > Package: `dist/planalto-moderno-chrome.zip`
 
 ---
+
+## Changelog v1.0.15
+• Resolução Completa de CSP para o VLibras: empacotamento local de script via `chrome-extension://` com regras declarativas (`declarativeNetRequest`) para contornar bloqueios de Content Security Policy na origem do Planalto, assegurando funcionamento fluido do intérprete 3D.
+• Eliminação Definitiva da Sobreposição na Impressão (Ctrl+P): ocultação ativa e isolamento absoluto de todos os nós originais do DOM do Planalto durante a geração de PDF/impressão, impedindo sobreposição e acúmulo de parágrafos nas páginas geradas.
+• Adaptação Fina de Tema: renderização do Tooltip da Chave de API e do botão selecionado do IA Chat estritamente sincronizada com a paleta ativa (Claro, Sépia ou Escuro).
 
 ## Changelog v1.0.14
 • Correção da Paginação na Impressão e PDF: eliminação definitiva do acúmulo e sobreposição de textos entre páginas sucessivas ao imprimir com Ctrl+P.

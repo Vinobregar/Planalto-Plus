@@ -10,7 +10,21 @@ const VLIBRAS_CONTAINER_ID = 'planalto-plus-vlibras-container';
 const VLIBRAS_SCRIPT_ID = 'planalto-plus-vlibras-script';
 const VLIBRAS_CLOSE_BTN_ID = 'planalto-vlibras-close-btn';
 
-// URL direta CDN do plugin oficial v7.12.2 com fallback para o portal
+// URL local empacotada na extensão para conformidade estrita com a Content Security Policy (chrome-extension://)
+function getExtensionVlibrasUrl() {
+  try {
+    if (typeof chrome !== 'undefined' && chrome.runtime && typeof chrome.runtime.getURL === 'function') {
+      return chrome.runtime.getURL('assets/vlibras/vlibras-plugin.js');
+    }
+    if (typeof browser !== 'undefined' && browser.runtime && typeof browser.runtime.getURL === 'function') {
+      return browser.runtime.getURL('assets/vlibras/vlibras-plugin.js');
+    }
+  } catch {
+    // Fallback
+  }
+  return null;
+}
+
 const VLIBRAS_PLUGIN_CDN =
   'https://cdn.jsdelivr.net/gh/spbgovbr-vlibras/vlibras-portal@v7.12.2/app/vlibras-plugin.js';
 const VLIBRAS_APP_ROOT = 'https://vlibras.gov.br/app';
@@ -133,11 +147,14 @@ export function syncVlibrasWidget(enabled = true, onHideCallback) {
     container.style.display = '';
   }
 
-  // Injeta script oficial do VLibras (usando CDN oficial com fallback para vlibras.gov.br)
+  // Injeta script do VLibras priorizando recurso local empacotado (chrome-extension://) para CSP compliance
   if (!document.getElementById(VLIBRAS_SCRIPT_ID)) {
+    const localUrl = getExtensionVlibrasUrl();
+    const primarySrc = localUrl || VLIBRAS_PLUGIN_CDN;
+
     const script = document.createElement('script');
     script.id = VLIBRAS_SCRIPT_ID;
-    script.src = VLIBRAS_PLUGIN_CDN;
+    script.src = primarySrc;
     script.async = true;
     script.onload = () => {
       try {
@@ -149,9 +166,9 @@ export function syncVlibrasWidget(enabled = true, onHideCallback) {
       }
     };
     script.onerror = () => {
-      // Fallback para vlibras.gov.br caso CDN falhe
+      // Fallback para vlibras.gov.br caso o recurso primário falhe
       const fallbackScript = document.createElement('script');
-      fallbackScript.src = 'https://vlibras.gov.br/app/vlibras-plugin.js';
+      fallbackScript.src = localUrl ? VLIBRAS_PLUGIN_CDN : 'https://vlibras.gov.br/app/vlibras-plugin.js';
       fallbackScript.async = true;
       document.head.appendChild(fallbackScript);
     };

@@ -644,6 +644,10 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                   </button>
 
                   <div
+                    style={{
+                      backgroundColor: surface.cardBg,
+                      borderColor: surface.borderColor,
+                    }}
                     className={`invisible opacity-0 group-hover/apikeytip:visible group-hover/apikeytip:opacity-100 transition-all duration-150 absolute right-[-60px] top-full mt-1.5 w-76 sm:w-80 p-3.5 rounded-xl border shadow-2xl text-[11px] font-normal leading-relaxed z-50 pointer-events-auto select-text before:absolute before:-top-2 before:left-0 before:right-0 before:h-2.5 ${tooltipClass}`}
                   >
                     <div className="flex items-center gap-1.5 font-bold text-xs text-indigo-500 dark:text-indigo-400 mb-2 border-b border-current/10 pb-1.5">

@@ -37,17 +37,34 @@ function injectWebFonts() {
 
     /* Print overrides in main document to ensure multi-page flow without overlaps */
     @media print {
+      /* Oculta todos os nós originais do Planalto fora do host moderno para evitar sobreposição de texto */
+      body.planalto-moderno-active > :not(#planalto-moderno-host),
+      body.planalto-print-active > :not(#planalto-moderno-host) {
+        display: none !important;
+        visibility: hidden !important;
+        height: 0 !important;
+        max-height: 0 !important;
+        overflow: hidden !important;
+        position: absolute !important;
+        left: -99999px !important;
+      }
+
       html, body {
         overflow: visible !important;
         position: static !important;
         height: auto !important;
+        min-height: 0 !important;
         max-height: none !important;
+        background: #ffffff !important;
+        color: #000000 !important;
       }
       #planalto-moderno-host {
         position: static !important;
         display: block !important;
         width: 100% !important;
         height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
         overflow: visible !important;
       }
       .planalto-content-wrapper {
@@ -56,6 +73,8 @@ function injectWebFonts() {
         display: block !important;
         width: 100% !important;
         height: auto !important;
+        min-height: 0 !important;
+        max-height: none !important;
         overflow: visible !important;
       }
       #vlibras-access-wrapper,
@@ -79,23 +98,45 @@ const ContentController: React.FC<{ doc: LegislationDocument }> = ({ doc }) => {
     if (modernActive) {
       document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
+      document.documentElement.classList.add('planalto-moderno-active');
+      document.body.classList.add('planalto-moderno-active');
     } else {
       document.documentElement.style.overflow = prevOverflow;
       document.body.style.overflow = prevBodyOverflow;
+      document.documentElement.classList.remove('planalto-moderno-active');
+      document.body.classList.remove('planalto-moderno-active');
     }
 
-    // Ao imprimir, destrava overflow de html e body para permitir paginação natural de 100+ páginas
+    // Ao imprimir, destrava overflow de html e body e oculta nós originais do Planalto
     const handleBeforePrint = () => {
       document.documentElement.style.overflow = 'visible';
       document.body.style.overflow = 'visible';
       document.documentElement.classList.add('planalto-print-active');
       document.body.classList.add('planalto-print-active');
+
+      if (modernActive) {
+        Array.from(document.body.children).forEach((child) => {
+          if (child.id !== HOST_ID && child.tagName !== 'SCRIPT' && child.tagName !== 'STYLE') {
+            const htmlEl = child as HTMLElement;
+            htmlEl.dataset.planaltoPrintPrevDisplay = htmlEl.style.display || '';
+            htmlEl.style.display = 'none';
+          }
+        });
+      }
     };
 
     const handleAfterPrint = () => {
       document.documentElement.classList.remove('planalto-print-active');
       document.body.classList.remove('planalto-print-active');
+
       if (modernActive) {
+        Array.from(document.body.children).forEach((child) => {
+          const htmlEl = child as HTMLElement;
+          if (htmlEl.id !== HOST_ID && htmlEl.dataset.planaltoPrintPrevDisplay !== undefined) {
+            htmlEl.style.display = htmlEl.dataset.planaltoPrintPrevDisplay || '';
+            delete htmlEl.dataset.planaltoPrintPrevDisplay;
+          }
+        });
         document.documentElement.style.overflow = 'hidden';
         document.body.style.overflow = 'hidden';
       }

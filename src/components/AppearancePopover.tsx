@@ -8,6 +8,7 @@ import {
   Minus,
   Moon,
   Palette,
+  Pipette,
   Plus,
   RotateCcw,
   Sliders,
@@ -359,48 +360,89 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
           </button>
         </div>
 
-        {/* Menu de Personalização de Cor com Confirmação Ok */}
+        {/* Menu de Personalização de Cor com Seletor Visual e Confirmação Ok */}
         {isCustomizingColor && (
-          <div className="mt-2 p-2.5 rounded-xl border border-current/15 bg-black/[0.03] dark:bg-white/[0.03] space-y-2">
+          <div className="mt-2 p-3 rounded-xl border border-current/15 bg-black/[0.03] dark:bg-white/[0.03] space-y-2.5 shadow-sm">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-semibold text-[11px] opacity-80">
-                Personalizar Cor
+              <span className="font-semibold text-[11px] opacity-80 flex items-center gap-1.5">
+                <Pipette className="w-3.5 h-3.5 text-indigo-500" />
+                <span>Seletor de Cor Personalizada</span>
               </span>
-              <span className="font-mono text-[10px] opacity-65">
+              <span className="font-mono text-[10px] font-bold opacity-75 px-1.5 py-0.5 rounded bg-black/5 dark:bg-white/10">
                 {customColorDraft.toUpperCase()}
               </span>
             </div>
+
             <div className="flex items-center gap-2">
-              <label className="relative w-8 h-8 rounded-lg cursor-pointer border border-current/20 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
-                <span
-                  className="w-full h-full"
-                  style={{ backgroundColor: customColorDraft }}
-                />
+              {/* Seletor Visual de Cores Nativo do Navegador */}
+              <div className="relative flex items-center shrink-0">
                 <input
                   type="color"
+                  id="planalto-color-picker-input"
                   value={customColorDraft}
-                  onChange={(e) => setCustomColorDraft(e.target.value)}
-                  className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
+                  onChange={(e) => {
+                    const color = e.target.value;
+                    setCustomColorDraft(color);
+                    update({ accentColor: color });
+                  }}
+                  className="w-10 h-8 rounded-lg border border-current/20 cursor-pointer bg-transparent p-0.5 shadow-sm"
+                  title="Clique para abrir a paleta de cores completa"
                 />
-              </label>
+              </div>
+
+              {/* Input Hexadecimal */}
               <input
                 type="text"
                 value={customColorDraft}
-                onChange={(e) => setCustomColorDraft(e.target.value)}
-                placeholder="#8b5cf6"
-                className="flex-1 px-2.5 py-1 rounded-lg border border-current/20 bg-transparent font-mono text-xs uppercase focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setCustomColorDraft(val);
+                  if (/^#([0-9A-F]{3}){1,2}$/i.test(val)) {
+                    update({ accentColor: val });
+                  }
+                }}
+                placeholder="#8B5CF6"
+                className="flex-1 px-2.5 py-1.5 rounded-lg border border-current/20 bg-transparent font-mono text-xs uppercase focus:outline-none focus:ring-1 focus:ring-indigo-500 shadow-inner"
               />
+
+              {/* Botão de Confirmação */}
               <button
                 type="button"
                 onClick={() => {
                   update({ accentColor: customColorDraft });
                   setIsCustomizingColor(false);
                 }}
-                className="px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-sm transition-colors"
-                title="Confirmar cor escolhida"
+                className="px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-sm transition-colors cursor-pointer"
+                title="Confirmar e salvar cor personalizada"
               >
                 Ok
               </button>
+            </div>
+
+            {/* Paleta rápida de sugestões de cores */}
+            <div className="flex items-center gap-1.5 pt-0.5">
+              <span className="text-[10px] opacity-60">Sugestões:</span>
+              {[
+                { color: '#06b6d4', label: 'Ciano' },
+                { color: '#14b8a6', label: 'Teal' },
+                { color: '#84cc16', label: 'Lima' },
+                { color: '#ec4899', label: 'Pink' },
+                { color: '#a855f7', label: 'Púrpura' },
+                { color: '#f97316', label: 'Laranja' },
+                { color: '#3b82f6', label: 'Cobalto' },
+              ].map((s) => (
+                <button
+                  key={s.color}
+                  type="button"
+                  onClick={() => {
+                    setCustomColorDraft(s.color);
+                    update({ accentColor: s.color });
+                  }}
+                  style={{ backgroundColor: s.color }}
+                  className="w-4 h-4 rounded-full transition-transform hover:scale-125 border border-white/20 shadow-sm cursor-pointer"
+                  title={s.label}
+                />
+              ))}
             </div>
           </div>
         )}

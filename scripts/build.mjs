@@ -23,6 +23,13 @@ function copyDirSync(src, dest) {
     if (entry.isDirectory()) {
       copyDirSync(srcPath, destPath);
     } else {
+      try {
+        if (fs.existsSync(destPath)) {
+          fs.unlinkSync(destPath);
+        }
+      } catch {
+        // ignore unlink error
+      }
       fs.copyFileSync(srcPath, destPath);
     }
   }

@@ -66,7 +66,7 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [isPlayingAudioDemo, setIsPlayingAudioDemo] = useState(false);
   const [audioCurrentTime, setAudioCurrentTime] = useState(0);
-  const [audioDuration, setAudioDuration] = useState(29);
+  const [audioDuration, setAudioDuration] = useState(31);
   const [audioPlaybackRate, setAudioPlaybackRate] = useState(1);
   const [audioVolume, setAudioVolume] = useState<number>(1);
 
@@ -380,7 +380,7 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
                   src={audioDemoUrl}
                   preload="metadata"
                   onTimeUpdate={(e) => setAudioCurrentTime(e.currentTarget.currentTime)}
-                  onLoadedMetadata={(e) => setAudioDuration(e.currentTarget.duration || 29)}
+                  onLoadedMetadata={(e) => setAudioDuration(e.currentTarget.duration || 31)}
                   onPlay={() => {
                     if (audioRef.current) {
                       audioRef.current.playbackRate = audioPlaybackRate;
@@ -399,7 +399,7 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
                 />
 
                 <div className="text-[10px] opacity-75 italic border-t border-current/10 pt-1.5 leading-snug">
-                  “A República Federativa do Brasil, formada pela união indissolúvel dos Estados e Municípios e do Distrito Federal, constitui-se em Estado Democrático de Direito...”
+                  “Art. 1º A República Federativa do Brasil, formada pela união indissolúvel dos Estados e Municípios e do Distrito Federal, constitui-se em Estado Democrático de Direito e tem como fundamentos: I - a soberania; II - a cidadania; III - a dignidade da pessoa humana; IV - os valores sociais do trabalho e da livre iniciativa; V - o pluralismo político.”
                 </div>
               </div>
             </div>

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Planalto Plus — Leitura Jurídica & IA",
   "short_name": "Planalto Plus",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Moderniza o Planalto.gov.br com leitura limpa, sumário hierárquico, texto compilado, grifos, flashcards Anki e assistente de IA.",
   "permissions": [
     "storage",

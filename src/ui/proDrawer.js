@@ -52,11 +52,11 @@ export const PEEKING_FEATURE_PREVIEWS = {
   podcast: {
     id: 'podcast',
     tag: 'Podcast Panorâmico da Lei Inteira',
-    title: '🎧 Ouvir Panorama da Lei (15 min)',
+    title: 'Ouvir Panorama da Lei (15 min)',
     description:
       'Ouça um episódio didático de 12 a 15 minutos cobrindo o objetivo e contexto da norma, explicação extensiva dos conceitos e o Top 7 artigos mais cobrados em prova (sintetizado com Google Cloud TTS WaveNet e salvo em cache global).',
     previewPoints: [
-      'Roteiro completo gerado com Gemini Flash (janela de 1M tokens)',
+      'Roteiro completo gerado com Inteligência Artificial para estudo panorâmico',
       'Voz neural Google Cloud TTS WaveNet (pt-BR-Wavenet-B)',
       'Seletor de velocidade de 0.75x a 2x e transcrição sincronizada',
     ],
@@ -66,10 +66,10 @@ export const PEEKING_FEATURE_PREVIEWS = {
     tag: 'Leitura Ativa por Áudio',
     title: '🔊 Ouvir Artigo (Voz Neural / Acessibilidade)',
     description:
-      'Escute qualquer artigo com voz neural WaveNet de alta naturalidade no plano PRO, ou ative gratuitamente a leitura por áudio nativa caso seja pessoa com deficiência visual (Lei Federal nº 13.146/2015).',
+      'Escute qualquer artigo com voz neural WaveNet de alta naturalidade no plano PRO, ou ative gratuitamente a leitura por áudio nativa caso seja pessoa com deficiência visual.',
     previewPoints: [
       'PRO: Google Cloud TTS WaveNet (pt-BR-Wavenet-B) com Cache Global',
-      'PcD (Lei 13.146/2015): 100% Gratuito e ilimitado via Web Speech API local',
+      'Acessibilidade PcD: 100% Gratuito e ilimitado via síntese nativa local',
       'Leitura inteligente de parágrafos, incisos e alíneas',
     ],
   },

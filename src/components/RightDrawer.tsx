@@ -79,6 +79,7 @@ import {
 import {
   calculateStudyTrailStats,
   updateStudyTrailTargetDays,
+  updateStudyTrailSettings,
   resetStudyTrailProgress,
 } from '../features/studyTrail.js';
 
@@ -691,7 +692,7 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                               100% Segura e Local
                             </strong>
                             <p className="opacity-90">
-                              Sua chave fica salva <strong>exclusivamente na memória local do seu navegador</strong> (<code>chrome.storage.local</code>) e <strong>nunca é enviada para nenhum servidor intermediário</strong>. As requisições vão direto do seu navegador para a API oficial do provedor escolhido.
+                              Sua chave fica salva <strong>exclusivamente na memória local do seu navegador</strong> e <strong>nunca é enviada para nenhum servidor intermediário</strong>. As requisições vão direto do seu navegador para a API oficial do provedor escolhido.
                             </p>
                           </div>
                         </div>
@@ -788,8 +789,8 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                             <strong>Edital de Concurso</strong> para grifar
                             automaticamente os artigos mais importantes, ou envie
                             sua dúvida jurídica abaixo.
-                            <span className="block mt-1.5 pt-1.5 border-t border-current/15 text-amber-500/90 dark:text-amber-400">
-                              <strong>Nota sobre Sínteses Automatizadas:</strong> As explicações e análises deste assistente são geradas por inteligência artificial como recurso complementar de estudo e podem apresentar nuances interpretativas ou imprecisões pontuais. Conteúdo gerado por IA para apoio didático; confira sempre a literalidade da norma e a jurisprudência oficial dos tribunais.
+                            <span className="block mt-1.5 pt-1.5 border-t border-current/15 text-[9.5px] leading-tight opacity-75">
+                              <strong>Nota sobre Sínteses Automatizadas:</strong> As análises são geradas por IA para apoio didático complementar; confira sempre a literalidade da norma e os tribunais.
                             </span>
                           </span>
                         </span>
@@ -938,9 +939,9 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-1.5 text-indigo-500 font-semibold">
                     <FileUp className="w-4 h-4" />
-                    <span>Importar Edital (PDF) & Grifar com IA</span>
+                    <span>Importar Edital & Grifar com IA</span>
                     <span className="px-1.5 py-0.2 rounded text-[9px] font-bold uppercase bg-indigo-500/15 text-indigo-600 dark:text-indigo-400">
-                      {isPro ? 'PRO Multi-Leis Ativo' : 'BYOK Lei Atual'}
+                      {isPro ? 'PRO Multi-Leis Ativo' : 'Lei Atual'}
                     </span>
                     <span className="relative group/edtip inline-flex items-center">
                       <HelpCircle className="w-3.5 h-3.5 opacity-60 hover:opacity-100 cursor-pointer" />
@@ -987,7 +988,7 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                 {/* Optional Syllabus Text Input */}
                 <div className="space-y-1">
                   <label className="text-[11px] font-medium opacity-75">
-                    Ou cole/complemente os tópicos do edital (opcional):
+                    Ou cole/complemente os tópicos do edital:
                   </label>
                   <textarea
                     rows={2}
@@ -1134,6 +1135,10 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                     <span className="relative group/keytip inline-flex items-center">
                       <HelpCircle className="w-3.5 h-3.5 opacity-60 hover:opacity-100 cursor-pointer" />
                       <div
+                        style={{
+                          backgroundColor: surface.cardBg,
+                          borderColor: surface.borderColor,
+                        }}
                         className={`invisible opacity-0 group-hover/keytip:visible group-hover/keytip:opacity-100 transition-all duration-150 absolute left-1/2 -translate-x-1/2 top-full mt-1.5 w-76 sm:w-80 p-3 rounded-xl border shadow-2xl text-[11px] font-normal leading-relaxed z-50 pointer-events-auto select-text before:absolute before:-top-2 before:left-0 before:right-0 before:h-2.5 ${tooltipClass}`}
                       >
                         <div className="flex items-center gap-1.5 font-bold text-xs text-indigo-500 dark:text-indigo-400 mb-2 border-b border-current/10 pb-1.5">
@@ -1164,7 +1169,7 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                                 Armazenamento 100% Local
                               </strong>
                               <p className="opacity-90">
-                                Sua chave é salva exclusivamente no seu navegador (<code>chrome.storage.local</code>) e nunca transita por servidores intermediários.
+                                Sua chave é salva exclusivamente no seu navegador e nunca transita por servidores intermediários.
                               </p>
                             </div>
                           </div>
@@ -1311,37 +1316,6 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                     />
                   </div>
                 )}
-
-                {/* IndexedDB Cache Status & Actions */}
-                <div className="pt-3 border-t border-current/10 space-y-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-semibold uppercase tracking-wider opacity-75 flex items-center gap-1.5">
-                      <Database className="w-3.5 h-3.5 text-indigo-500" />
-                      <span>Cache Local IndexedDB</span>
-                    </span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold">
-                      Ativo (0 tokens)
-                    </span>
-                  </div>
-                  <p className="text-[11px] opacity-70 leading-relaxed">
-                    Respostas doutrinárias e análises de jurisprudência já consultadas ficam salvas localmente no navegador para carregamento instantâneo sem gastar tokens da sua cota.
-                  </p>
-                  <div className="flex items-center justify-between pt-1">
-                    <span className="text-[10px] opacity-65 font-mono">
-                      {cacheStats.count} {cacheStats.count === 1 ? 'análise salva' : 'análises salvas'} (~{cacheStats.estimatedSizeKb} KB)
-                    </span>
-                    {cacheStats.count > 0 && (
-                      <button
-                        type="button"
-                        onClick={handleClearCache}
-                        className="text-[10px] font-semibold text-rose-500 hover:text-rose-600 hover:underline flex items-center gap-1 cursor-pointer"
-                      >
-                        <Trash2 className="w-3 h-3" />
-                        <span>Esvaziar cache</span>
-                      </button>
-                    )}
-                  </div>
-                </div>
 
                 <button
                   type="button"
@@ -1625,7 +1599,7 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                     {/* Custom Instructions Input */}
                     <div className="space-y-1">
                       <label className="text-[10px] font-bold uppercase tracking-wider opacity-70">
-                        Instrução ou Recorte Específico (Opcional)
+                        Instrução ou Recorte Específico
                       </label>
                       <input
                         type="text"
@@ -2913,8 +2887,20 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                   </div>
                   <button
                     type="button"
-                    onClick={() => onOpenProDrawer && onOpenProDrawer('oab_trail')}
-                    className="w-full py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors"
+                    onClick={() => {
+                      try {
+                        const getUrl =
+                          typeof chrome !== 'undefined' && chrome.runtime?.getURL
+                            ? chrome.runtime.getURL.bind(chrome.runtime)
+                            : null;
+                        if (getUrl) {
+                          window.open(getUrl('docs/pro.html'), '_blank');
+                          return;
+                        }
+                      } catch {}
+                      if (onOpenProDrawer) onOpenProDrawer('oab_trail');
+                    }}
+                    className="w-full py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors cursor-pointer"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
                     <span>Conhecer Recursos PRO</span>
@@ -3008,6 +2994,91 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                               <RotateCcw className="w-3 h-3" />
                             </button>
                           </div>
+                        </div>
+
+                        {/* Configuração de Dias da Semana para Estudo */}
+                        <div className="space-y-1.5 pt-2 border-t border-current/10">
+                          <div className="flex items-center justify-between text-[11px]">
+                            <span className="opacity-80 font-medium">Dias de estudo na semana:</span>
+                            <span className="font-bold text-indigo-600 dark:text-indigo-400">
+                              {stats.daysPerWeek} {stats.daysPerWeek === 1 ? 'dia' : 'dias'}/sem
+                            </span>
+                          </div>
+                          <div className="flex items-center justify-between gap-1">
+                            {[
+                              { id: 1, label: 'Seg' },
+                              { id: 2, label: 'Ter' },
+                              { id: 3, label: 'Qua' },
+                              { id: 4, label: 'Qui' },
+                              { id: 5, label: 'Sex' },
+                              { id: 6, label: 'Sáb' },
+                              { id: 7, label: 'Dom' },
+                            ].map((day) => {
+                              const isActive = (stats.studyDaysOfWeek || [1, 2, 3, 4, 5, 6, 7]).includes(day.id);
+                              return (
+                                <button
+                                  key={day.id}
+                                  type="button"
+                                  onClick={async () => {
+                                    const currentDays = stats.studyDaysOfWeek || [1, 2, 3, 4, 5, 6, 7];
+                                    const nextDays = isActive
+                                      ? currentDays.filter((d: number) => d !== day.id)
+                                      : [...currentDays, day.id];
+                                    // Pelo menos 1 dia deve permanecer ativo
+                                    if (nextDays.length === 0) return;
+                                    const next = await updateStudyTrailSettings(doc, studyProgress, {
+                                      studyDaysOfWeek: nextDays,
+                                    });
+                                    onUpdateStudyProgress?.(next);
+                                  }}
+                                  className={`flex-1 py-1 rounded-md text-[10px] font-bold transition-all border ${
+                                    isActive
+                                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
+                                      : 'border-current/15 opacity-60 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5'
+                                  }`}
+                                  title={`${day.label}: ${isActive ? 'Dia de estudo ativo' : 'Dia de descanso'}`}
+                                >
+                                  {day.label}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </div>
+
+                        {/* Opções de Exibição de Indicadores nos Artigos */}
+                        <div className="pt-2 border-t border-current/10 space-y-1.5 text-[11px]">
+                          <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input
+                              type="checkbox"
+                              checked={Boolean(studyProgress?.showReadBadges)}
+                              onChange={async (e) => {
+                                const next = await updateStudyTrailSettings(doc, studyProgress, {
+                                  showReadBadges: e.target.checked,
+                                });
+                                onUpdateStudyProgress?.(next);
+                              }}
+                              className="rounded accent-emerald-600 w-3.5 h-3.5 cursor-pointer"
+                            />
+                            <span className="font-medium text-emerald-800 dark:text-emerald-300">
+                              Exibir indicador de "✓ Lido" nos artigos lidos
+                            </span>
+                          </label>
+                          <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input
+                              type="checkbox"
+                              checked={Boolean(studyProgress?.showOabBadges)}
+                              onChange={async (e) => {
+                                const next = await updateStudyTrailSettings(doc, studyProgress, {
+                                  showOabBadges: e.target.checked,
+                                });
+                                onUpdateStudyProgress?.(next);
+                              }}
+                              className="rounded accent-amber-600 w-3.5 h-3.5 cursor-pointer"
+                            />
+                            <span className="font-medium text-amber-800 dark:text-amber-300">
+                              Exibir destaque de "🎯 Incidência OAB (FGV)" nos artigos
+                            </span>
+                          </label>
                         </div>
                       </div>
                     );

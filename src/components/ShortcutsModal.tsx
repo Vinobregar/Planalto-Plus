@@ -18,12 +18,12 @@ interface ShortcutItem {
 const SHORTCUTS: ShortcutItem[] = [
   {
     keys: ['J'],
-    description: 'Avançar para o próximo artigo (salto rápido)',
+    description: 'Avançar para o próximo artigo',
     category: 'Navegação',
   },
   {
     keys: ['K'],
-    description: 'Voltar para o artigo anterior (salto rápido)',
+    description: 'Voltar para o artigo anterior',
     category: 'Navegação',
   },
   {

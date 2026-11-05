@@ -539,8 +539,8 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
           Acessibilidade
         </div>
 
-        {/* Checkbox Ética PcD */}
-        <label className="flex items-start gap-2.5 p-2 rounded-xl border border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10 cursor-pointer transition-colors">
+        {/* Checkbox Ética PcD (Alto Contraste e Quebra de Linha Conforme Acessibilidade) */}
+        <label className="flex items-start gap-2.5 p-2.5 rounded-xl border-2 border-emerald-700 dark:border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-100 hover:bg-emerald-100/70 dark:hover:bg-emerald-950/60 cursor-pointer transition-colors whitespace-normal break-words">
           <input
             type="checkbox"
             checked={Boolean(settings.isPcdAudioAccess)}
@@ -548,10 +548,10 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
             className="mt-0.5 w-4 h-4 rounded accent-emerald-600 cursor-pointer shrink-0"
           />
           <div className="min-w-0 flex-1">
-            <div className="font-semibold text-xs leading-tight text-emerald-700 dark:text-emerald-300">
+            <div className="font-bold text-xs leading-snug text-emerald-950 dark:text-emerald-100 break-words">
               Sou pessoa com deficiência visual e necessito de leitura por áudio
             </div>
-            <p className="text-[10px] opacity-75 leading-snug mt-0.5">
+            <p className="text-[10.5px] font-medium opacity-85 leading-snug mt-0.5 text-emerald-900 dark:text-emerald-200">
               Ativa leitura gratuita e ilimitada por voz nativa
             </p>
           </div>

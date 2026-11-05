@@ -126,11 +126,13 @@ import { syncVlibrasWidget } from '../features/vlibras.js';
 
 interface PlanaltoReaderAppProps {
   doc: LegislationDocument;
+  isPrinting?: boolean;
   onToggleOriginalView: () => void;
 }
 
 export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
   doc,
+  isPrinting = false,
   onToggleOriginalView,
 }) => {
   const [appearance, setAppearance] = useState<AppearanceSettings>(() =>
@@ -880,7 +882,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
           const assistantMsg: ChatMessage = {
             id: `msg-${Date.now()}-a`,
             role: 'assistant',
-            content: `${cached.content}\n\n> ⚡ *Resposta carregada instantaneamente do Cache Local IndexedDB (0 tokens gastos).*`,
+            content: `${cached.content}\n\n> ⚡ *Resposta carregada instantaneamente do cache local.*`,
             articleContext: article.label,
             timestamp: new Date().toISOString(),
           };
@@ -954,7 +956,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
           const assistantMsg: ChatMessage = {
             id: `msg-${Date.now()}-a`,
             role: 'assistant',
-            content: `${cached.content}\n\n> ⚡ *Jurisprudência carregada instantaneamente do Cache Local IndexedDB (0 tokens gastos).*`,
+            content: `${cached.content}\n\n> ⚡ *Jurisprudência carregada instantaneamente do cache local.*`,
             articleContext: article.label,
             timestamp: new Date().toISOString(),
           };
@@ -1292,16 +1294,21 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
           '--app-accent-soft': hexToRgba(currentAccent, 0.14),
         } as React.CSSProperties
       }
-      className={`planalto-app-root fixed inset-0 w-screen h-screen flex flex-col overflow-hidden transition-colors duration-150 ${rootThemeClass}`}
+      className={
+        isPrinting
+          ? 'planalto-app-root relative w-full h-auto min-h-0 overflow-visible block bg-white text-slate-900'
+          : `planalto-app-root fixed inset-0 w-screen h-screen flex flex-col overflow-hidden transition-colors duration-150 ${rootThemeClass}`
+      }
     >
       {/* Top Minimal Uncluttered Header Bar - Strictly Single-Row & Non-Wrapping */}
-      <header
-        style={{
-          backgroundColor: themeColors.panelBg,
-          borderColor: themeColors.borderColor,
-        }}
-        className="h-12 px-2.5 sm:px-4 border-b backdrop-blur-md flex items-center justify-between gap-1.5 sm:gap-2.5 shrink-0 z-30 select-none whitespace-nowrap overflow-x-clip"
-      >
+      {!isPrinting && (
+        <header
+          style={{
+            backgroundColor: themeColors.panelBg,
+            borderColor: themeColors.borderColor,
+          }}
+          className="h-12 px-2.5 sm:px-4 border-b backdrop-blur-md flex items-center justify-between gap-1.5 sm:gap-2.5 shrink-0 z-30 select-none whitespace-nowrap overflow-x-clip"
+        >
         {/* Left: Sumário Toggle, Common Law Title & Relevant Laws Switcher */}
         <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 shrink-0">
           {!leftSidebarOpen && (
@@ -1692,15 +1699,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
               }`}
               title="Abrir IA Chat (Conversa, Importar Edital e Chave API)"
             >
-              <MessageSquare
-                className={`w-3.5 h-3.5 ${
-                  rightDrawerOpen && rightDrawerTab === 'chat'
-                    ? appearance.theme === 'sepia'
-                      ? 'text-indigo-900'
-                      : 'text-indigo-600 dark:text-indigo-400'
-                    : 'text-indigo-500'
-                }`}
-              />
+              <MessageSquare className="w-3.5 h-3.5 text-current shrink-0" />
               <span className="hidden lg:inline">IA Chat</span>
             </button>
           )}
@@ -1743,11 +1742,18 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
           )}
         </div>
       </header>
+      )}
 
       {/* Main 3-Zone Workspace */}
-      <div className="flex-1 flex min-h-0 overflow-hidden">
+      <div
+        className={
+          isPrinting
+            ? 'block w-full h-auto min-h-0 overflow-visible'
+            : 'flex-1 flex min-h-0 overflow-hidden'
+        }
+      >
         {/* Zone 1: Left Collapsible Hierarchical Sumário Sidebar */}
-        {leftSidebarOpen && (
+        {!isPrinting && leftSidebarOpen && (
           <TocSidebar
             toc={doc.toc}
             articles={doc.articles}
@@ -1774,7 +1780,11 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
         <main
           ref={readerScrollRef}
           style={{ fontFamily: activeFontCss }}
-          className="flex-1 overflow-y-auto px-4 sm:px-8 py-8 scroll-smooth"
+          className={
+            isPrinting
+              ? 'block w-full h-auto min-h-0 overflow-visible p-0 m-0'
+              : 'flex-1 overflow-y-auto px-4 sm:px-8 py-8 scroll-smooth'
+          }
         >
           <div
             style={{
@@ -1804,10 +1814,10 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
                     type="button"
                     onClick={handleOpenLawPodcast}
                     className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border border-current/15 hover:border-indigo-500/50 hover:bg-indigo-500/10 transition-colors"
-                    title="Ouvir episódio de podcast panorâmico de 15 minutos sobre esta lei (Gemini Flash 1M + Google Cloud TTS WaveNet)"
+                    title="Ouvir episódio de podcast panorâmico de 15 minutos sobre esta lei"
                   >
                     <Headphones className="w-3.5 h-3.5 text-indigo-500" />
-                    <span>🎧 Ouvir Panorama da Lei (15 min)</span>
+                    <span>Ouvir Panorama da Lei (15 min)</span>
                     <span className="px-1.5 py-0.2 rounded text-[9px] font-bold uppercase tracking-wider bg-black/5 dark:bg-white/10 opacity-75">
                       PRO
                     </span>
@@ -2306,11 +2316,22 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
                     isReadInTrail={Boolean(
                       studyProgress?.readArticleIds?.includes(article.id)
                     )}
+                    showReadBadges={Boolean(isPro && studyProgress?.showReadBadges)}
+                    showOabBadges={Boolean(isPro && studyProgress?.showOabBadges)}
                   />
                 );
               }
 
               if (appearance.compiledMode && block.isRevoked) {
+                return null;
+              }
+
+              // Suprime linhas órfãs de emendas já presentes no cabeçalho
+              if (
+                /^\(?\s*(?:Vide\s+)?Emendas?\s+Constitucionais?/i.test(block.text.trim()) ||
+                /^\(?\s*Vide\s+(?:Emenda|Lei|Decreto|Regulamento|ADIN|ADI|ADC|Arguição|Súmula)/i.test(block.text.trim()) ||
+                /^\(?\s*Vide\s+.*Vig[êe]ncia/i.test(block.text.trim())
+              ) {
                 return null;
               }
 
@@ -2336,7 +2357,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
         </main>
 
         {/* Zone 3: Right Collapsible Drawer */}
-        {rightDrawerOpen && (
+        {!isPrinting && rightDrawerOpen && (
           <RightDrawer
             activeTab={rightDrawerTab}
             onTabChange={setRightDrawerTab}
@@ -2384,25 +2405,27 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
       </div>
 
       {/* Peeking UI & Pro Plans Lateral Drawer */}
-      <ProDrawerModal
-        isOpen={proDrawerOpen}
-        featureKey={proDrawerFeatureKey}
-        appearance={appearance}
-        authSession={authSession}
-        isPro={isPro}
-        isPcd={isPcd}
-        onClose={() => setProDrawerOpen(false)}
-        onAuthChange={refreshAuthAndPermissions}
-        onPcdChange={(enabled) => {
-          setIsPcd(enabled);
-          const nextApp = { ...appearance, isPcdAudioAccess: enabled };
-          setAppearance(nextApp);
-          saveAppearanceSettings(nextApp);
-        }}
-      />
+      {!isPrinting && (
+        <ProDrawerModal
+          isOpen={proDrawerOpen}
+          featureKey={proDrawerFeatureKey}
+          appearance={appearance}
+          authSession={authSession}
+          isPro={isPro}
+          isPcd={isPcd}
+          onClose={() => setProDrawerOpen(false)}
+          onAuthChange={refreshAuthAndPermissions}
+          onPcdChange={(enabled) => {
+            setIsPcd(enabled);
+            const nextApp = { ...appearance, isPcdAudioAccess: enabled };
+            setAppearance(nextApp);
+            saveAppearanceSettings(nextApp);
+          }}
+        />
+      )}
 
       {/* Law Cross-Reference Graph Modal (Opened via Hover Card on Inline Article Mentions) */}
-      {showCrossRefModal && (
+      {!isPrinting && showCrossRefModal && (
         <CrossReferenceGraphModal
           lawEpigraph={doc.epigraph}
           articles={doc.articles}
@@ -2416,7 +2439,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
       )}
 
       {/* Keyboard Shortcuts Modal */}
-      {showShortcutsModal && (
+      {!isPrinting && showShortcutsModal && (
         <ShortcutsModal
           isOpen={showShortcutsModal}
           onClose={() => setShowShortcutsModal(false)}

@@ -236,7 +236,7 @@ const PopupApp: React.FC = () => {
             }}
             className="mt-0.5 w-4 h-4 rounded accent-emerald-500 cursor-pointer shrink-0"
           />
-          <span className="text-emerald-300 font-medium leading-snug">
+          <span className="text-emerald-300 font-bold leading-snug whitespace-normal break-words">
             Sou pessoa com deficiência visual e necessito de leitura por áudio (Gratuito)
           </span>
         </label>

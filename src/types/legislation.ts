@@ -186,6 +186,9 @@ export interface StudyProgressEntry {
   readArticleIds: string[];
   targetDays: number;
   dailyGoalArticles: number;
+  studyDaysOfWeek?: number[]; // [1, 2, 3, 4, 5] (1 = Seg, ..., 7 = Dom)
+  showReadBadges?: boolean; // Exibir indicador de "Lido" nos artigos
+  showOabBadges?: boolean; // Exibir indicador de "Incidência da OAB" nos artigos
   startedAt: string;
   updatedAt: string;
 }

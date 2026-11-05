@@ -39,7 +39,8 @@ function injectWebFonts() {
     @media print {
       /* Oculta todos os nós originais do Planalto fora do host moderno para evitar sobreposição de texto */
       body.planalto-moderno-active > :not(#planalto-moderno-host),
-      body.planalto-print-active > :not(#planalto-moderno-host) {
+      body.planalto-print-active > :not(#planalto-moderno-host),
+      #planalto-moderno-host ~ * {
         display: none !important;
         visibility: hidden !important;
         height: 0 !important;
@@ -90,6 +91,7 @@ function injectWebFonts() {
 
 const ContentController: React.FC<{ doc: LegislationDocument }> = ({ doc }) => {
   const [modernActive, setModernActive] = useState(true);
+  const [isPrinting, setIsPrinting] = useState(false);
 
   useEffect(() => {
     const prevOverflow = document.documentElement.style.overflow;
@@ -109,6 +111,7 @@ const ContentController: React.FC<{ doc: LegislationDocument }> = ({ doc }) => {
 
     // Ao imprimir, destrava overflow de html e body e oculta nós originais do Planalto
     const handleBeforePrint = () => {
+      setIsPrinting(true);
       document.documentElement.style.overflow = 'visible';
       document.body.style.overflow = 'visible';
       document.documentElement.classList.add('planalto-print-active');
@@ -126,6 +129,7 @@ const ContentController: React.FC<{ doc: LegislationDocument }> = ({ doc }) => {
     };
 
     const handleAfterPrint = () => {
+      setIsPrinting(false);
       document.documentElement.classList.remove('planalto-print-active');
       document.body.classList.remove('planalto-print-active');
 
@@ -169,9 +173,16 @@ const ContentController: React.FC<{ doc: LegislationDocument }> = ({ doc }) => {
   }
 
   return (
-    <div className="fixed inset-0 z-[2147483646] planalto-content-wrapper">
+    <div
+      className={
+        isPrinting
+          ? 'relative w-full h-auto min-h-0 overflow-visible planalto-content-wrapper'
+          : 'fixed inset-0 z-[2147483645] planalto-content-wrapper'
+      }
+    >
       <PlanaltoReaderApp
         doc={doc}
+        isPrinting={isPrinting}
         onToggleOriginalView={() => setModernActive(false)}
       />
     </div>

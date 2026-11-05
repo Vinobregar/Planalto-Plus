@@ -120,7 +120,7 @@ export async function loadOrGenerateLawPodcast(doc) {
           storagePath,
           audioUrl: publicStorageUrl,
           script: scriptData,
-          modelUsed: 'gemini-3.8-flash-1m + pt-BR-Wavenet-B (Cache Global)',
+          modelUsed: 'Voz Neural WaveNet (Cache Global)',
         };
       }
 
@@ -152,7 +152,7 @@ export async function loadOrGenerateLawPodcast(doc) {
               '2. Extensivamente explicação dos conceitos',
               '3. Top 7 artigos Mais Cobrados em Prova e mais importantes',
             ],
-            fullLawText: fullLawText.slice(0, 900000), // Janela de até 1M tokens do Gemini Flash
+            fullLawText: fullLawText.slice(0, 900000),
           }),
         }
       );
@@ -165,7 +165,7 @@ export async function loadOrGenerateLawPodcast(doc) {
           storagePath,
           audioUrl: data.audioUrl || publicStorageUrl,
           script: data.script || scriptData,
-          modelUsed: 'gemini-3.8-flash (1M context) + Google Cloud TTS WaveNet',
+          modelUsed: 'Voz Neural WaveNet',
         };
       }
     } catch {

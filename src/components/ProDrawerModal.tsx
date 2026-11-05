@@ -18,6 +18,7 @@ import {
   loginWithMagicLink,
   logout,
   setPcdUserStatus,
+  setDebugProOverride,
   activateProSubscription,
 } from '../services/auth.js';
 
@@ -172,9 +173,7 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
             <div className="space-y-1">
               <h3 className="font-bold text-sm">Planalto Plus PRO</h3>
               <p className="text-[11.5px] opacity-80 leading-relaxed max-w-xs mx-auto">
-                Desbloqueie o Podcast Panorâmico da Lei, Trilha com meta diária,
-                Mapeador de Incidência OAB/FGV, Destaques Multi-Leis de Editais
-                e Sincronização em Nuvem.
+                Conheça todos os recursos avançados na página oficial de planos.
               </p>
             </div>
 
@@ -190,17 +189,13 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
 
           {/* Ativação Direta e Gratuita de Acessibilidade PcD */}
           <div
-            style={{
-              backgroundColor: surface.cardBg,
-              borderColor: surface.borderColor,
-            }}
-            className="p-3.5 rounded-2xl border border-l-4 border-l-emerald-500 space-y-2"
+            className="p-3.5 rounded-2xl border-2 border-emerald-700 dark:border-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-100 space-y-2 whitespace-normal break-words"
           >
-            <div className="flex items-center gap-1.5 font-bold text-emerald-600 dark:text-emerald-400">
+            <div className="flex items-center gap-1.5 font-bold text-emerald-900 dark:text-emerald-200">
               <Volume2 className="w-4 h-4 shrink-0" />
               <span>Acessibilidade Gratuita</span>
             </div>
-            <p className="text-[11px] opacity-85 leading-relaxed">
+            <p className="text-[11px] leading-relaxed font-medium">
               Pessoas com deficiência visual têm acesso gratuito e ilimitado à
               leitura por áudio de qualquer artigo utilizando síntese nativa de
               latência zero.
@@ -210,16 +205,56 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
                 type="checkbox"
                 checked={isPcd}
                 onChange={(e) => handleTogglePcd(e.target.checked)}
-                className="mt-0.5 rounded accent-emerald-600 w-4 h-4 shrink-0"
+                className="mt-0.5 rounded accent-emerald-600 w-4 h-4 shrink-0 cursor-pointer"
               />
-              <span className="text-xs font-semibold">
+              <span className="text-xs font-bold leading-snug break-words">
                 Sou pessoa com deficiência visual e necessito de leitura por
                 áudio
               </span>
             </label>
           </div>
 
-          {/* Autenticação Supabase (Google OAuth 1-Click + Magic Link) */}
+          {/* Modo Desenvolvedor / Debug PRO */}
+          <div
+            style={{
+              backgroundColor: surface.cardBg,
+              borderColor: surface.borderColor,
+            }}
+            className="p-3.5 rounded-2xl border border-dashed border-amber-500/40 bg-amber-500/5 space-y-2"
+          >
+            <div className="flex items-center justify-between">
+              <span className="font-bold text-xs flex items-center gap-1.5 text-amber-600 dark:text-amber-400">
+                <span>🛠️ Modo de Teste PRO (Debug)</span>
+              </span>
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                isPro
+                  ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300'
+                  : 'bg-black/5 dark:bg-white/10 opacity-70'
+              }`}>
+                {isPro ? 'ATIVO' : 'DESATIVADO'}
+              </span>
+            </div>
+            <p className="text-[11px] opacity-80 leading-relaxed">
+              Ativação local para testes e conferência imediata de todos os recursos PRO sem necessidade de login.
+            </p>
+            <button
+              type="button"
+              onClick={async () => {
+                await setDebugProOverride(!isPro);
+                onAuthChange();
+              }}
+              className={`w-full py-1.5 px-3 rounded-xl border font-semibold text-[11px] flex items-center justify-center gap-1.5 transition-colors cursor-pointer ${
+                isPro
+                  ? 'border-rose-500/30 bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400'
+                  : 'border-emerald-500/40 bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-700 dark:text-emerald-300'
+              }`}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span>{isPro ? 'Desativar Modo de Teste PRO' : 'Ativar Modo PRO (Debug / Teste)'}</span>
+            </button>
+          </div>
+
+          {/* Autenticação (Google OAuth 1-Click + Magic Link) */}
           <div
             style={{
               backgroundColor: surface.cardBg,
@@ -230,7 +265,7 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
             <div className="flex items-center justify-between">
               <span className="font-bold text-xs flex items-center gap-1.5">
                 <Cloud className="w-4 h-4 text-indigo-500" />
-                <span>Conta & Sincronização em Nuvem (Supabase)</span>
+                <span>Conta & Sincronização em Nuvem</span>
               </span>
               {authSession && (
                 <span

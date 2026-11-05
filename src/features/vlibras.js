@@ -9,6 +9,33 @@
 const VLIBRAS_CONTAINER_ID = 'planalto-plus-vlibras-container';
 const VLIBRAS_SCRIPT_ID = 'planalto-plus-vlibras-script';
 const VLIBRAS_CLOSE_BTN_ID = 'planalto-vlibras-close-btn';
+const VLIBRAS_STYLE_ID = 'planalto-vlibras-global-style';
+
+function injectVlibrasTopZIndexStyles() {
+  if (typeof document === 'undefined') return;
+  if (document.getElementById(VLIBRAS_STYLE_ID)) return;
+  const style = document.createElement('style');
+  style.id = VLIBRAS_STYLE_ID;
+  style.textContent = `
+    #vlibras-access-wrapper,
+    #vlibras-access,
+    #vlibras-app-root,
+    [vw],
+    #${VLIBRAS_CLOSE_BTN_ID} {
+      z-index: 2147483647 !important;
+      position: fixed !important;
+    }
+    #vlibras-access-wrapper {
+      pointer-events: none !important;
+    }
+    #vlibras-access,
+    #vlibras-button,
+    #${VLIBRAS_CLOSE_BTN_ID} {
+      pointer-events: auto !important;
+    }
+  `;
+  document.head.appendChild(style);
+}
 
 // URL local empacotada na extensão para conformidade estrita com a Content Security Policy (chrome-extension://)
 function getExtensionVlibrasUrl() {
@@ -90,6 +117,8 @@ function attachVlibrasCloseButton(onCloseCallback) {
 export function syncVlibrasWidget(enabled = true, onHideCallback) {
   if (typeof document === 'undefined' || !document.body) return;
 
+  injectVlibrasTopZIndexStyles();
+
   const existingCloseBtn = document.getElementById(VLIBRAS_CLOSE_BTN_ID);
 
   if (!enabled) {
@@ -166,9 +195,9 @@ export function syncVlibrasWidget(enabled = true, onHideCallback) {
       }
     };
     script.onerror = () => {
-      // Fallback para vlibras.gov.br caso o recurso primário falhe
+      if (localUrl) return; // Se o local falhou, não tenta cdn bloqueado por CSP
       const fallbackScript = document.createElement('script');
-      fallbackScript.src = localUrl ? VLIBRAS_PLUGIN_CDN : 'https://vlibras.gov.br/app/vlibras-plugin.js';
+      fallbackScript.src = VLIBRAS_PLUGIN_CDN;
       fallbackScript.async = true;
       document.head.appendChild(fallbackScript);
     };

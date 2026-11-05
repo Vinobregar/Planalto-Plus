@@ -337,6 +337,14 @@ export function parsePlanaltoDom(
       ) {
         continue;
       }
+      // Skip top cross-reference links that are already gathered into headerLinks (e.g. "Vide Emenda...", "Emendas Constitucionais...")
+      if (
+        /^\(?\s*(?:Vide\s+)?Emendas?\s+Constitucionais?/i.test(rawText.trim()) ||
+        /^\(?\s*Vide\s+(?:Emenda|Lei|Decreto|Regulamento|ADIN|ADI|ADC|Arguição|Súmula)/i.test(rawText.trim()) ||
+        /^\(?\s*Vide\s+.*Vig[êe]ncia/i.test(rawText.trim())
+      ) {
+        continue;
+      }
     }
 
     const revoked = isElementRevoked(el, rawText);

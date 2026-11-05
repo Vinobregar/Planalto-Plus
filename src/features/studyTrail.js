@@ -60,9 +60,19 @@ export function calculateStudyTrailStats(doc, progressEntry) {
   const readCount = activeArticles.filter((a) => readSet.has(a.id)).length;
   const remainingArticles = Math.max(0, totalArticles - readCount);
   const targetDays = Math.max(1, Number(progressEntry?.targetDays) || 15);
+  
+  // Dias da semana ativos (1 = Seg, 2 = Ter, ..., 7 = Dom). Default: todos os 7 dias
+  const studyDaysOfWeek = Array.isArray(progressEntry?.studyDaysOfWeek) && progressEntry.studyDaysOfWeek.length > 0
+    ? progressEntry.studyDaysOfWeek
+    : [1, 2, 3, 4, 5, 6, 7];
+  
+  // Proporção de dias de estudo na semana
+  const daysPerWeek = Math.max(1, Math.min(7, studyDaysOfWeek.length));
+  const estimatedStudySessions = Math.max(1, Math.round((targetDays / 7) * daysPerWeek));
+
   const dailyGoalArticles = Math.max(
     1,
-    Math.ceil(totalArticles / targetDays)
+    Math.ceil(remainingArticles / estimatedStudySessions)
   );
 
   // Conta palavras restantes para estimativa realista de tempo de leitura
@@ -81,7 +91,7 @@ export function calculateStudyTrailStats(doc, progressEntry) {
   );
   const estimatedDailyMinutes = Math.max(
     1,
-    Math.ceil(estimatedRemainingMinutes / targetDays)
+    Math.ceil(estimatedRemainingMinutes / estimatedStudySessions)
   );
   const percentage = Math.min(
     100,
@@ -95,6 +105,10 @@ export function calculateStudyTrailStats(doc, progressEntry) {
     percentage,
     targetDays,
     dailyGoalArticles,
+    studyDaysOfWeek,
+    daysPerWeek,
+    showReadBadges: Boolean(progressEntry?.showReadBadges),
+    showOabBadges: Boolean(progressEntry?.showOabBadges),
     estimatedRemainingMinutes,
     estimatedDailyMinutes,
   };
@@ -137,6 +151,23 @@ export async function markArticleAsRead(doc, currentProgress, articleId) {
     ...base,
     lawId,
     readArticleIds: [...base.readArticleIds, articleId],
+    updatedAt: new Date().toISOString(),
+  };
+
+  await syncStudyProgressWithCloud(lawId, next);
+  return next;
+}
+
+/**
+ * Atualiza opções da trilha de estudos (ex: exibição de badges OAB/Lido e dias da semana)
+ */
+export async function updateStudyTrailSettings(doc, currentProgress, partialSettings) {
+  const lawId = doc?.lawId || 'default';
+  const base = currentProgress || (await loadStudyTrailProgress(doc));
+  const next = {
+    ...base,
+    lawId,
+    ...partialSettings,
     updatedAt: new Date().toISOString(),
   };
 

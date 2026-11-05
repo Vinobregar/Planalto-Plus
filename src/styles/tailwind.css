@@ -119,6 +119,8 @@
   .planalto-content-wrapper,
   .planalto-app-root,
   .planalto-app-root > div,
+  .planalto-workspace-zone,
+  .planalto-main-scroll,
   main,
   main > div,
   div[class*="overflow-"],
@@ -144,7 +146,9 @@
   }
 
   /* Outer ContentController wrapper must not be position: fixed */
-  div.fixed.inset-0 {
+  div.fixed.inset-0,
+  div.fixed,
+  .fixed.inset-0 {
     position: static !important;
     inset: auto !important;
     width: 100% !important;

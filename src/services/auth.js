@@ -178,10 +178,39 @@ export async function getAuthSession() {
   return session;
 }
 
+const PRO_DEBUG_KEY = 'planalto_debug_pro_override';
+
 /**
- * Verifica se o usuário possui assinatura PRO ativa (respeitando cache local com TTL de 24h)
+ * Retorna o estado do modo de teste / debug PRO (se definido)
+ */
+export async function getDebugProOverride() {
+  return await getStorageValue(PRO_DEBUG_KEY, null);
+}
+
+/**
+ * Ativa ou desativa o modo PRO diretamente para desenvolvimento, testes e debug
+ */
+export async function setDebugProOverride(enabled) {
+  if (enabled === null) {
+    const storage = getStorageArea();
+    if (storage && typeof storage.remove === 'function') {
+      await storage.remove(PRO_DEBUG_KEY);
+    } else {
+      localStorage.removeItem(PRO_DEBUG_KEY);
+    }
+    return;
+  }
+  await setStorageValue(PRO_DEBUG_KEY, Boolean(enabled));
+}
+
+/**
+ * Verifica se o usuário possui assinatura PRO ativa (respeitando modo debug e cache local com TTL de 24h)
  */
 export async function isProUser() {
+  const debugOverride = await getDebugProOverride();
+  if (debugOverride !== null && debugOverride !== undefined) {
+    return Boolean(debugOverride);
+  }
   const session = await getAuthSession();
   if (!session || !session.profile) return false;
   return session.profile.subscription_tier === 'pro';

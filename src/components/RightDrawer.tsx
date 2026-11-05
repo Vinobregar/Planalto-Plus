@@ -1,8 +1,9 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   AlertCircle,
   BookMarked,
   CheckCircle2,
+  Database,
   Download,
   ExternalLink,
   Eye,
@@ -61,6 +62,7 @@ import {
   getHighlightTagDisplayName,
   resolveHighlightTag,
 } from '../storage/storageService';
+import { getAICacheStats, clearAllAICache } from '../storage/indexedDBService';
 import {
   extractTextFromPdfFile,
   fileToBase64,
@@ -236,6 +238,19 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
   const [chatInput, setChatInput] = useState('');
   const [showKey, setShowKey] = useState(false);
   const [configSavedBanner, setConfigSavedBanner] = useState(false);
+  const [cacheStats, setCacheStats] = useState<{ count: number; estimatedSizeKb: number }>({ count: 0, estimatedSizeKb: 0 });
+
+  useEffect(() => {
+    if (aiSection === 'apikey') {
+      getAICacheStats().then(setCacheStats);
+    }
+  }, [aiSection]);
+
+  const handleClearCache = async () => {
+    await clearAllAICache();
+    const stats = await getAICacheStats();
+    setCacheStats(stats);
+  };
   const [selectedTagFilter, setSelectedTagFilter] = useState<string>('all');
   const [notesSearchQuery, setNotesSearchQuery] = useState('');
 
@@ -1242,6 +1257,37 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                     />
                   </div>
                 )}
+
+                {/* IndexedDB Cache Status & Actions */}
+                <div className="pt-3 border-t border-current/10 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-semibold uppercase tracking-wider opacity-75 flex items-center gap-1.5">
+                      <Database className="w-3.5 h-3.5 text-indigo-500" />
+                      <span>Cache Local IndexedDB</span>
+                    </span>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold">
+                      Ativo (0 tokens)
+                    </span>
+                  </div>
+                  <p className="text-[11px] opacity-70 leading-relaxed">
+                    Respostas doutrinárias e análises de jurisprudência já consultadas ficam salvas localmente no navegador para carregamento instantâneo sem gastar tokens da sua cota.
+                  </p>
+                  <div className="flex items-center justify-between pt-1">
+                    <span className="text-[10px] opacity-65 font-mono">
+                      {cacheStats.count} {cacheStats.count === 1 ? 'análise salva' : 'análises salvas'} (~{cacheStats.estimatedSizeKb} KB)
+                    </span>
+                    {cacheStats.count > 0 && (
+                      <button
+                        type="button"
+                        onClick={handleClearCache}
+                        className="text-[10px] font-semibold text-rose-500 hover:text-rose-600 hover:underline flex items-center gap-1 cursor-pointer"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                        <span>Esvaziar cache</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
 
                 <button
                   type="button"

@@ -10,6 +10,7 @@ import {
   QuizQuestion,
 } from '../types/legislation';
 import { getLawSearchKeywords } from '../storage/storageService';
+import { getAICache, setAICache } from '../storage/indexedDBService';
 
 export interface AIRequestPayload {
   config: AIConfig;
@@ -223,11 +224,31 @@ export function formatArticleFullText(article: ArticleBlock): string {
   return parts.join('\n');
 }
 
+export interface AICacheOptions {
+  forceRefresh?: boolean;
+  lawId?: string;
+}
+
 export async function explainArticleWithAI(
   config: AIConfig,
   lawEpigraph: string,
-  article: ArticleBlock
+  article: ArticleBlock,
+  options?: AICacheOptions
 ): Promise<string> {
+  const lawId = options?.lawId || 'default';
+
+  // Check high-capacity IndexedDB local cache first (0 tokens, 0ms)
+  if (!options?.forceRefresh) {
+    try {
+      const cached = await getAICache(lawId, article.id, 'explain');
+      if (cached && cached.content) {
+        return cached.content;
+      }
+    } catch {
+      // Fall through to AI execution if cache fails
+    }
+  }
+
   const systemPrompt =
     'Você é um professor especialista em Direito Brasileiro, preparação para OAB (FGV) e Concursos Públicos de alto nível (Magistratura, MP, Defensoria, Tribunais). Responda em português claro, didático e bem estruturado em Markdown.';
   const userPrompt = `Analise e explique detalhadamente o seguinte dispositivo legal da norma "${lawEpigraph}":
@@ -242,14 +263,41 @@ Estruture sua resposta exatamente com os seguintes tópicos:
 3. **Como Cai na OAB e Concursos (Pontos Críticos & Exceções)**: Principais inversões de palavras (ex.: prazos, "salvo", "vedado", competência) cobradas por FGV, Cebraspe e FCC.
 4. **Exemplo Prático**: Um caso concreto curto ilustrando a aplicação do dispositivo.`;
 
-  return runAICompletion({ config, systemPrompt, userPrompt });
+  const reply = await runAICompletion({ config, systemPrompt, userPrompt });
+
+  // Save to IndexedDB cache asynchronously
+  setAICache(
+    lawId,
+    article.id,
+    'explain',
+    reply,
+    config.provider,
+    config.models[config.provider]
+  ).catch(() => {});
+
+  return reply;
 }
 
 export async function summarizeArticleJurisprudenceWithAI(
   config: AIConfig,
   lawEpigraph: string,
-  article: ArticleBlock
+  article: ArticleBlock,
+  options?: AICacheOptions
 ): Promise<string> {
+  const lawId = options?.lawId || 'default';
+
+  // Check high-capacity IndexedDB local cache first (0 tokens, 0ms)
+  if (!options?.forceRefresh) {
+    try {
+      const cached = await getAICache(lawId, article.id, 'jurisprudence');
+      if (cached && cached.content) {
+        return cached.content;
+      }
+    } catch {
+      // Fall through to AI execution if cache fails
+    }
+  }
+
   const systemPrompt =
     'Você é um pesquisador jurídico especialista em jurisprudência dos Tribunais Superiores brasileiros (STF e STJ). Seja rigoroso, cite apenas Súmulas, Temas de Repercussão Geral, Recursos Repetitivos ou Informativos reais e consolidados.';
   const userPrompt = `Apresente o panorama jurisprudencial (STF e STJ) aplicável ao seguinte artigo da norma "${lawEpigraph}":
@@ -263,7 +311,19 @@ Inclua:
 2. **Teses e Entendimentos Consolidados (STF / STJ)** sobre a interpretação deste artigo.
 3. **Termos de Busca Recomendados** para pesquisa avançada no STF/STJ/Jusbrasil.`;
 
-  return runAICompletion({ config, systemPrompt, userPrompt });
+  const reply = await runAICompletion({ config, systemPrompt, userPrompt });
+
+  // Save to IndexedDB cache asynchronously
+  setAICache(
+    lawId,
+    article.id,
+    'jurisprudence',
+    reply,
+    config.provider,
+    config.models[config.provider]
+  ).catch(() => {});
+
+  return reply;
 }
 
 export const DEFAULT_QUIZ_PARAMS: QuizGenerationParams = {

@@ -64,6 +64,7 @@ import {
   sendLegalChatWithAI,
   summarizeArticleJurisprudenceWithAI,
 } from '../services/aiService';
+import { getAICache } from '../storage/indexedDBService';
 import { TocSidebar } from './TocSidebar';
 import { ShortcutsModal } from './ShortcutsModal';
 import { normalizeArticleNumberKey } from '../utils/crossReferenceGraph';
@@ -577,12 +578,39 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
     scrollToElementId(headingId);
   };
 
-  // AI Actions
-  const handleExplainArticle = async (article: ArticleBlock) => {
+  // AI Actions (Integrated with zero-token IndexedDB local cache)
+  const handleExplainArticle = async (article: ArticleBlock, forceRefresh = false) => {
     setFocusedArticleId(article.id);
     setRightDrawerOpen(true);
     setRightDrawerTab('chat');
     setAiError(null);
+
+    // 1. Check zero-latency IndexedDB local cache first (0 tokens)
+    if (!forceRefresh) {
+      try {
+        const cached = await getAICache(doc.lawId, article.id, 'explain');
+        if (cached && cached.content) {
+          const userMsg: ChatMessage = {
+            id: `msg-${Date.now()}-u`,
+            role: 'user',
+            content: `Explique detalhadamente o ${article.label} com foco em doutrina e provas da OAB / Concursos.`,
+            articleContext: article.label,
+            timestamp: new Date().toISOString(),
+          };
+          const assistantMsg: ChatMessage = {
+            id: `msg-${Date.now()}-a`,
+            role: 'assistant',
+            content: `${cached.content}\n\n> ⚡ *Resposta carregada instantaneamente do Cache Local IndexedDB (0 tokens gastos).*`,
+            articleContext: article.label,
+            timestamp: new Date().toISOString(),
+          };
+          setChatMessages((prev) => [...prev, userMsg, assistantMsg]);
+          return;
+        }
+      } catch {
+        // Fall through to AI execution
+      }
+    }
 
     const hasKey = Boolean(aiConfig.apiKeys[aiConfig.provider]?.trim());
     if (!hasKey) {
@@ -607,7 +635,8 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
       const reply = await explainArticleWithAI(
         aiConfig,
         doc.epigraph,
-        article
+        article,
+        { forceRefresh, lawId: doc.lawId }
       );
       const assistantMsg: ChatMessage = {
         id: `msg-${Date.now()}-a`,
@@ -624,11 +653,38 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
     }
   };
 
-  const handleSummarizeJurisprudence = async (article: ArticleBlock) => {
+  const handleSummarizeJurisprudence = async (article: ArticleBlock, forceRefresh = false) => {
     setFocusedArticleId(article.id);
     setRightDrawerOpen(true);
     setRightDrawerTab('chat');
     setAiError(null);
+
+    // 1. Check zero-latency IndexedDB local cache first (0 tokens)
+    if (!forceRefresh) {
+      try {
+        const cached = await getAICache(doc.lawId, article.id, 'jurisprudence');
+        if (cached && cached.content) {
+          const userMsg: ChatMessage = {
+            id: `msg-${Date.now()}-u`,
+            role: 'user',
+            content: `Sintetize as súmulas e a jurisprudência dominante do STF e STJ sobre o ${article.label}.`,
+            articleContext: article.label,
+            timestamp: new Date().toISOString(),
+          };
+          const assistantMsg: ChatMessage = {
+            id: `msg-${Date.now()}-a`,
+            role: 'assistant',
+            content: `${cached.content}\n\n> ⚡ *Jurisprudência carregada instantaneamente do Cache Local IndexedDB (0 tokens gastos).*`,
+            articleContext: article.label,
+            timestamp: new Date().toISOString(),
+          };
+          setChatMessages((prev) => [...prev, userMsg, assistantMsg]);
+          return;
+        }
+      } catch {
+        // Fall through to AI execution
+      }
+    }
 
     const hasKey = Boolean(aiConfig.apiKeys[aiConfig.provider]?.trim());
     if (!hasKey) {
@@ -653,7 +709,8 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
       const reply = await summarizeArticleJurisprudenceWithAI(
         aiConfig,
         doc.epigraph,
-        article
+        article,
+        { forceRefresh, lawId: doc.lawId }
       );
       const assistantMsg: ChatMessage = {
         id: `msg-${Date.now()}-a`,

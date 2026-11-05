@@ -46,7 +46,7 @@
     }
 
     .container {
-      max-width: 1080px;
+      max-width: 1160px;
       margin: 0 auto;
       padding: 0 1.25rem;
     }
@@ -135,8 +135,8 @@
     /* PRICING GRID */
     .pricing-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
-      gap: 1.25rem;
+      grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
+      gap: 1.15rem;
       margin-bottom: 5rem;
       align-items: stretch;
     }
@@ -705,7 +705,7 @@
             <li><span class="icon-check">✓</span> Grifos e notas locais</li>
             <li><span class="icon-check">✓</span> Exportação Anki e Markdown</li>
             <li><span class="icon-check">✓</span> IA com chave própria</li>
-            <li class="disabled"><span class="icon-cross">✕</span> Podcast da Lei</li>
+            <li class="disabled"><span class="icon-cross">✕</span> Podcast/Resumo em Áudio Cloud TTS</li>
             <li class="disabled"><span class="icon-cross">✕</span> "Pergunte à Lei"</li>
             <li class="disabled"><span class="icon-cross">✕</span> Mapeador de Incidência OAB</li>
             <li class="disabled"><span class="icon-cross">✕</span> Trilha do Edital</li>
@@ -728,7 +728,7 @@
           </div>
           <ul class="plan-features">
             <li><span class="icon-check">✓</span> <strong>Tudo do Plano Gratuito</strong></li>
-            <li><span class="icon-check">✓</span> <strong>Podcast da Lei</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Podcast/Resumo por Áudio Cloud TTS</strong></li>
             <li><span class="icon-check">✓</span> <strong>"Pergunte à Lei"</strong></li>
             <li><span class="icon-check">✓</span> <strong>Mapeador de Incidência OAB</strong></li>
             <li><span class="icon-check">✓</span> <strong>Trilha do Edital</strong></li>
@@ -754,7 +754,7 @@
           </div>
           <ul class="plan-features">
             <li><span class="icon-check">✓</span> <strong>Tudo do Plano Gratuito</strong></li>
-            <li><span class="icon-check">✓</span> <strong>Podcast da Lei</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Podcast/Resumo por Áudio Cloud TTS</strong></li>
             <li><span class="icon-check">✓</span> <strong>"Pergunte à Lei"</strong></li>
             <li><span class="icon-check">✓</span> <strong>Mapeador de Incidência OAB</strong></li>
             <li><span class="icon-check">✓</span> <strong>Trilha do Edital</strong></li>
@@ -763,6 +763,32 @@
             <li><span class="icon-check">✓</span> <strong>IA Pronta sem Configuração</strong></li>
           </ul>
           <a href="#assinar" class="btn-plan btn-primary">Assinar Anual (R$ 10/mês)</a>
+        </div>
+
+        <!-- PLANO 4: PRO VITALÍCIO -->
+        <div class="plan-card">
+          <span class="plan-tag" style="background: #334155;">Acesso Único • Sem Mensalidades</span>
+          <div class="plan-header">
+            <h3 class="plan-name">Pro Vitalício</h3>
+            <p class="plan-description">Acesso permanente a todas as funções atuais e futuras, sem renovações.</p>
+          </div>
+          <div class="plan-price-wrap">
+            <span class="plan-currency">R$</span>
+            <span class="plan-price">247</span>
+            <span class="plan-period">/ pagamento único</span>
+            <span class="plan-badge-saving">Em até 12x</span>
+          </div>
+          <ul class="plan-features">
+            <li><span class="icon-check">✓</span> <strong>Tudo do Plano Gratuito</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Podcast/Resumo por Áudio Cloud TTS</strong></li>
+            <li><span class="icon-check">✓</span> <strong>"Pergunte à Lei"</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Mapeador de Incidência OAB</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Trilha do Edital</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Sincronização em Nuvem</strong></li>
+            <li><span class="icon-check">✓</span> <strong>Analisador de Editais em PDF</strong></li>
+            <li><span class="icon-check">✓</span> <strong>IA Pronta sem Configuração</strong></li>
+          </ul>
+          <a href="#assinar" class="btn-plan">Garantir Acesso Vitalício</a>
         </div>
 
       </div>
@@ -780,15 +806,15 @@
         <!-- 1. PODCAST DA LEI -->
         <div class="demo-card">
           <div>
-            <span class="demo-badge">Áudio da Legislação</span>
-            <h3 class="demo-heading">1. Podcast da Lei (Áudio Neural)</h3>
+            <span class="demo-badge">Áudio Cloud TTS</span>
+            <h3 class="demo-heading">1. Podcast & Resumo da Lei (Cloud TTS)</h3>
             <p class="demo-text">
-              Escute os artigos da lei e suas notas com síntese de voz de alta fidelidade. Ideal para aproveitar o tempo de deslocamento ou descanso visual da tela.
+              Escute os artigos na íntegra e resumos comentados sintetizados em alta fidelidade com vozes neurais brasileiras do Google Cloud TTS. Ideal para transformar horas de deslocamento e descanso de tela em rendimento de estudo.
             </p>
             <ul class="demo-bullets">
-              <li>Vozes neurais brasileiras com pontuação jurídica correta</li>
-              <li>Controle de velocidade (1.0x, 1.25x, 1.5x e 2.0x)</li>
-              <li>Opção de ouvir apenas a letra de lei ou resumos comentados</li>
+              <li>Vozes neurais WaveNet brasileiras com pontuação e cadência jurídica precisa</li>
+              <li>Resumo em áudio com explicação dos termos-chave do artigo</li>
+              <li>Controle de velocidade (0.75x a 2.0x) e player minimalista integrado</li>
             </ul>
           </div>
           <div class="mockup-frame">

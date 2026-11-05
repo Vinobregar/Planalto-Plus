@@ -1,10 +1,15 @@
 # Chrome Web Store Listing — Planalto Plus
 
 > Last Updated: 2026-11-05  
-> Version: 1.0.11  
+> Version: 1.0.12  
 > Package: `dist/planalto-moderno-chrome.zip` (772 KB)
 
 ---
+
+## Changelog v1.0.12
+• Cache Local de Alta Capacidade com IndexedDB: armazenamento permanente e de latência zero para análises doutrinárias e panoramas de jurisprudência (STF/STJ) já consultados.
+• Economia de Cotas e Tokens: artigos já explicados abrem instantaneamente (0ms e 0 tokens consumidos), mesmo sem conexão à internet.
+• Painel de Controle de Cache: visualização do total de análises salvas e tamanho estimado em KB na aba Chave API, com opção de esvaziamento em 1 clique.
 
 ## Changelog v1.0.11
 • Desmarcação Imediata ao Limpar a Busca: ao apagar os termos na barra de pesquisa superior ou no sumário (seja com backspace, seleção ou botão limpar), todos os destaques nos artigos são instantaneamente removidos e a norma retorna ao estado de leitura limpa.

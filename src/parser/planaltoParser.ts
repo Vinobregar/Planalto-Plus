@@ -3,6 +3,7 @@ import {
   ArticleRubric,
   ArticleSummary,
   DocumentBlock,
+  HeaderLink,
   HeadingLevel,
   LegislationDocument,
   SubClause,
@@ -32,13 +33,14 @@ function cleanWhitespace(text: string): string {
 export function normalizeLegalOrdinals(text: string): string {
   return cleanWhitespace(text)
     .replace(
-      /\b(Art\.?\s*\d+)\s*(?:o|º|°)(?![a-zA-ZáàâãéêíóôõúçÁÀÂÃÉÊÍÓÔÕÚÇ])/gi,
+      /\b(Art(?:igo|\.)?\s*\d+)\.?\s*(?:o|º|°)(?![a-zA-ZáàâãéêíóôõúçÁÀÂÃÉÊÍÓÔÕÚÇ])/gi,
       '$1º'
     )
     .replace(
-      /(§\s*\d+)\s*(?:o|º|°)(?![a-zA-ZáàâãéêíóôõúçÁÀÂÃÉÊÍÓÔÕÚÇ])/gi,
+      /(§\s*\d+)\.?\s*(?:o|º|°)(?![a-zA-ZáàâãéêíóôõúçÁÀÂÃÉÊÍÓÔÕÚÇ])/gi,
       '$1º'
-    );
+    )
+    .replace(/\b(Art(?:igo|\.)?\s*\d+)\s*-\s*([A-Z])\b/gi, '$1-$2');
 }
 
 /**
@@ -193,12 +195,21 @@ export function parsePlanaltoDom(
   const container =
     'body' in root && root.body ? root.body : (root as HTMLElement);
   const rawParagraphs = Array.from(
-    container.querySelectorAll('p, div.artigo, center > font, blockquote, h1, h2, h3')
+    container.querySelectorAll(
+      'p, div, blockquote, td, center, h1, h2, h3, li'
+    )
   ) as HTMLElement[];
 
   const elements = rawParagraphs.filter((el) => {
     if (el.closest('#planalto-moderno-host')) return false;
-    if (el.tagName === 'BLOCKQUOTE' && el.querySelector('p')) return false;
+    // Skip wrapper containers that contain other block elements to process only leaf content blocks
+    if (
+      el.querySelector(
+        'p, div, td, blockquote, table, center, h1, h2, h3, li'
+      )
+    ) {
+      return false;
+    }
     return true;
   });
 
@@ -216,6 +227,7 @@ export function parsePlanaltoDom(
   let expectingSubtitleFor: TocNode | null = null;
   let inAdct = false;
   let hasAdct = false;
+  let firstArticleEl: HTMLElement | null = null;
 
   const flushPendingRubricsToBlocks = () => {
     if (pendingRubrics.length === 0) return;
@@ -437,12 +449,15 @@ export function parsePlanaltoDom(
     }
     expectingSubtitleFor = null;
 
-    // 2. Check if this element starts an Article (Art. 1º, Art. 2º, Art. 100, Art. 14-A)
+    // 2. Check if this element starts an Article (Art. 1º, Art. 2º, Art. 100, Art. 14-A, Artigo 1º)
     // Only match -[A-Z] as part of the article number if there is NO space before '-' AND the letter is NOT followed by another letter!
     const artMatch = rawText.match(
-      /^Art\.?\s*(\d+(?:\.\d+)*(?:º|°)?(?:-[A-Z](?![a-zA-ZáàâãéêíóôõúçÁÀÂÃÉÊÍÓÔÕÚÇ]))?)\.?\s*(?:[-–—.]\s*)?(.*)$/i
+      /^Art(?:igo|\.)?\s*(\d+(?:\.\d+)*(?:\.?[º°o])?(?:-[A-Z](?![a-zA-ZáàâãéêíóôõúçÁÀÂÃÉÊÍÓÔÕÚÇ]))?)\.?\s*(?:[-–—.]\s*)?(.*)$/i
     );
     if (artMatch) {
+      if (!firstArticleEl) {
+        firstArticleEl = el;
+      }
       const rawNumber = artMatch[1].replace(/\./g, '');
       const formattedLabel = `Art. ${artMatch[1]}`;
       const bodyRaw = (artMatch[2] || '').replace(/^[-–—.]\s*/, '');
@@ -691,6 +706,20 @@ export function parsePlanaltoDom(
       if (!cleanText) {
         continue;
       }
+      // If the preceding article only had a label/number line without caput body, adopt this block as its caput
+      if (
+        currentArticle &&
+        !currentArticle.caputText &&
+        currentArticle.subClauses.length === 0
+      ) {
+        currentArticle.caputText = cleanText;
+        currentArticle.caputHtml = sanitizeInlineHtml(el, pageUrl);
+        if (note && !currentArticle.modificationNote) {
+          currentArticle.modificationNote = note;
+          if (url) currentArticle.modificationUrl = url;
+        }
+        continue;
+      }
       // Buffer short rubric lines so they attach to the exact next Article or SubClause
       if (cleanText.length <= 220) {
         pendingRubrics.push({
@@ -759,12 +788,79 @@ export function parsePlanaltoDom(
     });
   }
 
+  // Extract initial header hyperlinks (remissões, atos vinculados, etc.)
+  const headerLinks: HeaderLink[] = [];
+  const seenHeaderLinks = new Set<string>();
+  const allAnchors = Array.from(
+    container.querySelectorAll<HTMLAnchorElement>('a[href]')
+  );
+  for (const a of allAnchors) {
+    if (firstArticleEl) {
+      if (
+        firstArticleEl === a ||
+        firstArticleEl.contains(a) ||
+        Boolean(
+          firstArticleEl.compareDocumentPosition(a) &
+            Node.DOCUMENT_POSITION_FOLLOWING
+        )
+      ) {
+        break;
+      }
+    }
+
+    const anchorText = cleanWhitespace(a.textContent || '');
+    if (!anchorText || anchorText.length < 2) continue;
+
+    const parentBlock = a.closest('p, div, blockquote, tr, td, li');
+    const parentText = parentBlock
+      ? cleanWhitespace(parentBlock.textContent || '')
+      : '';
+    if (
+      /^Art\.?\s*\d+/i.test(parentText) ||
+      /^Art\.?\s*\d+/i.test(anchorText)
+    ) {
+      break;
+    }
+
+    if (epigraph && anchorText.toLowerCase() === epigraph.toLowerCase()) {
+      continue;
+    }
+    if (
+      /^(Presid[êe]ncia da Rep[úu]blica|Casa Civil|Subchefia|Secretaria-Geral|Bras[ãa]o|Texto\s+compilado)/i.test(
+        anchorText
+      )
+    ) {
+      continue;
+    }
+
+    const rawHref = a.getAttribute('href') || '';
+    if (!rawHref || rawHref.startsWith('javascript:')) continue;
+
+    let fullUrl = rawHref;
+    try {
+      fullUrl = new URL(rawHref, pageUrl).href;
+    } catch {
+      // Fallback to rawHref
+    }
+
+    const key = `${anchorText}:::${fullUrl}`;
+    if (!seenHeaderLinks.has(key)) {
+      seenHeaderLinks.add(key);
+      headerLinks.push({
+        id: `hlink-${headerLinks.length + 1}`,
+        text: anchorText,
+        url: fullUrl,
+      });
+    }
+  }
+
   return {
     lawId: normalizeLawId(pageUrl),
     url: pageUrl,
     epigraph: epigraph || document.title || 'Legislação Federal — Planalto',
     ementa,
     preambulo,
+    headerLinks,
     blocks,
     toc: rootToc,
     articles,

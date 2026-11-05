@@ -14,17 +14,44 @@ const ANNOTATIONS_PREFIX = 'planalto_moderno_annotations_v1:';
 
 export const DEFAULT_APPEARANCE: AppearanceSettings = {
   theme: 'light',
-  fontFamily: 'sans',
-  fontSize: 17,
-  lineHeight: 1.75,
-  paragraphSpacing: 16,
-  maxWidth: 820,
+  fontFamily: 'serif',
+  fontSize: 15,
+  lineHeight: 1.5,
+  paragraphSpacing: 8,
+  maxWidth: 880,
   compiledMode: true,
-  accentColor: '#6366f1',
+  accentColor: '#8b5cf6',
   hideAITools: false,
   sepiaIntensity: 50,
   darkIntensity: 100,
 };
+
+/**
+ * Computes appearance defaults scaled proportionally to the user's viewport resolution,
+ * using 1360x768 as the reference baseline. Accent color and font family stay default.
+ */
+export function computeProportionalAppearance(
+  viewportWidth?: number
+): AppearanceSettings {
+  const width =
+    viewportWidth ??
+    (typeof window !== 'undefined'
+      ? window.innerWidth || window.screen?.width || 1360
+      : 1360);
+
+  // Baseline width is 1360px
+  const ratio = Math.max(0.7, Math.min(1.6, width / 1360));
+
+  return {
+    ...DEFAULT_APPEARANCE,
+    accentColor: '#8b5cf6', // Violeta permanece como padrão
+    fontFamily: 'serif', // Merriweather permanece como padrão
+    fontSize: Math.round(15 * ratio),
+    paragraphSpacing: Math.max(4, Math.round(8 * ratio)),
+    lineHeight: Number((1.5 * Math.pow(ratio, 0.2)).toFixed(2)),
+    maxWidth: Math.round(880 * ratio),
+  };
+}
 
 export const DEFAULT_AI_CONFIG: AIConfig = {
   provider: 'gemini',
@@ -47,7 +74,7 @@ export const PRESET_TAG_SUGGESTIONS: string[] = [
   'Importante',
   'OAB',
   'Concursos',
-  'Pegadinha / Exceção',
+  'Exceção / Prazos',
   'Jurisprudência / Súmula',
   'Edital Prioritário',
 ];
@@ -473,7 +500,8 @@ async function setRaw<T>(key: string, value: T): Promise<void> {
 
 export async function loadAppearanceSettings(): Promise<AppearanceSettings> {
   const saved = await getRaw<Partial<AppearanceSettings>>(APPEARANCE_KEY, {});
-  const merged = { ...DEFAULT_APPEARANCE, ...saved };
+  const baseDefaults = computeProportionalAppearance();
+  const merged = { ...baseDefaults, ...saved };
   if (merged.fontFamily === 'mono') {
     merged.fontFamily = 'opendyslexic';
   }
@@ -841,7 +869,7 @@ export function exportFlashcardsToAnkiTxt(
   const headerLines = [
     '#separator:tab',
     '#html:true',
-    `#deck:Planalto Moderno::${safeDeckName}`,
+    `#deck:Planalto Plus::${safeDeckName}`,
     '#columns:Front\tBack\tTags',
     '#tags column:3',
   ];
@@ -876,7 +904,7 @@ export async function exportFlashcardsToAnkiApkg(
   lawTitle: string
 ): Promise<void> {
   const safeDeckName = lawTitle.replace(/[:\t\r\n]/g, ' ').trim();
-  const deckFullName = `Planalto Moderno::${safeDeckName}`;
+  const deckFullName = `Planalto Plus::${safeDeckName}`;
 
   const { AnkiExport } = await import('anki-apkg-export');
 

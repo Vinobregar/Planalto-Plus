@@ -4,9 +4,11 @@ import {
   BookOpen,
   Check,
   ExternalLink,
+  HelpCircle,
   KeyRound,
   Moon,
   Scale,
+  ShieldCheck,
   Sun,
   Sunset,
 } from 'lucide-react';
@@ -20,6 +22,7 @@ import {
 import {
   DEFAULT_AI_CONFIG,
   DEFAULT_APPEARANCE,
+  computeProportionalAppearance,
   loadAIConfig,
   loadAppearanceSettings,
   saveAIConfig,
@@ -54,8 +57,9 @@ const QUICK_LAWS = [
 ];
 
 const PopupApp: React.FC = () => {
-  const [appearance, setAppearance] =
-    useState<AppearanceSettings>(DEFAULT_APPEARANCE);
+  const [appearance, setAppearance] = useState<AppearanceSettings>(() =>
+    computeProportionalAppearance()
+  );
   const [aiConfig, setAiConfig] = useState<AIConfig>(DEFAULT_AI_CONFIG);
   const [saved, setSaved] = useState(false);
 
@@ -85,7 +89,7 @@ const PopupApp: React.FC = () => {
             <Scale className="w-4 h-4" />
           </div>
           <div>
-            <h1 className="font-bold text-sm leading-tight">Planalto Moderno</h1>
+            <h1 className="font-bold text-sm leading-tight">Planalto Plus</h1>
             <p className="text-[11px] text-slate-400">
               Leitura Jurídica, Notas & IA
             </p>
@@ -129,10 +133,42 @@ const PopupApp: React.FC = () => {
         className="p-3 rounded-xl bg-slate-800/60 border border-slate-800 space-y-2.5 text-xs"
       >
         <div className="flex items-center justify-between">
-          <span className="font-semibold flex items-center gap-1.5 text-indigo-400">
-            <KeyRound className="w-3.5 h-3.5" />
-            <span>Chave de API de IA</span>
-          </span>
+          <div className="flex items-center gap-1.5">
+            <span className="font-semibold flex items-center gap-1.5 text-indigo-400">
+              <KeyRound className="w-3.5 h-3.5" />
+              <span>Chave de API de IA</span>
+            </span>
+            <span className="relative group/popuptip inline-flex items-center">
+              <HelpCircle className="w-3.5 h-3.5 opacity-60 hover:opacity-100 cursor-pointer text-indigo-400" />
+              <div className="invisible opacity-0 group-hover/popuptip:visible group-hover/popuptip:opacity-100 transition-all duration-150 absolute left-0 top-full mt-1.5 w-72 p-3 rounded-xl border border-slate-700 bg-slate-900 text-slate-100 shadow-2xl text-[11px] font-normal leading-relaxed z-50 pointer-events-auto select-text before:absolute before:-top-2 before:left-0 before:right-0 before:h-2.5">
+                <div className="flex items-center gap-1.5 font-bold text-xs text-indigo-400 mb-1.5 border-b border-slate-700 pb-1">
+                  <KeyRound className="w-3 h-3" />
+                  <span>Sobre a Chave de API</span>
+                </div>
+                <div className="space-y-2">
+                  <div>
+                    <strong className="block text-indigo-300 font-semibold mb-0.5">O que é?</strong>
+                    <p className="opacity-90">Permite conectar a extensão à IA (Google Gemini, OpenAI, Claude) para tirar dúvidas, resumir artigos e criar questões.</p>
+                  </div>
+                  <div>
+                    <strong className="block text-emerald-400 font-semibold mb-0.5">Como obter?</strong>
+                    <p className="opacity-90 mb-1">Crie gratuitamente no Google AI Studio (recomendado, sem custo):</p>
+                    <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-semibold text-indigo-400 hover:underline">
+                      <span>Google AI Studio</span>
+                      <ExternalLink className="w-2.5 h-2.5" />
+                    </a>
+                  </div>
+                  <div className="pt-1.5 border-t border-slate-700 flex items-start gap-1.5">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="block text-emerald-400 font-semibold mb-0.5">Segura e 100% Local</strong>
+                      <p className="opacity-90">Sua chave é armazenada exclusivamente no seu navegador local e nunca é enviada a servidores intermediários.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </span>
+          </div>
           <select
             value={aiConfig.provider}
             onChange={(e) =>

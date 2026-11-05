@@ -1,5 +1,5 @@
 {
-  "name": "planalto-moderno-extension",
+  "name": "planalto-plus",
   "private": true,
   "version": "1.0.0",
   "description": "Modernizes www.planalto.gov.br legislation pages with a clean reader, hierarchical TOC, notes, highlights, jurisprudence search, and AI (Explanations, OAB/Concursos Quiz & Chat).",

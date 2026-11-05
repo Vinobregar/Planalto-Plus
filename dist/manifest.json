@@ -1,9 +1,9 @@
 {
   "manifest_version": 3,
-  "name": "Planalto Moderno — Leitura Jurídica & IA",
-  "short_name": "Planalto Moderno",
+  "name": "Planalto Plus — Leitura Jurídica & IA",
+  "short_name": "Planalto Plus",
   "version": "1.0.0",
-  "description": "Moderniza a visualização de leis no Planalto.gov.br com sumário hierárquico, grifos, notas, jurisprudência e IA para OAB e Concursos.",
+  "description": "Moderniza o Planalto.gov.br com leitura limpa, sumário hierárquico, texto compilado, grifos, flashcards Anki e assistente de IA.",
   "permissions": [
     "storage",
     "unlimitedStorage"
@@ -27,7 +27,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Planalto Moderno — Configurações & IA",
+    "default_title": "Planalto Plus — Configurações & IA",
     "default_icon": {
       "16": "icons/icon-16.png",
       "32": "icons/icon-32.png",
@@ -42,6 +42,10 @@
         "*://*.planalto.gov.br/*lei*",
         "*://*.planalto.gov.br/*decreto*",
         "*://*.planalto.gov.br/*constituicao*"
+      ],
+      "exclude_matches": [
+        "*://*.planalto.gov.br/ccivil_03/constituicao/emendas/ecr/quadro_ecr.htm*",
+        "*://*.planalto.gov.br/ccivil_03/constituicao/emendas/emc/quadro_emc.htm*"
       ],
       "js": ["content.js"],
       "run_at": "document_idle"

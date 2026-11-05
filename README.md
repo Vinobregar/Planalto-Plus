@@ -1,6 +1,6 @@
-# Planalto Plus — Extensão para Leitura Jurídica & IA (Chrome & Firefox)
+# Planalto Moderno — Extensão para Leitura Jurídica & IA (Chrome & Firefox)
 
-Extensão multiplataforma para **Google Chrome** e **Mozilla Firefox** que moderniza a visualização de legislações no portal [www.planalto.gov.br](https://www.planalto.gov.br).
+Extensão multiplataforma para **Google Chrome** e **Mozilla Firefox** que moderniza a visualização de legislações no portal oficial [www.planalto.gov.br](https://www.planalto.gov.br).
 
 ---
 
@@ -12,9 +12,9 @@ npm install
 npm run build
 ```
 
-O comando compila o projeto e gera automaticamente as versões completas e idênticas para ambos os navegadores na pasta `dist/`:
-* **Chrome**: pasta `dist/chrome/` (ou `dist/`) e pacote compactado `dist/planalto-plus.zip`
-* **Firefox**: pasta `dist/firefox/` e pacotes `dist/planalto-plus-firefox.zip` / `dist/planalto-plus.xpi`
+O comando compila o projeto e gera automaticamente as versões completas e otimizadas para ambos os navegadores na pasta `dist/`:
+* **Chrome**: pasta descompactada `dist/chrome/` e pacote pronto para a Chrome Web Store `dist/planalto-moderno-chrome.zip`
+* **Firefox**: pasta `dist/firefox/`, pacotes `dist/planalto-moderno-firefox.zip` / `dist/planalto-moderno-firefox.xpi`, e o código-fonte para revisão do AMO `dist/planalto-moderno-source.zip`
 
 Você também pode compilar alvos específicos:
 ```bash
@@ -32,7 +32,7 @@ npm run build:all      # Ambas as versões
    about:debugging#/runtime/this-firefox
    ```
 2. Na seção **Extensões temporárias** (*Temporary Extensions*), clique em **Carregar extensão temporária...** (*Load Temporary Add-on...*).
-3. Selecione o arquivo `manifest.json` dentro da pasta **`dist/firefox`** (ou selecione diretamente o pacote **`dist/planalto-plus.zip`** / **`.xpi`**).
+3. Selecione o arquivo `manifest.json` dentro da pasta **`dist/firefox`** (ou selecione diretamente o pacote **`dist/planalto-moderno-firefox.zip`** / **`.xpi`**).
 4. Pronto! A extensão estará ativa no Firefox com todas as permissões, scripts e recursos WebAssembly configurados.
 
 ---
@@ -81,3 +81,21 @@ npm run build:all      # Ambas as versões
    - Suporte a múltiplos provedores por Chave API (Google Gemini, OpenAI, Anthropic Claude, OpenRouter, Groq).
    - Importação de **Edital de Concurso (PDF)** com grifo automatizado dos artigos mais incidentes.
    - Gerador de simulados e questões com parametrização de dificuldade e banca.
+
+---
+
+## Isenção de Responsabilidade & Propriedade Intelectual
+
+1. **Projeto Independente**: O Planalto Moderno é um projeto de código aberto mantido pela comunidade e **não possui vínculo oficial, afiliação, parceria ou endosso da Presidência da República do Brasil, do Governo Federal ou do portal oficial Planalto.gov.br**.
+2. **Finalidade Educacional**: O software tem propósito exclusivamente de estudo, pesquisa acadêmica e leitura confortável de textos legais públicos. Não substitui assessoria jurídica e não constitui consultoria profissional.
+3. **Marcas Registradas**:
+   - *Firefox* e *Mozilla* são marcas da Mozilla Foundation.
+   - *Google Gemini* é marca da Google LLC.
+   - *OpenAI* é marca da OpenAI, Inc.
+   - *Anthropic* e *Claude* são marcas da Anthropic PBC.
+   - *Groq* é marca da Groq, Inc.
+   - *Anki* é marca registrada de Damien Elmes.
+4. **Licenças de Terceiros**:
+   - Código-fonte sob licença **MIT** (consulte [`LICENSE`](./LICENSE)).
+   - Ícones por Lucide Icons (Licença ISC) e arte procedural nativa.
+   - Tipografia: Inter, Merriweather, Atkinson Hyperlegible e OpenDyslexic (todas sob SIL Open Font License 1.1).

@@ -82,12 +82,19 @@ export type DocumentBlock =
       modificationUrl?: string;
     };
 
+export interface HeaderLink {
+  id: string;
+  text: string;
+  url: string;
+}
+
 export interface LegislationDocument {
   lawId: string;
   url: string;
   epigraph: string;
   ementa: string;
   preambulo: string[];
+  headerLinks?: HeaderLink[];
   blocks: DocumentBlock[];
   toc: TocNode[];
   articles: ArticleBlock[];

@@ -61,7 +61,7 @@ async function buildExtension() {
   const target = targetArg ? targetArg.split('=')[1] : 'all'; // 'chrome', 'firefox', or 'all'
 
   console.log(`\n========================================`);
-  console.log(`Building Planalto Moderno (Target: ${target.toUpperCase()})`);
+  console.log(`Building Planalto Plus (Target: ${target.toUpperCase()})`);
   console.log(`========================================\n`);
 
   console.log('1/4 Building content script (self-contained IIFE for Shadow DOM)...');

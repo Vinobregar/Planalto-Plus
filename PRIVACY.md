@@ -1,5 +1,5 @@
-# Política de Privacidade — Planalto Moderno
-*(Privacy Policy — Planalto Moderno)*
+# Política de Privacidade — Planalto Plus
+*(Privacy Policy — Planalto Plus)*
 
 > **Última atualização / Last updated:** 2 de novembro de 2026 (November 2, 2026)
 
@@ -7,15 +7,15 @@
 
 ## 1. Visão Geral (Overview)
 
-O **Planalto Moderno** é uma extensão de navegador de código aberto desenvolvida para aprimorar a legibilidade, navegação e estudo de legislações públicas hospedadas no portal oficial brasileiro `www.planalto.gov.br`.
+O **Planalto Plus** é uma extensão de navegador de código aberto desenvolvida para aprimorar a legibilidade, navegação e estudo de legislações públicas hospedadas no portal oficial brasileiro `www.planalto.gov.br`.
 
-A sua privacidade e a segurança dos seus dados são princípios fundamentais do projeto. **O Planalto Moderno NÃO coleta, não armazena, não rastreia, não vende e não compartilha dados de identificação pessoal, dados analíticos ou histórico de navegação com nenhum servidor próprio ou intermediário.**
+A sua privacidade e a segurança dos seus dados são princípios fundamentais do projeto. **O Planalto Plus NÃO coleta, não armazena, não rastreia, não vende e não compartilha dados de identificação pessoal, dados analíticos ou histórico de navegação com nenhum servidor próprio ou intermediário.**
 
 ---
 
 ## 2. Dados Manipulados e Armazenamento Local (Data Handling & Local Storage)
 
-Todas as funcionalidades do Planalto Moderno operam sob o modelo **estritamente local no cliente (Client-Side Only)**:
+Todas as funcionalidades do Planalto Plus operam sob o modelo **estritamente local no cliente (Client-Side Only)**:
 
 1. **Anotações e Grifos de Estudo:** Suas marcações de texto, cores de grifo personalizadas, tags e notas de estudo sobre artigos de lei são gravadas exclusivamente no armazenamento interno do seu próprio navegador através da API `storage.local`. Nenhum desses dados é sincronizado com servidores externos.
 2. **Preferências de Leitura e Aparência:** Suas preferências de tema (claro, sépia, escuro), tamanho de fonte, espaçamento tipográfico e fontes selecionadas permanecem armazenadas no dispositivo local.
@@ -25,7 +25,7 @@ Todas as funcionalidades do Planalto Moderno operam sob o modelo **estritamente 
 
 ## 3. Comunicações com Serviços de Terceiros (Third-Party Services)
 
-O Planalto Moderno estabelece conexões de rede exclusivamente nos seguintes cenários:
+O Planalto Plus estabelece conexões de rede exclusivamente nos seguintes cenários:
 
 1. **Requisições de IA sob Demanda do Usuário:** Quando você clica ativamente para solicitar uma explicação, gerar uma questão ou enviar uma mensagem no chat, o trecho do artigo ou edital em análise é enviado diretamente pelo seu navegador aos endpoints oficiais do provedor de IA escolhido por você:
    - Google Generative AI (Gemini): [Política de Privacidade do Google](https://policies.google.com/privacy)
@@ -51,7 +51,7 @@ Em conformidade com a política de Privilégio Mínimo (Least Privilege) do Goog
 
 Você possui controle total sobre todos os seus dados:
 - É possível exportar ou excluir suas notas e grifos a qualquer momento através do menu do **Caderno** da extensão.
-- Caso desinstale a extensão do navegador, todos os dados locais associados ao Planalto Moderno (incluindo chaves de API salvas e anotações locais) serão permanentemente removidos pelo próprio navegador.
+- Caso desinstale a extensão do navegador, todos os dados locais associados ao Planalto Plus (incluindo chaves de API salvas e anotações locais) serão permanentemente removidos pelo próprio navegador.
 
 ---
 
@@ -63,4 +63,4 @@ Quaisquer atualizações futuras nesta política serão publicadas neste mesmo e
 
 ## 7. Contato e Código Aberto (Contact & Open Source)
 
-O Planalto Moderno é um software livre e transparente. Em caso de dúvidas sobre privacidade, segurança ou funcionamento da extensão, entre em contato através da seção de issues do repositório no GitHub ou pelo e-mail de suporte do desenvolvedor.
+O Planalto Plus é um software livre e transparente. Em caso de dúvidas sobre privacidade, segurança ou funcionamento da extensão, entre em contato através da seção de issues do repositório no GitHub ou pelo e-mail de suporte do desenvolvedor.

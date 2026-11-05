@@ -22,6 +22,7 @@ import {
   RotateCcw,
   Search,
   Send,
+  ShieldCheck,
   SlidersHorizontal,
   Sparkles,
   StickyNote,
@@ -539,70 +540,6 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
       }}
       className={`w-[410px] max-w-full shrink-0 h-full border-l flex flex-col select-none relative z-30 ${textClass}`}
     >
-      {/* Top Navigation Tabs: IA Chat & Caderno (+ Questões when active) */}
-      <div
-        style={{ borderColor: surface.borderColor }}
-        className="px-2.5 py-2 border-b flex items-center justify-between gap-1.5"
-      >
-        <div className="flex items-center gap-1 flex-1 min-w-0">
-          {!hideAITools && (
-            <button
-              type="button"
-              onClick={() => onTabChange('chat')}
-              className={`flex-1 py-1.5 px-2.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-colors ${
-                activeTab === 'chat'
-                  ? 'bg-indigo-600 text-white shadow-sm'
-                  : 'hover:bg-black/5 dark:hover:bg-white/5 opacity-75'
-              }`}
-              title="Assistente IA, Importar Edital e Configuração de Chave API"
-            >
-              <MessageSquare className="w-3.5 h-3.5 shrink-0" />
-              <span className="truncate">IA Chat</span>
-              {!hasConfiguredKey && (
-                <span
-                  className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0"
-                  title="Chave API não configurada"
-                />
-              )}
-            </button>
-          )}
-
-          {activeTab === 'quiz' && !hideAITools && (
-            <button
-              type="button"
-              onClick={() => onTabChange('quiz')}
-              className="flex-1 py-1.5 px-2.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 bg-indigo-600 text-white shadow-sm"
-            >
-              <GraduationCap className="w-3.5 h-3.5 shrink-0" />
-              <span className="truncate">Questões</span>
-            </button>
-          )}
-
-          <button
-            type="button"
-            onClick={() => onTabChange('notes')}
-            className={`flex-1 py-1.5 px-2.5 rounded-lg text-xs font-medium flex items-center justify-center gap-1.5 transition-colors ${
-              activeTab === 'notes'
-                ? 'bg-indigo-600 text-white shadow-sm'
-                : 'hover:bg-black/5 dark:hover:bg-white/5 opacity-75'
-            }`}
-            title="Caderno (Grifos & Tags e Anotações)"
-          >
-            <BookMarked className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">Caderno</span>
-          </button>
-        </div>
-
-        <button
-          type="button"
-          onClick={onClose}
-          className="p-1.5 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 opacity-75 hover:opacity-100"
-          title="Recolher painel lateral direito"
-        >
-          <PanelRightClose className="w-4 h-4" />
-        </button>
-      </div>
-
       {/* TAB 1: IA CHAT MENU (Contains Conversation, Importar Edital, Chave API, and Ocultar Opções de IA) */}
       {activeTab === 'chat' && !hideAITools && (
         <div className="flex-1 flex flex-col min-h-0">
@@ -638,22 +575,92 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                 <span>Importar Edital</span>
               </button>
 
-              <button
-                type="button"
-                onClick={() => setAiSection('apikey')}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold flex items-center gap-1 transition-colors ${
-                  aiSection === 'apikey'
-                    ? 'bg-indigo-600 text-white shadow-sm'
-                    : 'hover:bg-black/5 dark:hover:bg-white/5 opacity-75 hover:opacity-100'
-                }`}
-                title="Configurar Chave API e Modelo"
-              >
-                <KeyRound className="w-3 h-3" />
-                <span>Chave API</span>
-                {!hasConfiguredKey && (
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                )}
-              </button>
+              <div className="relative inline-flex items-center">
+                <button
+                  type="button"
+                  onClick={() => setAiSection('apikey')}
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold flex items-center gap-1 transition-colors ${
+                    aiSection === 'apikey'
+                      ? 'bg-indigo-600 text-white shadow-sm'
+                      : 'hover:bg-black/5 dark:hover:bg-white/5 opacity-75 hover:opacity-100'
+                  }`}
+                  title="Configurar Chave API e Modelo"
+                >
+                  <KeyRound className="w-3 h-3" />
+                  <span>Chave API</span>
+                  {!hasConfiguredKey && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                  )}
+                </button>
+
+                {/* Tooltip explicativo ao lado do botão de Chave API */}
+                <span className="relative group/apikeytip inline-flex items-center ml-0.5">
+                  <button
+                    type="button"
+                    aria-label="Informações sobre a Chave API e Segurança"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setAiSection('apikey');
+                    }}
+                    className="p-1 rounded-md opacity-60 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5 text-indigo-500 dark:text-indigo-400 transition-colors cursor-pointer"
+                    title="Ajuda sobre a Chave API e Segurança"
+                  >
+                    <HelpCircle className="w-3.5 h-3.5" />
+                  </button>
+
+                  <div
+                    className={`invisible opacity-0 group-hover/apikeytip:visible group-hover/apikeytip:opacity-100 transition-all duration-150 absolute right-[-60px] top-full mt-1.5 w-76 sm:w-80 p-3.5 rounded-xl border shadow-2xl text-[11px] font-normal leading-relaxed z-50 pointer-events-auto select-text before:absolute before:-top-2 before:left-0 before:right-0 before:h-2.5 ${tooltipClass}`}
+                  >
+                    <div className="flex items-center gap-1.5 font-bold text-xs text-indigo-500 dark:text-indigo-400 mb-2 border-b border-current/10 pb-1.5">
+                      <KeyRound className="w-3.5 h-3.5" />
+                      <span>Guia da Chave de API</span>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div>
+                        <strong className="block text-indigo-600 dark:text-indigo-400 font-semibold mb-0.5">
+                          O que é?
+                        </strong>
+                        <p className="opacity-90">
+                          É o seu código pessoal de acesso que conecta a extensão diretamente à inteligência artificial (Google Gemini, OpenAI, Claude ou OpenRouter) para explicar dispositivos, tirar dúvidas jurídicas, analisar editais e criar questões.
+                        </p>
+                      </div>
+
+                      <div>
+                        <strong className="block text-emerald-600 dark:text-emerald-400 font-semibold mb-0.5">
+                          Como obter a chave?
+                        </strong>
+                        <p className="opacity-90 mb-1">
+                          É gratuita e rápida! Recomendamos o <strong>Google Gemini</strong> por ter cota gratuita para uso pessoal:
+                        </p>
+                        <a
+                          href="https://aistudio.google.com/app/apikey"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 font-semibold text-indigo-500 hover:underline"
+                        >
+                          <span>Obter chave gratuita no Google AI Studio</span>
+                          <ExternalLink className="w-2.5 h-2.5" />
+                        </a>
+                      </div>
+
+                      <div className="pt-1.5 border-t border-current/10">
+                        <div className="flex items-start gap-1.5">
+                          <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                          <div>
+                            <strong className="block text-emerald-600 dark:text-emerald-400 font-semibold mb-0.5">
+                              100% Segura e Local
+                            </strong>
+                            <p className="opacity-90">
+                              Sua chave fica salva <strong>exclusivamente na memória local do seu navegador</strong> (<code>chrome.storage.local</code>) e <strong>nunca é enviada para nenhum servidor intermediário</strong>. As requisições vão direto do seu navegador para a API oficial do provedor escolhido.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </span>
+              </div>
             </div>
 
             <div className="flex items-center gap-1">
@@ -685,6 +692,16 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
               >
                 <EyeOff className="w-3 h-3" />
                 <span>Ocultar IA</span>
+              </button>
+
+              {/* Close / Collapse Drawer Button */}
+              <button
+                type="button"
+                onClick={onClose}
+                className="p-1 rounded-lg border border-current/15 hover:bg-black/10 dark:hover:bg-white/10 opacity-75 hover:opacity-100 transition-colors ml-0.5"
+                title="Recolher painel lateral direito"
+              >
+                <PanelRightClose className="w-3.5 h-3.5" />
               </button>
             </div>
           </div>
@@ -780,17 +797,6 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                           className="px-2.5 py-1.5 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-500 transition-colors"
                         >
                           Explicar {focusedArticle.label}
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            onSendChat(
-                              `Quais são as principais pegadinhas de concurso público e exame da OAB sobre o ${focusedArticle.label}?`
-                            )
-                          }
-                          className="px-2.5 py-1.5 rounded-lg border border-current/15 hover:bg-black/5 dark:hover:bg-white/5 font-medium"
-                        >
-                          Pegadinhas ({focusedArticle.label})
                         </button>
                         <button
                           type="button"
@@ -1090,13 +1096,43 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                     <span>Configuração da Chave de API</span>
                     <span className="relative group/keytip inline-flex items-center">
                       <HelpCircle className="w-3.5 h-3.5 opacity-60 hover:opacity-100 cursor-pointer" />
-                      <span
-                        className={`pointer-events-none opacity-0 group-hover/keytip:opacity-100 transition-opacity duration-150 absolute left-1/2 -translate-x-1/2 top-full mt-1.5 w-64 max-w-[280px] p-2.5 rounded-xl border shadow-2xl text-[11px] font-normal leading-relaxed z-50 ${tooltipClass}`}
+                      <div
+                        className={`invisible opacity-0 group-hover/keytip:visible group-hover/keytip:opacity-100 transition-all duration-150 absolute left-1/2 -translate-x-1/2 top-full mt-1.5 w-76 sm:w-80 p-3 rounded-xl border shadow-2xl text-[11px] font-normal leading-relaxed z-50 pointer-events-auto select-text before:absolute before:-top-2 before:left-0 before:right-0 before:h-2.5 ${tooltipClass}`}
                       >
-                        Sua chave de API fica salva exclusivamente no armazenamento
-                        local do seu navegador (<code>storage.local</code>) e
-                        nunca é enviada a servidores intermediários.
-                      </span>
+                        <div className="flex items-center gap-1.5 font-bold text-xs text-indigo-500 dark:text-indigo-400 mb-2 border-b border-current/10 pb-1.5">
+                          <KeyRound className="w-3.5 h-3.5" />
+                          <span>Segurança e Privacidade da Chave</span>
+                        </div>
+                        <div className="space-y-2">
+                          <div>
+                            <strong className="block text-indigo-600 dark:text-indigo-400 font-semibold mb-0.5">
+                              O que é?
+                            </strong>
+                            <p className="opacity-90">
+                              O token pessoal que autoriza as chamadas diretas ao modelo de IA escolhido.
+                            </p>
+                          </div>
+                          <div>
+                            <strong className="block text-emerald-600 dark:text-emerald-400 font-semibold mb-0.5">
+                              Como obter?
+                            </strong>
+                            <p className="opacity-90">
+                              Gere sua chave gratuitamente no painel oficial do provedor (ex: Google AI Studio) usando o link abaixo.
+                            </p>
+                          </div>
+                          <div className="pt-1.5 border-t border-current/10 flex items-start gap-1.5">
+                            <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" />
+                            <div>
+                              <strong className="block text-emerald-600 dark:text-emerald-400 font-semibold mb-0.5">
+                                Armazenamento 100% Local
+                              </strong>
+                              <p className="opacity-90">
+                                Sua chave é salva exclusivamente no seu navegador (<code>chrome.storage.local</code>) e nunca transita por servidores intermediários.
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </span>
                   </div>
                 </div>
@@ -1267,9 +1303,9 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
           {/* Sub-Navigation Inside Questões: Questões Inéditas vs Flashcards */}
           <div
             style={{ borderColor: surface.borderColor }}
-            className="px-3.5 pt-2.5 pb-2 border-b bg-black/[0.02] dark:bg-white/[0.02]"
+            className="px-3.5 pt-2.5 pb-2 border-b bg-black/[0.02] dark:bg-white/[0.02] flex items-center justify-between gap-2"
           >
-            <div className="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-current/10">
+            <div className="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-current/10 flex-1">
               <button
                 type="button"
                 onClick={() => setQuizSubMode('questions')}
@@ -1296,7 +1332,36 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                 <span>Flashcards ({flashcards.length})</span>
               </button>
             </div>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1.5 rounded-lg border border-current/15 hover:bg-black/10 dark:hover:bg-white/10 opacity-75 hover:opacity-100 transition-colors shrink-0"
+              title="Recolher painel lateral direito"
+            >
+              <PanelRightClose className="w-3.5 h-3.5" />
+            </button>
           </div>
+
+          {/* Error or Missing Key Prompt in Quiz */}
+          {aiError && (
+            <div className="m-3 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-300 text-xs space-y-1.5 shrink-0">
+              <div className="font-semibold flex items-center justify-between">
+                <span>Chave de API Necessária</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onTabChange('chat');
+                    setAiSection('apikey');
+                  }}
+                  className="text-[11px] underline hover:no-underline font-bold"
+                >
+                  Configurar Chave API
+                </button>
+              </div>
+              <p className="opacity-90 leading-relaxed">{aiError}</p>
+            </div>
+          )}
 
           {/* SUB-MODE 2A: QUESTÕES INÉDITAS & BANCOS EXTERNOS */}
           {quizSubMode === 'questions' && (
@@ -1465,7 +1530,7 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                             ['letra_lei', 'Letra da Lei (Lei Seca)'],
                             ['caso_pratico', 'Casos Práticos'],
                             ['jurisprudencia', 'Jurisprudência / Súmulas'],
-                            ['pegadinhas', 'Pegadinhas (Exceções/Prazos)'],
+                            ['pegadinhas', 'Exceções & Prazos'],
                           ] as const
                         ).map(([val, label]) => (
                           <button
@@ -2174,9 +2239,9 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
           {/* Sub-Tabs Header: Grifos vs Anotações */}
           <div
             style={{ borderColor: surface.borderColor }}
-            className="px-3.5 pt-2.5 pb-2 border-b"
+            className="px-3.5 pt-2.5 pb-2 border-b flex items-center justify-between gap-2"
           >
-            <div className="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-current/10">
+            <div className="grid grid-cols-2 gap-1.5 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-current/10 flex-1">
               <button
                 type="button"
                 onClick={() => onCadernoSubTabChange('grifos')}
@@ -2225,6 +2290,15 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                 )}
               </button>
             </div>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1.5 rounded-lg border border-current/15 hover:bg-black/10 dark:hover:bg-white/10 opacity-75 hover:opacity-100 transition-colors shrink-0"
+              title="Recolher painel lateral direito"
+            >
+              <PanelRightClose className="w-3.5 h-3.5" />
+            </button>
           </div>
 
           {/* SUB-TAB 1: GRIFOS & PERSONALIZAÇÃO DE CORES / TAGS */}

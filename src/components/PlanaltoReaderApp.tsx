@@ -38,6 +38,7 @@ import {
   DEFAULT_APPEARANCE,
   DEFAULT_HIGHLIGHT_TAGS,
   RELEVANT_BRAZILIAN_LAWS,
+  computeProportionalAppearance,
   formatLawAbntCitation,
   getCommonLawName,
   loadAIConfig,
@@ -54,7 +55,6 @@ import {
   DEFAULT_FLASHCARD_PARAMS,
   DEFAULT_QUIZ_PARAMS,
   analyzeEditalAndSelectArticles,
-  buildFallbackFlashcards,
   explainArticleWithAI,
   generateArticleQuizWithAI,
   generateFlashcardsWithAI,
@@ -62,6 +62,7 @@ import {
   summarizeArticleJurisprudenceWithAI,
 } from '../services/aiService';
 import { TocSidebar } from './TocSidebar';
+import { normalizeArticleNumberKey } from '../utils/crossReferenceGraph';
 import {
   AppearancePopover,
   FONT_FAMILY_CSS,
@@ -81,88 +82,13 @@ interface PlanaltoReaderAppProps {
   onToggleOriginalView: () => void;
 }
 
-function buildFallbackQuestions(
-  article: ArticleBlock | null,
-  params: QuizGenerationParams = DEFAULT_QUIZ_PARAMS
-): QuizQuestion[] {
-  const ref = article ? article.label : 'Art. 1º';
-  const count = Math.max(1, Math.min(10, params.count || 1));
-  const results: QuizQuestion[] = [];
-
-  for (let i = 0; i < count; i++) {
-    if (params.style === 'certo_errado') {
-      results.push({
-        id: `demo-q-ce-${Date.now()}-${i}`,
-        articleRef: ref,
-        difficulty: params.difficulty,
-        statement: article
-          ? `Julgue o item a seguir à luz do ${article.label}: "${article.caputText.slice(
-              0,
-              180
-            )}${article.caputText.length > 180 ? '...' : ''}"`
-          : 'De acordo com a literalidade da norma vigente, o comando legal admite exceções expressamente consignadas em lei.',
-        options: [
-          { letter: 'C', text: 'Certo' },
-          { letter: 'E', text: 'Errado' },
-        ],
-        correctLetter: 'C',
-        explanation:
-          'O item está CERTO, pois reproduz fielmente a previsão normativa do dispositivo em análise. Configure sua chave de API no menu IA Chat para gerar questões inéditas personalizadas ilimitadas!',
-      });
-    } else {
-      const options = [
-        {
-          letter: 'A',
-          text: 'A aplicação do dispositivo independe dos requisitos previstos nos parágrafos ou incisos subsequentes, ainda que haja disposição especial em contrário.',
-        },
-        {
-          letter: 'B',
-          text: article
-            ? `Observa-se a regra expressa no ${article.label}: "${article.caputText.slice(
-                0,
-                140
-              )}${article.caputText.length > 140 ? '...' : ''}"`
-            : 'O dano exclusivamente moral é plenamente indenizável e independe de repercussão patrimonial direta.',
-        },
-        {
-          letter: 'C',
-          text: 'A norma possui eficácia meramente programática, não produzindo efeitos vinculantes imediatos.',
-        },
-        {
-          letter: 'D',
-          text: 'A regra somente se aplica mediante autorização judicial prévia em todos os casos.',
-        },
-      ];
-      if (params.style === 'multipla_abcde') {
-        options.push({
-          letter: 'E',
-          text: 'O dispositivo foi integralmente revogado sem substituição normativa.',
-        });
-      }
-      results.push({
-        id: `demo-q-mc-${Date.now()}-${i}`,
-        articleRef: ref,
-        difficulty: params.difficulty,
-        statement: article
-          ? `Considerando a literalidade e a interpretação sistemática do ${article.label}, assinale a alternativa correta:`
-          : 'Considerando a disciplina legal vigente, assinale a alternativa correta:',
-        options,
-        correctLetter: 'B',
-        explanation:
-          'A alternativa B está correta por refletir com exatidão a literalidade do dispositivo legal. Configure sua chave de API no menu IA Chat para gerar questões inéditas personalizadas para qualquer artigo!',
-      });
-    }
-  }
-
-  return results;
-}
-
 export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
   doc,
   onToggleOriginalView,
 }) => {
-  const [appearance, setAppearance] =
-    useState<AppearanceSettings>(DEFAULT_APPEARANCE);
+  const [appearance, setAppearance] = useState<AppearanceSettings>(() =>
+    computeProportionalAppearance()
+  );
   const [aiConfig, setAiConfig] = useState<AIConfig>(DEFAULT_AI_CONFIG);
   const [highlightTags, setHighlightTags] = useState<HighlightTag[]>(
     DEFAULT_HIGHLIGHT_TAGS
@@ -232,6 +158,25 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
   const topSearchResults = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return [];
+
+    // Check if query is targeting an article number (e.g. "155", "art 155", "art. 155", "artigo 155", "155º", "155-A", "155a")
+    const cleanQuery = q.replace(/[º°.]/g, '').trim();
+    const articleNumPattern = /^(?:art(?:igo)?\s*)?(\d+[\w-]*)$/i;
+    const numMatch = articleNumPattern.exec(cleanQuery);
+
+    if (numMatch) {
+      const target = normalizeArticleNumberKey(numMatch[1]);
+      const cleanTarget = target.replace(/-/g, '');
+      return doc.articles
+        .filter((art) => {
+          if (appearance.compiledMode && art.isRevoked) return false;
+          const artKey = normalizeArticleNumberKey(art.number);
+          const cleanArtKey = artKey.replace(/-/g, '');
+          return artKey === target || cleanArtKey === cleanTarget;
+        })
+        .slice(0, 20);
+    }
+
     return doc.articles
       .filter((art) => {
         if (appearance.compiledMode && art.isRevoked) return false;
@@ -374,6 +319,15 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
     setRightDrawerOpen(true);
     setRightDrawerTab('chat');
     setAiError(null);
+
+    const hasKey = Boolean(aiConfig.apiKeys[aiConfig.provider]?.trim());
+    if (!hasKey) {
+      setAiError(
+        `Chave de API (${aiConfig.provider.toUpperCase()}) não configurada. Acesse o menu IA Chat > Chave API para inserir sua chave gratuita e utilizar a IA.`
+      );
+      return;
+    }
+
     setIsLoadingAI(true);
 
     const userMsg: ChatMessage = {
@@ -411,6 +365,15 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
     setRightDrawerOpen(true);
     setRightDrawerTab('chat');
     setAiError(null);
+
+    const hasKey = Boolean(aiConfig.apiKeys[aiConfig.provider]?.trim());
+    if (!hasKey) {
+      setAiError(
+        `Chave de API (${aiConfig.provider.toUpperCase()}) não configurada. Acesse o menu IA Chat > Chave API para inserir sua chave gratuita e utilizar a IA.`
+      );
+      return;
+    }
+
     setIsLoadingAI(true);
 
     const userMsg: ChatMessage = {
@@ -457,9 +420,8 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
     const hasKey = Boolean(aiConfig.apiKeys[aiConfig.provider]?.trim());
     if (!hasKey) {
       setAiError(
-        'Modo Demonstração: exibindo questão(ões) de exemplo. Configure sua chave no menu IA Chat para gerar questões personalizadas ilimitadas com IA.'
+        `Chave de API (${aiConfig.provider.toUpperCase()}) não configurada. Configure sua chave no menu IA Chat > Chave API para gerar questões personalizadas.`
       );
-      setQuizQuestions(buildFallbackQuestions(article, activeParams));
       return;
     }
 
@@ -482,9 +444,6 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
       }
     } catch (err) {
       setAiError(err instanceof Error ? err.message : String(err));
-      if (quizQuestions.length === 0) {
-        setQuizQuestions(buildFallbackQuestions(article, activeParams));
-      }
     } finally {
       setIsLoadingAI(false);
     }
@@ -511,13 +470,9 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
 
     const hasKey = Boolean(aiConfig.apiKeys[aiConfig.provider]?.trim());
     if (!hasKey) {
-      const fallbackCards = buildFallbackFlashcards(
-        doc,
-        focusedArticle,
-        highlightedArticles,
-        activeParams
+      setAiError(
+        `Chave de API (${aiConfig.provider.toUpperCase()}) não configurada. Configure sua chave no menu IA Chat > Chave API para gerar flashcards.`
       );
-      setFlashcards(fallbackCards);
       return;
     }
 
@@ -533,13 +488,6 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
       setFlashcards(generated);
     } catch (err) {
       setAiError(err instanceof Error ? err.message : String(err));
-      const fallbackCards = buildFallbackFlashcards(
-        doc,
-        focusedArticle,
-        highlightedArticles,
-        activeParams
-      );
-      setFlashcards(fallbackCards);
     } finally {
       setIsLoadingAI(false);
     }
@@ -613,6 +561,15 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
 
   const handleSendChat = async (text: string) => {
     setAiError(null);
+
+    const hasKey = Boolean(aiConfig.apiKeys[aiConfig.provider]?.trim());
+    if (!hasKey) {
+      setAiError(
+        `Chave de API (${aiConfig.provider.toUpperCase()}) não configurada. Acesse o menu IA Chat > Chave API para inserir sua chave gratuita e enviar mensagens à IA.`
+      );
+      return;
+    }
+
     const userMsg: ChatMessage = {
       id: `msg-${Date.now()}-u`,
       role: 'user',
@@ -911,7 +868,11 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
               }
               className={`flex items-center gap-1 sm:gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors shrink-0 whitespace-nowrap ${
                 appearance.compiledMode
-                  ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                  ? appearance.theme === 'dark'
+                    ? 'border-emerald-400/50 bg-emerald-400/15 text-emerald-300 shadow-sm font-semibold'
+                    : appearance.theme === 'sepia'
+                    ? 'border-emerald-800/40 bg-emerald-800/15 text-emerald-950 shadow-sm font-semibold'
+                    : 'border-emerald-700/50 bg-emerald-700/15 text-emerald-800 shadow-sm font-semibold'
                   : 'border-current/15 opacity-75 hover:opacity-100'
               }`}
             >
@@ -926,13 +887,21 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
                 backgroundColor: themeColors.cardBg,
                 borderColor: themeColors.borderColor,
               }}
-              className={`pointer-events-none opacity-0 group-hover/compilado:opacity-100 transition-opacity duration-150 absolute right-0 top-full mt-2 w-72 p-3 rounded-xl border shadow-xl text-[11px] leading-relaxed z-50 ${dropdownThemeClass}`}
+              className={`pointer-events-none opacity-0 group-hover/compilado:opacity-100 transition-opacity duration-150 absolute left-0 top-full mt-2 w-80 sm:w-96 p-3 rounded-xl border shadow-xl text-[11px] leading-relaxed whitespace-normal break-words z-50 ${dropdownThemeClass}`}
             >
-              <div className="font-bold text-emerald-600 dark:text-emerald-400 mb-1 flex items-center gap-1">
+              <div
+                className={`font-bold mb-1 flex items-center gap-1 ${
+                  appearance.theme === 'dark'
+                    ? 'text-emerald-400'
+                    : appearance.theme === 'sepia'
+                    ? 'text-emerald-900'
+                    : 'text-emerald-700'
+                }`}
+              >
                 <CheckCheck className="w-3.5 h-3.5" />
                 <span>O que é o Texto Compilado?</span>
               </div>
-              <p className="opacity-85">
+              <p className="opacity-85 whitespace-normal break-words">
                 Quando ativado, oculta automaticamente os dispositivos revogados
                 (textos riscados) e minimiza anotações legislativas como{' '}
                 <em>"(Redação dada / Incluído pela Lei nº X)"</em> em pequenos
@@ -1100,6 +1069,37 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
               <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight mb-4">
                 {doc.epigraph}
               </h2>
+
+              {/* Top cross-reference hyperlinks / remissões at the beginning of the law */}
+              {doc.headerLinks && doc.headerLinks.length > 0 && (
+                <div
+                  style={{
+                    backgroundColor: themeColors.cardBg,
+                    borderColor: themeColors.borderColor,
+                  }}
+                  className="my-3 p-3 rounded-xl border shadow-sm space-y-2 text-xs"
+                >
+                  <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400">
+                    <ExternalLink className="w-3 h-3" />
+                    <span>Atos Vinculados & Remissões</span>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {doc.headerLinks.map((link) => (
+                      <a
+                        key={link.id}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-medium border border-current/15 hover:border-indigo-500/50 hover:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 transition-colors"
+                        title={link.text}
+                      >
+                        <span>{link.text}</span>
+                        <ExternalLink className="w-2.5 h-2.5 opacity-60 shrink-0" />
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {/* Ementa in a dedicated Quote Box with Explicit Serif font + ABNT Citation Copy Icon at the bottom (Leis comuns) */}
               {!isConstitution && doc.ementa && (

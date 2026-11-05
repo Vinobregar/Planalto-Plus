@@ -20,6 +20,7 @@ import {
   TocNode,
 } from '../types/legislation';
 import { computeThemeColors } from './AppearancePopover';
+import { normalizeArticleNumberKey } from '../utils/crossReferenceGraph';
 
 interface TocSidebarProps {
   toc: TocNode[];
@@ -83,6 +84,24 @@ export const TocSidebar: React.FC<TocSidebarProps> = ({
   const filteredArticles = useMemo(() => {
     const q = searchQuery.trim().toLowerCase();
     if (!q) return [];
+
+    // Check if query is targeting an article number (e.g. "155", "art 155", "art. 155", "artigo 155", "155º", "155-A", "155a")
+    const cleanQuery = q.replace(/[º°.]/g, '').trim();
+    const articleNumPattern = /^(?:art(?:igo)?\s*)?(\d+[\w-]*)$/i;
+    const numMatch = articleNumPattern.exec(cleanQuery);
+
+    if (numMatch) {
+      const target = normalizeArticleNumberKey(numMatch[1]);
+      const cleanTarget = target.replace(/-/g, '');
+      return articles.filter((art) => {
+        if (compiledMode && art.isRevoked) return false;
+        const artKey = normalizeArticleNumberKey(art.number);
+        const cleanArtKey = artKey.replace(/-/g, '');
+        return artKey === target || cleanArtKey === cleanTarget;
+      });
+    }
+
+    // Otherwise, perform full-text search across article label, text and user notes
     return articles.filter((art) => {
       if (compiledMode && art.isRevoked) return false;
       const numMatch =

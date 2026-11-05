@@ -239,7 +239,7 @@ ${formatArticleFullText(article)}
 Estruture sua resposta exatamente com os seguintes tópicos:
 1. **Resumo Direto (O que diz o artigo)**: Explicação clara e objetiva do comando normativo.
 2. **Conceitos-Chave & Doutrina**: Termos técnicos, natureza jurídica, exceções e entendimento doutrinário majoritário.
-3. **Como Cai na OAB e Concursos (Pegadinhas)**: Principais inversões de palavras (ex.: prazos, "salvo", "vedado", competência) cobradas por FGV, Cebraspe e FCC.
+3. **Como Cai na OAB e Concursos (Pontos Críticos & Exceções)**: Principais inversões de palavras (ex.: prazos, "salvo", "vedado", competência) cobradas por FGV, Cebraspe e FCC.
 4. **Exemplo Prático**: Um caso concreto curto ilustrando a aplicação do dispositivo.`;
 
   return runAICompletion({ config, systemPrompt, userPrompt });

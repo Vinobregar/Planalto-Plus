@@ -68,7 +68,7 @@ const ContentController: React.FC<{ doc: LegislationDocument }> = ({ doc }) => {
           className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs shadow-2xl border border-indigo-400/30 transition-all hover:scale-105"
         >
           <Sparkles className="w-4 h-4" />
-          <span>Ativar Planalto Moderno</span>
+          <span>Ativar Planalto Plus</span>
         </button>
       </div>
     );
@@ -84,7 +84,13 @@ const ContentController: React.FC<{ doc: LegislationDocument }> = ({ doc }) => {
   );
 };
 
+function isExcludedUrl(url: string): boolean {
+  const u = url.toLowerCase();
+  return u.includes('quadro_ecr.htm') || u.includes('quadro_emc.htm');
+}
+
 export function mountPlanaltoModerno() {
+  if (isExcludedUrl(window.location.href)) return;
   if (document.getElementById(HOST_ID)) return;
 
   const parsedDoc = parsePlanaltoDom(document, window.location.href);
@@ -116,4 +122,12 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', mountPlanaltoModerno);
 } else {
   mountPlanaltoModerno();
+}
+
+if (document.readyState !== 'complete') {
+  window.addEventListener('load', () => {
+    if (!document.getElementById(HOST_ID)) {
+      mountPlanaltoModerno();
+    }
+  });
 }

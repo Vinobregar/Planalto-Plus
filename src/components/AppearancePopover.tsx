@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   AlignJustify,
   Eye,
@@ -19,7 +19,10 @@ import {
   FontFamilyOption,
   ThemeMode,
 } from '../types/legislation';
-import { DEFAULT_APPEARANCE } from '../storage/storageService';
+import {
+  DEFAULT_APPEARANCE,
+  computeProportionalAppearance,
+} from '../storage/storageService';
 
 interface AppearancePopoverProps {
   settings: AppearanceSettings;
@@ -164,12 +167,17 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
   onChange,
   onClose,
 }) => {
+  const [customColorDraft, setCustomColorDraft] = useState<string>(
+    settings.accentColor || '#8b5cf6'
+  );
+  const [isCustomizingColor, setIsCustomizingColor] = useState<boolean>(false);
+
   const update = (patch: Partial<AppearanceSettings>) => {
     onChange({ ...settings, ...patch });
   };
 
   const surface = computeThemeColors(settings);
-  const currentAccent = settings.accentColor || '#6366f1';
+  const currentAccent = settings.accentColor || '#8b5cf6';
   const activeFontCss =
     FONT_FAMILY_CSS[settings.fontFamily] || FONT_FAMILY_CSS.sans;
 
@@ -201,9 +209,9 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
         <div className="flex items-center gap-1">
           <button
             type="button"
-            onClick={() => onChange(DEFAULT_APPEARANCE)}
+            onClick={() => onChange(computeProportionalAppearance())}
             className="p-1 rounded-md hover:bg-black/5 dark:hover:bg-white/5 opacity-70 hover:opacity-100"
-            title="Restaurar padrão"
+            title="Restaurar padrão proporcional à tela"
           >
             <RotateCcw className="w-3.5 h-3.5" />
           </button>
@@ -318,7 +326,11 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
               <button
                 key={preset.color}
                 type="button"
-                onClick={() => update({ accentColor: preset.color })}
+                onClick={() => {
+                  update({ accentColor: preset.color });
+                  setCustomColorDraft(preset.color);
+                  setIsCustomizingColor(false);
+                }}
                 style={{ backgroundColor: preset.color }}
                 className={`w-6 h-6 rounded-full transition-transform ${
                   isSelected
@@ -329,19 +341,64 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
               />
             );
           })}
-          <label
-            className="relative w-7 h-7 rounded-lg cursor-pointer border border-current/25 flex items-center justify-center overflow-hidden shadow-sm"
-            style={{ backgroundColor: currentAccent }}
-            title="Escolher cor personalizada"
+          <button
+            type="button"
+            onClick={() => setIsCustomizingColor((v) => !v)}
+            className={`relative w-7 h-7 rounded-lg cursor-pointer border border-current/25 flex items-center justify-center overflow-hidden shadow-sm transition-transform ${
+              isCustomizingColor ? 'ring-2 ring-indigo-500 scale-105' : 'hover:scale-105'
+            }`}
+            style={{ backgroundColor: isCustomizingColor ? customColorDraft : currentAccent }}
+            title="Escolher cor personalizada (confirmação com Ok)"
           >
-            <input
-              type="color"
-              value={currentAccent}
-              onChange={(e) => update({ accentColor: e.target.value })}
-              className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
-            />
-          </label>
+            <Palette className="w-3.5 h-3.5 text-white drop-shadow" />
+          </button>
         </div>
+
+        {/* Menu de Personalização de Cor com Confirmação Ok */}
+        {isCustomizingColor && (
+          <div className="mt-2 p-2.5 rounded-xl border border-current/15 bg-black/[0.03] dark:bg-white/[0.03] space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="font-semibold text-[11px] opacity-80">
+                Personalizar Cor
+              </span>
+              <span className="font-mono text-[10px] opacity-65">
+                {customColorDraft.toUpperCase()}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <label className="relative w-8 h-8 rounded-lg cursor-pointer border border-current/20 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
+                <span
+                  className="w-full h-full"
+                  style={{ backgroundColor: customColorDraft }}
+                />
+                <input
+                  type="color"
+                  value={customColorDraft}
+                  onChange={(e) => setCustomColorDraft(e.target.value)}
+                  className="opacity-0 absolute inset-0 w-full h-full cursor-pointer"
+                />
+              </label>
+              <input
+                type="text"
+                value={customColorDraft}
+                onChange={(e) => setCustomColorDraft(e.target.value)}
+                placeholder="#8b5cf6"
+                className="flex-1 px-2.5 py-1 rounded-lg border border-current/20 bg-transparent font-mono text-xs uppercase focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  update({ accentColor: customColorDraft });
+                  setIsCustomizingColor(false);
+                }}
+                className="px-3 py-1 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs shadow-sm transition-colors"
+                title="Confirmar cor escolhida"
+              >
+                Ok
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Font Family */}
@@ -387,7 +444,7 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
           <button
             type="button"
             onClick={() =>
-              update({ fontSize: Math.max(13, settings.fontSize - 1) })
+              update({ fontSize: Math.max(10, settings.fontSize - 1) })
             }
             className="p-1.5 rounded-lg border border-current/15 hover:bg-black/5 dark:hover:bg-white/5"
           >
@@ -395,8 +452,8 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
           </button>
           <input
             type="range"
-            min={13}
-            max={26}
+            min={10}
+            max={28}
             step={1}
             value={settings.fontSize}
             onChange={(e) => update({ fontSize: Number(e.target.value) })}
@@ -406,7 +463,7 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
           <button
             type="button"
             onClick={() =>
-              update({ fontSize: Math.min(26, settings.fontSize + 1) })
+              update({ fontSize: Math.min(28, settings.fontSize + 1) })
             }
             className="p-1.5 rounded-lg border border-current/15 hover:bg-black/5 dark:hover:bg-white/5"
           >
@@ -428,7 +485,7 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
         </div>
         <input
           type="range"
-          min={6}
+          min={2}
           max={32}
           step={2}
           value={settings.paragraphSpacing}
@@ -447,7 +504,7 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
           </div>
           <input
             type="range"
-            min={1.4}
+            min={1.2}
             max={2.2}
             step={0.05}
             value={settings.lineHeight}
@@ -464,9 +521,9 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
           </div>
           <input
             type="range"
-            min={640}
-            max={1120}
-            step={40}
+            min={520}
+            max={1200}
+            step={20}
             value={settings.maxWidth}
             onChange={(e) => update({ maxWidth: Number(e.target.value) })}
             style={{ accentColor: currentAccent }}

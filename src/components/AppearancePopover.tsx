@@ -192,7 +192,7 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
         backgroundColor: surface.cardBg,
         borderColor: surface.borderColor,
       }}
-      className={`w-80 rounded-2xl border shadow-2xl p-4 space-y-4 z-50 select-none ${
+      className={`w-[340px] max-w-[92vw] rounded-2xl border shadow-2xl p-4 space-y-4 z-50 select-none ${
         settings.theme === 'dark'
           ? 'text-zinc-100'
           : settings.theme === 'sepia'
@@ -538,7 +538,7 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
         <button
           type="button"
           onClick={() => update({ hideAITools: !settings.hideAITools })}
-          className={`w-full py-2 px-3 rounded-xl border text-xs font-semibold flex items-center justify-between transition-colors ${
+          className={`w-full py-2 px-3 rounded-xl border text-xs font-semibold flex items-center justify-between gap-2.5 transition-colors ${
             settings.hideAITools
               ? 'border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400'
               : 'border-current/15 hover:bg-black/5 dark:hover:bg-white/5 opacity-85 hover:opacity-100'
@@ -549,27 +549,27 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
               : 'Oculta o IA Chat e os botões de IA em cada artigo para foco total na leitura legal'
           }
         >
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5 min-w-0 flex-1">
             {settings.hideAITools ? (
               <EyeOff className="w-4 h-4 text-amber-500 shrink-0" />
             ) : (
               <Sparkles className="w-4 h-4 text-indigo-500 shrink-0" />
             )}
-            <div className="text-left">
-              <div className="leading-tight">
+            <div className="text-left min-w-0 flex-1">
+              <div className="font-semibold text-xs leading-tight truncate">
                 {settings.hideAITools
                   ? 'Recursos de IA Ocultos'
                   : 'Ocultar Recursos de IA'}
               </div>
-              <p className="text-[10px] font-normal opacity-70 leading-snug">
+              <p className="text-[10px] font-normal opacity-70 leading-snug truncate">
                 {settings.hideAITools
-                  ? 'Assistente e botões de IA desativados'
-                  : 'Oculta o IA Chat e botões para foco na lei'}
+                  ? 'Assistente e botões desativados'
+                  : 'Oculta chat e botões nos artigos'}
               </p>
             </div>
           </div>
           <span
-            className={`text-[11px] font-bold px-2 py-0.5 rounded-lg border ${
+            className={`text-[11px] font-bold px-2.5 py-0.5 rounded-lg border shrink-0 ${
               settings.hideAITools
                 ? 'border-amber-500/30 bg-amber-500/20 text-amber-700 dark:text-amber-300'
                 : 'border-current/20 bg-black/5 dark:bg-white/5'

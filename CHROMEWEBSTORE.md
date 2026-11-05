@@ -1,10 +1,13 @@
 # Chrome Web Store Listing — Planalto Plus
 
 > Last Updated: 2026-11-04  
-> Version: 1.0.3  
+> Version: 1.0.4  
 > Package: `dist/planalto-moderno-chrome.zip` (772 KB)
 
 ---
+
+## Changelog v1.0.4
+• Correção de layout e sobreposição de texto no botão Ocultar IA do menu de Aparência.
 
 ## Changelog v1.0.3
 • Otimização de Memória RAM: purga ativa de dados de IA (chat, simulados e editais) ao ocultar IA, com persistência local em segundo plano.

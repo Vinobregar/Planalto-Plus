@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   AlignJustify,
   Eye,
+  EyeOff,
   Minus,
   Moon,
   Palette,
@@ -532,20 +533,52 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
         </div>
       </div>
 
-      {/* Option to re-enable AI tools if user previously hid them inside IA Chat */}
-      {settings.hideAITools && (
-        <div className="pt-2 border-t border-current/10">
-          <button
-            type="button"
-            onClick={() => update({ hideAITools: false })}
-            className="w-full py-1.5 px-3 rounded-xl bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors"
+      {/* Opção para Ocultar / Exibir Recursos de IA (exclusiva do menu Aparência) */}
+      <div className="pt-2.5 border-t border-current/10">
+        <button
+          type="button"
+          onClick={() => update({ hideAITools: !settings.hideAITools })}
+          className={`w-full py-2 px-3 rounded-xl border text-xs font-semibold flex items-center justify-between transition-colors ${
+            settings.hideAITools
+              ? 'border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400'
+              : 'border-current/15 hover:bg-black/5 dark:hover:bg-white/5 opacity-85 hover:opacity-100'
+          }`}
+          title={
+            settings.hideAITools
+              ? 'Clique para reexibir todos os botões e abas de Inteligência Artificial'
+              : 'Oculta o IA Chat e os botões de IA em cada artigo para foco total na leitura legal'
+          }
+        >
+          <div className="flex items-center gap-2">
+            {settings.hideAITools ? (
+              <EyeOff className="w-4 h-4 text-amber-500 shrink-0" />
+            ) : (
+              <Sparkles className="w-4 h-4 text-indigo-500 shrink-0" />
+            )}
+            <div className="text-left">
+              <div className="leading-tight">
+                {settings.hideAITools
+                  ? 'Recursos de IA Ocultos'
+                  : 'Ocultar Recursos de IA'}
+              </div>
+              <p className="text-[10px] font-normal opacity-70 leading-snug">
+                {settings.hideAITools
+                  ? 'Assistente e botões de IA desativados'
+                  : 'Oculta o IA Chat e botões para foco na lei'}
+              </p>
+            </div>
+          </div>
+          <span
+            className={`text-[11px] font-bold px-2 py-0.5 rounded-lg border ${
+              settings.hideAITools
+                ? 'border-amber-500/30 bg-amber-500/20 text-amber-700 dark:text-amber-300'
+                : 'border-current/20 bg-black/5 dark:bg-white/5'
+            }`}
           >
-            <Sparkles className="w-3.5 h-3.5" />
-            <Eye className="w-3.5 h-3.5" />
-            <span>Reativar Opções de IA</span>
-          </button>
-        </div>
-      )}
+            {settings.hideAITools ? 'Reativar' : 'Ocultar'}
+          </span>
+        </button>
+      </div>
     </div>
   );
 };

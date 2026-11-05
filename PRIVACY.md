@@ -7,7 +7,7 @@
 
 ## 1. Visão Geral (Overview)
 
-O **Planalto Plus** é uma extensão de navegador de código aberto desenvolvida para aprimorar a legibilidade, navegação e estudo de legislações públicas hospedadas no portal oficial brasileiro `www.planalto.gov.br`.
+O **Planalto Plus** é uma extensão de navegador desenvolvida para aprimorar a legibilidade, navegação e estudo de legislações públicas hospedadas no portal oficial brasileiro `www.planalto.gov.br`. Seu código-fonte é disponibilizado publicamente sob a licença PolyForm Noncommercial 1.0.0 (com transição para MIT em 2036).
 
 A sua privacidade e a segurança dos seus dados são princípios fundamentais do projeto. **O Planalto Plus NÃO coleta, não armazena, não rastreia, não vende e não compartilha dados de identificação pessoal, dados analíticos ou histórico de navegação com nenhum servidor próprio ou intermediário.**
 

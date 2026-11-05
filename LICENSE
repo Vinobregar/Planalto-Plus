@@ -1,6 +1,177 @@
-MIT License
+# PolyForm Noncommercial License 1.0.0
 
 Copyright (c) 2026 Planalto Plus Contributors
+
+Official License Reference: https://polyformproject.org/licenses/noncommercial/1.0.0
+
+================================================================================
+CHANGE DATE NOTICE / SUNSET CLAUSE (TRANSITION TO OPEN SOURCE)
+================================================================================
+
+1. Prior to January 1, 2036 ("Change Date"):
+   This software and associated documentation files (the "Software") are licensed 
+   strictly under the terms and conditions of the PolyForm Noncommercial License 1.0.0 
+   set forth below. Any commercial purpose, distribution for commercial advantage, 
+   sublicensing, or sale is strictly prohibited.
+
+2. On and after January 1, 2036 ("Change Date"):
+   This Software automatically transitions to, and becomes licensed under, the 
+   permissive MIT License (set forth at the end of this document). No further 
+   action or notice by the licensors is required for this transition to take effect.
+
+================================================================================
+LEGAL TEXT (ENGLISH - AUTHORITATIVE)
+================================================================================
+
+## Purpose
+This license allows each user to run, copy, modify, and combine this software for 
+noncommercial purposes, but not for commercial purposes.
+
+## Agreement
+In order to receive this license, you have to agree to its terms. If you do not 
+agree to this license, you must not use or distribute this software.
+
+## Notices
+You must ensure that everyone who gets a copy of any part of this software from you, 
+with or without changes, also gets the text of this license or a link to 
+https://polyformproject.org/licenses/noncommercial/1.0.0.
+
+## License
+Subject to the terms of this license, the licensor grants each user that agrees to 
+this license a perpetual, worldwide, nonexclusive, royalty-free, and fully paid-up 
+copyright license, without the right to sublicense, to run, modify, and combine this 
+software, and to copy resulting modified software.
+
+You may also distribute copies of this software, or resulting modified software, but 
+only for noncommercial purposes.
+
+## Noncommercial Purposes
+Any use of this software is for noncommercial purposes unless it is for a commercial purpose.
+
+A use is for a commercial purpose if:
+1. it is made by or on behalf of an enterprise, and that enterprise or an affiliate receives 
+   any monetary or other commercial advantage or compensation from that use, or
+2. it is made by or on behalf of an individual, and that individual or an affiliate receives 
+   any monetary or other commercial advantage or compensation from that use.
+
+Commercial purposes include, but are not limited to:
+1. using this software to develop or provide software, goods, or services to third parties for compensation;
+2. charging fees to access or use this software, or software, goods, or services that include this software;
+3. distributing this software with commercial software, goods, or services;
+4. selling, renting, leasing, sublicensing, or publishing this software on commercial marketplaces without authorization.
+
+Personal, educational, academic, and non-profit research uses are noncommercial purposes.
+
+## Fair Use
+You may make "fair use" of this software, as that phrase is understood under copyright law, but no more.
+
+## Patents
+Subject to the terms of this license, the licensor grants each user that agrees to this 
+license a perpetual, worldwide, nonexclusive, royalty-free, and fully paid-up patent license, 
+without the right to sublicense, to make, have made, use, and import this software, but only 
+to the extent necessary to use the copyright license granted above.
+
+If you bring a patent lawsuit against the licensor or anyone else claiming that this software 
+infringes any patent, your licenses under this license terminate immediately.
+
+## Trademarks
+This license does not grant any trademark, service mark, or other trademark rights.
+
+## Defensive Termination
+If you make any claim that this software, or any part of it, infringes any copyright, patent, 
+or other intellectual property right, your licenses under this license terminate immediately.
+
+## No Warranty
+As far as the law allows, this software comes as is, without any warranty or condition, 
+and no contributor will be liable to anyone for any damages, related to this software or 
+this license, under any kind of legal claim.
+
+================================================================================
+TRADUÇÃO INFORMATIVA PARA O PORTUGUÊS (PORTUGUESE TRANSLATION)
+================================================================================
+
+## Cláusula de Transição Futura (Sunset Clause / Data de Abertura)
+1. Antes de 1º de janeiro de 2036 ("Data de Transição"):
+   Este software e seus arquivos associados são licenciados estritamente sob os termos 
+   da licença PolyForm Noncommercial License 1.0.0. Qualquer finalidade comercial, 
+   obtenção de vantagem financeira direta ou indireta, revenda, sublicenciamento ou 
+   distribuição comercial é estritamente proibida.
+
+2. A partir de 1º de janeiro de 2036 ("Data de Transição"):
+   Este software transitará automaticamente para a licença de código aberto MIT, 
+   sem a necessidade de qualquer ato, outorga ou notificação adicional por parte dos autores.
+
+## Finalidade
+Esta licença permite a cada usuário executar, copiar, modificar e combinar este software 
+para fins não comerciais, vedada a sua utilização para qualquer fim comercial.
+
+## Acordo
+Para usufruir desta licença, você deve concordar com todos os seus termos. Se não 
+concordar com esta licença, você não deve utilizar nem distribuir este software.
+
+## Avisos de Notificação
+Você deve assegurar que qualquer pessoa que receba uma cópia de qualquer parte deste 
+software através de você, com ou sem modificações, receba também o texto integral desta 
+licença ou um link direto para https://polyformproject.org/licenses/noncommercial/1.0.0.
+
+## Concessão de Direitos Autorais
+Sujeito aos termos desta licença, o licenciante concede a cada usuário que aceitar esta 
+licença uma outorga perpétua, mundial, não exclusiva, isenta de royalties e integralmente 
+paga, sem direito a sublicenciar, para executar, modificar e integrar este software, bem como 
+copiar o software modificado resultante.
+
+Você também pode distribuir cópias deste software ou de versões modificadas resultantes, 
+mas estritamente para finalidades não comerciais.
+
+## Fins Não Comerciais
+Qualquer uso deste software é considerado não comercial, a menos que configure fim comercial.
+
+Um uso tem finalidade comercial se:
+1. for realizado por ou em nome de uma empresa/entidade, e essa entidade ou sua afiliada 
+   receber qualquer vantagem monetária, compensação financeira ou vantagem comercial com esse uso; ou
+2. for realizado por ou em nome de uma pessoa física, e esse indivíduo ou associado 
+   receber qualquer vantagem monetária, remuneração ou vantagem comercial decorrente desse uso.
+
+Fins comerciais incluem, entre outros:
+1. usar este software para desenvolver, vender ou prestar softwares, produtos ou serviços a terceiros mediante pagamento;
+2. cobrar taxas, assinaturas ou mensalidades pelo acesso ou uso deste software ou de soluções que o integrem;
+3. distribuir este software em conjunto com pacotes, produtos ou serviços comerciais;
+4. vender, alugar, sublicenciar ou publicar este software em lojas comerciais de extensões ou marketplaces sem expressa autorização por escrito.
+
+Usos pessoais, educacionais, acadêmicos e para pesquisas sem fins lucrativos são considerados fins não comerciais.
+
+## Uso Justo (Fair Use)
+Você pode fazer uso justo deste software, conforme tal termo é compreendido na legislação 
+de direitos autorais aplicável (Lei nº 9.610/1998 e tratados internacionais), mas nada além disso.
+
+## Patentes
+O licenciante concede a cada usuário que aceitar esta licença uma licença de patente mundial, 
+isenta de royalties, sem direito a sublicenciamento, para criar, mandar criar, usar e importar 
+este software, estritamente na medida necessária para exercer a licença de direitos autorais acima.
+Caso você ajuíze ação de patente contra o licenciante alegando infração relativa a este software, 
+seus direitos sob esta licença serão rescindidos imediatamente.
+
+## Marcas
+Esta licença não concede direitos sobre marcas registradas, nomes comerciais ou logotipos do projeto.
+
+## Cláusula de Defesa e Rescisão Automática
+Se você fizer qualquer alegação de que este software ou qualquer parte dele infringe 
+direitos autorais, patentes ou outros direitos de propriedade intelectual, todas as suas licenças 
+sob este instrumento serão automaticamente revogadas e encerradas.
+
+## Isenção de Garantias
+Na máxima extensão permitida pela lei aplicável, este software é fornecido "no estado em que se encontra" 
+("AS IS"), sem qualquer garantia expressa ou implícita. Nenhum mantenedor ou colaborador 
+será responsável perante terceiros por quaisquer danos diretos, indiretos ou incidentais 
+decorrentes do uso deste software.
+
+================================================================================
+SUNSET TARGET LICENSE: MIT LICENSE (EFFECTIVE JANUARY 1, 2036)
+================================================================================
+
+MIT License
+
+Copyright (c) 2026-2036 Planalto Plus Contributors
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -20,30 +191,30 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
----
+================================================================================
+LICENÇAS DE TERCEIROS E PROPRIEDADE INTELECTUAL
+================================================================================
 
-### Third-Party Licenses & Intellectual Property Acknowledgements
+1. **Ícones:**
+   - Lucide React (https://lucide.dev): Licenciado sob a Licença ISC. Copyright (c) Lucide Contributors.
+   - Ícones de Identidade Visual da Extensão: Gráficos vetoriais procedurais gerados sob medida (`scripts/generate_icons.py`). Livres de direitos autorais de terceiros.
 
-1. **Icons:**
-   - Lucide React (https://lucide.dev): Licensed under the ISC License. Copyright (c) Lucide Contributors.
-   - Extension Brand Icons: 100% custom-rendered procedural vector graphic generated in Python (`scripts/generate_icons.py`). Free of third-party copyrights or proprietary marks.
-
-2. **Fonts:**
+2. **Fontes:**
    - Inter: SIL Open Font License, Version 1.1. Copyright (c) Rasmus Andersson.
    - Merriweather: SIL Open Font License, Version 1.1. Copyright (c) Sorkin Type Co.
    - Atkinson Hyperlegible: SIL Open Font License, Version 1.1. Copyright (c) Braille Institute of America.
    - OpenDyslexic: SIL Open Font License, Version 1.1. Copyright (c) Abbie Gonzalez.
 
-3. **Libraries:**
-   - React & React-DOM: MIT License. Copyright (c) Meta Platforms, Inc. and affiliates.
-   - anki-apkg-export: MIT License. Copyright (c) Vadim Demedes.
-   - sql.js: MIT License. Copyright (c) Alon Zakai and sql.js contributors.
+3. **Bibliotecas de Terceiros:**
+   - React & React-DOM: Licença MIT. Copyright (c) Meta Platforms, Inc. e afiliados.
+   - anki-apkg-export: Licença MIT. Copyright (c) Vadim Demedes.
+   - sql.js: Licença MIT. Copyright (c) Alon Zakai e colaboradores de sql.js.
 
-4. **Trademarks & Disclaimers:**
-   - "Planalto" / "Planalto.gov.br": Refer to the official website of Brazilian legislation (Presidência da República). Planalto Moderno is an independent open-source project and is NOT affiliated with, sponsored by, or endorsed by the Brazilian Federal Government, the Presidency of the Republic, or the official portal Planalto.gov.br.
-   - "Firefox" and "Mozilla" are trademarks of Mozilla Foundation in the U.S. and other countries.
-   - "Google Gemini" is a trademark of Google LLC.
-   - "OpenAI" is a trademark of OpenAI, Inc.
-   - "Anthropic" and "Claude" are trademarks of Anthropic PBC.
-   - "Groq" is a trademark of Groq, Inc.
-   - "Anki" is a trademark of Damien Elmes.
+4. **Isenção Institucional e Marcas Registradas:**
+   - "Planalto" / "Planalto.gov.br": Referem-se ao portal oficial da legislação brasileira (Presidência da República). O Planalto Plus é um projeto independente e NÃO possui afiliação, patrocínio ou endosso da Presidência da República, do Governo Federal ou do portal oficial Planalto.gov.br.
+   - "Firefox" e "Mozilla" são marcas registradas da Mozilla Foundation.
+   - "Google Gemini" é marca registrada da Google LLC.
+   - "OpenAI" é marca registrada da OpenAI, Inc.
+   - "Anthropic" e "Claude" são marcas registradas da Anthropic PBC.
+   - "Groq" é marca registrada da Groq, Inc.
+   - "Anki" é marca registrada de Damien Elmes.

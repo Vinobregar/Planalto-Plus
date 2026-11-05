@@ -664,17 +664,6 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
             </div>
 
             <div className="flex items-center gap-1">
-              {/* Option to Hide AI Options (inside IA Chat menu as requested) */}
-              <button
-                type="button"
-                onClick={() => onToggleHideAI(true)}
-                className="px-2 py-1 rounded-lg border border-current/15 hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/30 text-[10px] font-semibold inline-flex items-center gap-1 opacity-75 hover:opacity-100 transition-colors"
-                title="Ocultar opções e botões de IA em todo o aplicativo (pode ser reativado no menu Aparência)"
-              >
-                <EyeOff className="w-3 h-3" />
-                <span>Ocultar IA</span>
-              </button>
-
               {/* Close / Collapse Drawer Button */}
               <button
                 type="button"

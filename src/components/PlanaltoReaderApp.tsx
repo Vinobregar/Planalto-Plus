@@ -1057,7 +1057,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
             )}
           </button>
 
-          {/* IA Chat Button (contains Chat, Importar Edital, Chave API, and Ocultar IA) */}
+          {/* IA Chat Button (contains Chat, Importar Edital, and Chave API) */}
           {!appearance.hideAITools && (
             <button
               type="button"
@@ -1072,7 +1072,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
                   ? 'bg-indigo-600 text-white border-indigo-600'
                   : 'border-current/15 hover:bg-black/5 dark:hover:bg-white/5'
               }`}
-              title="Abrir IA Chat (Conversa, Importar Edital, Chave API e Ocultar IA)"
+              title="Abrir IA Chat (Conversa, Importar Edital e Chave API)"
             >
               <MessageSquare className="w-3.5 h-3.5 text-indigo-500" />
               <span className="hidden lg:inline">IA Chat</span>

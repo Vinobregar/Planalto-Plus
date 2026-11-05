@@ -86,7 +86,7 @@ npm run build:all      # Ambas as versões
 
 ## Isenção de Responsabilidade & Propriedade Intelectual
 
-1. **Projeto Independente**: O Planalto Moderno é um projeto de código aberto mantido pela comunidade e **não possui vínculo oficial, afiliação, parceria ou endosso da Presidência da República do Brasil, do Governo Federal ou do portal oficial Planalto.gov.br**.
+1. **Projeto Independente**: O Planalto Plus é um projeto independente e **não possui vínculo oficial, afiliação, parceria ou endosso da Presidência da República do Brasil, do Governo Federal ou do portal oficial Planalto.gov.br**.
 2. **Finalidade Educacional**: O software tem propósito exclusivamente de estudo, pesquisa acadêmica e leitura confortável de textos legais públicos. Não substitui assessoria jurídica e não constitui consultoria profissional.
 3. **Marcas Registradas**:
    - *Firefox* e *Mozilla* são marcas da Mozilla Foundation.
@@ -95,7 +95,10 @@ npm run build:all      # Ambas as versões
    - *Anthropic* e *Claude* são marcas da Anthropic PBC.
    - *Groq* é marca da Groq, Inc.
    - *Anki* é marca registrada de Damien Elmes.
-4. **Licenças de Terceiros**:
-   - Código-fonte sob licença **MIT** (consulte [`LICENSE`](./LICENSE)).
-   - Ícones por Lucide Icons (Licença ISC) e arte procedural nativa.
+4. **Licença de Uso & Sunset Clause**:
+   - O código-fonte deste projeto é disponibilizado sob a licença **PolyForm Noncommercial License 1.0.0** com cláusula de transição (*Sunset Clause*) para a licença **MIT** em **1º de janeiro de 2036** (consulte [`LICENSE`](./LICENSE)).
+   - **Uso pessoal e acadêmico:** Livre e gratuito para estudantes, concurseiros, advogados e cidadãos.
+   - **Uso comercial proibido:** É vedada a venda, revenda, sublicenciamento ou publicação comercial em lojas de aplicativos sem autorização prévia por escrito.
+5. **Licenças de Terceiros**:
+   - Ícones por Lucide Icons (Licença ISC) e arte procedural vetorial nativa.
    - Tipografia: Inter, Merriweather, Atkinson Hyperlegible e OpenDyslexic (todas sob SIL Open Font License 1.1).

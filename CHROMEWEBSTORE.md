@@ -1,10 +1,13 @@
 # Chrome Web Store Listing — Planalto Plus
 
 > Last Updated: 2026-11-04  
-> Version: 1.0.1  
+> Version: 1.0.2  
 > Package: `dist/planalto-moderno-chrome.zip` (772 KB)
 
 ---
+
+## Changelog v1.0.2
+• Opção de Ocultar / Reativar recursos de IA centralizada exclusivamente no menu de Aparência.
 
 ## Changelog v1.0.1
 • Ajuste de sobreposição (z-index) do menu de aparência e popover de remissões.

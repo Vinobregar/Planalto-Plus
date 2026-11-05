@@ -538,7 +538,7 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
         backgroundColor: surface.panelBg,
         borderColor: surface.borderColor,
       }}
-      className={`w-[410px] max-w-full shrink-0 h-full border-l flex flex-col select-none relative z-30 ${textClass}`}
+      className={`w-[410px] max-w-full shrink-0 h-full border-l flex flex-col select-none relative z-20 ${textClass}`}
     >
       {/* TAB 1: IA CHAT MENU (Contains Conversation, Importar Edital, Chave API, and Ocultar Opções de IA) */}
       {activeTab === 'chat' && !hideAITools && (
@@ -664,25 +664,6 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
             </div>
 
             <div className="flex items-center gap-1">
-              {/* Euphemistic AI Reliability Notice Tooltip */}
-              <span className="relative group/aidisclaimer inline-flex items-center">
-                <span className="p-1 rounded-lg border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400 cursor-pointer inline-flex items-center gap-1 text-[10px] font-semibold">
-                  <AlertCircle className="w-3 h-3" />
-                </span>
-                <span
-                  className={`pointer-events-none opacity-0 group-hover/aidisclaimer:opacity-100 transition-opacity duration-150 absolute right-0 top-full mt-1.5 w-72 p-3 rounded-xl border shadow-xl text-[11px] font-normal leading-relaxed z-50 ${tooltipClass}`}
-                >
-                  <strong className="block text-amber-500 mb-1">
-                    Nota sobre Sínteses Automatizadas
-                  </strong>
-                  As explicações e análises deste assistente são geradas por
-                  inteligência artificial como recurso complementar de estudo e
-                  podem apresentar nuances interpretativas ou imprecisões
-                  pontuais. Recomendamos sempre conferir os dispositivos na
-                  íntegra e a jurisprudência oficial dos tribunais.
-                </span>
-              </span>
-
               {/* Option to Hide AI Options (inside IA Chat menu as requested) */}
               <button
                 type="button"
@@ -779,10 +760,8 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                             <strong>Edital de Concurso</strong> para grifar
                             automaticamente os artigos mais importantes, ou envie
                             sua dúvida jurídica abaixo.
-                            <span className="block mt-1.5 pt-1.5 border-t border-current/15 text-amber-400">
-                              Nota: Conteúdo gerado por IA para apoio didático;
-                              sujeito a variações interpretativas. Confira sempre
-                              a literalidade da norma.
+                            <span className="block mt-1.5 pt-1.5 border-t border-current/15 text-amber-500/90 dark:text-amber-400">
+                              <strong>Nota sobre Sínteses Automatizadas:</strong> As explicações e análises deste assistente são geradas por inteligência artificial como recurso complementar de estudo e podem apresentar nuances interpretativas ou imprecisões pontuais. Conteúdo gerado por IA para apoio didático; confira sempre a literalidade da norma e a jurisprudência oficial dos tribunais.
                             </span>
                           </span>
                         </span>

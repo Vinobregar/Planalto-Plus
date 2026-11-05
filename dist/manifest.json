@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Planalto Plus — Leitura Jurídica & IA",
   "short_name": "Planalto Plus",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Moderniza o Planalto.gov.br com leitura limpa, sumário hierárquico, texto compilado, grifos, flashcards Anki e assistente de IA.",
   "permissions": [
     "storage",
@@ -47,13 +47,17 @@
         "*://*.planalto.gov.br/ccivil_03/constituicao/emendas/ecr/quadro_ecr.htm*",
         "*://*.planalto.gov.br/ccivil_03/constituicao/emendas/emc/quadro_emc.htm*"
       ],
-      "js": ["content.js"],
+      "js": [
+        "content.js"
+      ],
       "run_at": "document_idle"
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["sql-wasm.wasm"],
+      "resources": [
+        "sql-wasm.wasm"
+      ],
       "matches": [
         "*://*.planalto.gov.br/*",
         "http://localhost/*",

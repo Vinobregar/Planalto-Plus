@@ -19,6 +19,35 @@ const LEVEL_RANK: Record<HeadingLevel, number> = {
   subsecao: 6,
 };
 
+export function standardizeArticleLabelAndNumber(rawMatchNumber: string): {
+  standardizedNumber: string;
+  formattedLabel: string;
+} {
+  const clean = rawMatchNumber.replace(/\./g, '').trim();
+  const numOnlyMatch = clean.match(/^(\d+)([º°o])?(-[A-Za-z]+)?$/i);
+  if (!numOnlyMatch) {
+    return {
+      standardizedNumber: clean,
+      formattedLabel: `Art. ${clean}`,
+    };
+  }
+  const intVal = parseInt(numOnlyMatch[1], 10);
+  const suffix = numOnlyMatch[3] ? numOnlyMatch[3].toUpperCase() : '';
+  if (intVal >= 1 && intVal <= 9) {
+    const stdNum = `${intVal}º${suffix}`;
+    return {
+      standardizedNumber: stdNum,
+      formattedLabel: `Art. ${stdNum}`,
+    };
+  } else {
+    const stdNum = `${intVal}${suffix}`;
+    return {
+      standardizedNumber: stdNum,
+      formattedLabel: `Art. ${stdNum}`,
+    };
+  }
+}
+
 function cleanWhitespace(text: string): string {
   return text
     .replace(/\u00a0/g, ' ')
@@ -458,8 +487,9 @@ export function parsePlanaltoDom(
       if (!firstArticleEl) {
         firstArticleEl = el;
       }
-      const rawNumber = artMatch[1].replace(/\./g, '');
-      const formattedLabel = `Art. ${artMatch[1]}`;
+      const { standardizedNumber, formattedLabel } =
+        standardizeArticleLabelAndNumber(artMatch[1]);
+      const rawNumber = standardizedNumber;
       const bodyRaw = (artMatch[2] || '').replace(/^[-–—.]\s*/, '');
       const { cleanText, note, url } = extractModificationNote(el, bodyRaw);
 

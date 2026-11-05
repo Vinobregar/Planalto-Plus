@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ArrowRight,
+  Check,
+  Copy,
   ChevronDown,
   ChevronUp,
   ExternalLink,
@@ -172,7 +174,7 @@ const ArticleMentionLink: React.FC<ArticleMentionLinkProps> = ({
       : 'bg-white border-slate-200 text-slate-800';
 
   return (
-    <span className="relative inline-block group/artref">
+    <span className="relative inline-block group/artref z-20 group-hover/artref:z-[60]">
       <a
         href={`#${targetArticle.id}`}
         onClick={(e) => {
@@ -186,7 +188,7 @@ const ArticleMentionLink: React.FC<ArticleMentionLinkProps> = ({
       </a>
 
       {/* Hover Popover Card with Bridge Padding so mouse can enter buttons */}
-      <span className="pointer-events-none opacity-0 group-hover/artref:opacity-100 group-hover/artref:pointer-events-auto transition-opacity duration-150 absolute bottom-full left-1/2 -translate-x-1/2 pb-2 w-80 sm:w-96 z-50 select-none text-left font-normal not-italic">
+      <span className="pointer-events-none opacity-0 group-hover/artref:opacity-100 group-hover/artref:pointer-events-auto transition-opacity duration-150 absolute bottom-full left-1/2 -translate-x-1/2 pb-2 w-80 sm:w-96 z-[70] select-none text-left font-normal not-italic">
         <span
           onClick={(e) => e.stopPropagation()}
           className={`block p-3.5 rounded-2xl border shadow-2xl space-y-2.5 text-xs leading-relaxed ${popoverBg}`}
@@ -222,7 +224,7 @@ const ArticleMentionLink: React.FC<ArticleMentionLinkProps> = ({
             </span>
           )}
 
-          <span className="pt-1.5 border-t border-current/10 flex items-center justify-between gap-2">
+          <span className="pt-1.5 border-t border-current/10 flex items-center justify-between gap-2 relative z-[80] pointer-events-auto">
             <button
               type="button"
               onClick={(e) => {
@@ -482,6 +484,28 @@ export const ArticleItem: React.FC<ArticleItemProps> = ({
   const [noteDraft, setNoteDraft] = useState(annotation?.note || '');
   const [selectedQuote, setSelectedQuote] = useState<string>('');
   const [expandRevoked, setExpandRevoked] = useState(false);
+  const [copiedArticle, setCopiedArticle] = useState(false);
+
+  const handleCopyArticleFull = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const parts: string[] = [];
+    if (article.rubrics && article.rubrics.length > 0) {
+      parts.push(article.rubrics.map((r) => r.text).join('\n'));
+    }
+    parts.push(`${article.label} ${article.caputText}`);
+    for (const sc of article.subClauses) {
+      if (sc.type === 'rubrica') {
+        parts.push(sc.text);
+      } else {
+        parts.push(`${sc.label} ${sc.text}`);
+      }
+    }
+    const fullText = parts.join('\n');
+    navigator.clipboard.writeText(fullText).then(() => {
+      setCopiedArticle(true);
+      setTimeout(() => setCopiedArticle(false), 2000);
+    });
+  };
 
   const articleRef = useRef<HTMLElement | null>(null);
 
@@ -950,8 +974,25 @@ export const ArticleItem: React.FC<ArticleItemProps> = ({
           article.isRevoked ? 'line-through opacity-55' : ''
         }`}
       >
-        <span className="inline-flex items-center px-2 py-0.5 mr-2 rounded-md text-[0.88em] font-bold bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 select-all">
-          {article.label}
+        <span className="inline-flex items-center gap-1 px-2 py-0.5 mr-2 rounded-md text-[0.88em] font-bold bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 select-all align-middle">
+          <span>{article.label}</span>
+          <button
+            type="button"
+            onClick={handleCopyArticleFull}
+            className="p-0.5 -mr-1 rounded hover:bg-black/10 dark:hover:bg-white/10 opacity-60 hover:opacity-100 transition-opacity text-current cursor-pointer"
+            title={
+              copiedArticle
+                ? 'Artigo copiado para a área de transferência!'
+                : `Copiar ${article.label} na íntegra`
+            }
+            aria-label={`Copiar ${article.label} na íntegra`}
+          >
+            {copiedArticle ? (
+              <Check className="w-3 h-3 text-emerald-500" />
+            ) : (
+              <Copy className="w-3 h-3" />
+            )}
+          </button>
         </span>
 
         {/* Explicit Revoked Incisos Notice Badge on Caput */}

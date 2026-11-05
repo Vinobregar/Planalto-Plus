@@ -1,10 +1,18 @@
 # Chrome Web Store Listing — Planalto Plus
 
 > Last Updated: 2026-11-04  
-> Version: 1.0.0  
+> Version: 1.0.1  
 > Package: `dist/planalto-moderno-chrome.zip` (772 KB)
 
 ---
+
+## Changelog v1.0.1
+• Ajuste de sobreposição (z-index) do menu de aparência e popover de remissões.
+• Padronização da grafia ordinal dos artigos (LC 95/98: Art. 1º a 9º, e cardinal a partir do 10).
+• Novo botão de cópia na íntegra de cada artigo ao lado do seu número.
+• Busca superior com filtro exclusivo de artigos ao pressionar Enter/buscar e suporte a sinônimos jurídicos.
+• Readequação da nota sobre sínteses automatizadas no assistente IA.
+• Redução e refinamento tipográfico dos links de remissão no início da norma.
 
 ## 1. Store Listing Details
 

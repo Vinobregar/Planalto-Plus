@@ -68,6 +68,7 @@ import {
   FONT_FAMILY_CSS,
   computeThemeColors,
 } from './AppearancePopover';
+import { getSynonymsForQuery } from '../utils/legalSynonyms';
 import {
   ArticleItem,
   ModificationNoteBadge,
@@ -104,6 +105,66 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
 
   // Shared search query between Sumário (left sidebar) and Centered Top Search Bar
   const [searchQuery, setSearchQuery] = useState('');
+  const [appliedFilterQuery, setAppliedFilterQuery] = useState<string | null>(null);
+  const [searchWithSynonyms, setSearchWithSynonyms] = useState(false);
+
+  const handleApplySearchFilter = () => {
+    const q = searchQuery.trim();
+    if (!q) {
+      setAppliedFilterQuery(null);
+    } else {
+      setAppliedFilterQuery(q);
+    }
+    setShowTopSearchDropdown(false);
+  };
+
+  const activeFilteredArticleIds = useMemo(() => {
+    if (!appliedFilterQuery) return null;
+    const q = appliedFilterQuery.toLowerCase().trim();
+    const cleanQuery = q.replace(/[º°.]/g, '').trim();
+    const numMatch = /^(?:art(?:igo)?\s*)?(\d+[\w-]*)$/i.exec(cleanQuery);
+    if (numMatch) {
+      const target = normalizeArticleNumberKey(numMatch[1]);
+      const cleanTarget = target.replace(/-/g, '');
+      const ids = new Set<string>();
+      for (const art of doc.articles) {
+        if (appearance.compiledMode && art.isRevoked) continue;
+        const artKey = normalizeArticleNumberKey(art.number);
+        const cleanArtKey = artKey.replace(/-/g, '');
+        if (artKey === target || cleanArtKey === cleanTarget) {
+          ids.add(art.id);
+        }
+      }
+      return ids;
+    }
+
+    const searchTerms = searchWithSynonyms
+      ? q.split(/\s+/).flatMap((w) => getSynonymsForQuery(w))
+      : [q];
+
+    const ids = new Set<string>();
+    for (const art of doc.articles) {
+      if (appearance.compiledMode && art.isRevoked) continue;
+      const num = art.number.toLowerCase();
+      const label = art.label.toLowerCase();
+      const caput = art.caputText.toLowerCase();
+      const subs = art.subClauses.map((sc) => sc.text.toLowerCase()).join(' ');
+      const note = annotations[art.id]?.note?.toLowerCase() || '';
+
+      const matches = searchTerms.some(
+        (term) =>
+          num.includes(term) ||
+          label.includes(term) ||
+          caput.includes(term) ||
+          subs.includes(term) ||
+          note.includes(term)
+      );
+      if (matches) {
+        ids.add(art.id);
+      }
+    }
+    return ids;
+  }, [appliedFilterQuery, searchWithSynonyms, doc.articles, appearance.compiledMode, annotations]);
   const [showTopSearchDropdown, setShowTopSearchDropdown] = useState(false);
 
   // Floating menu states
@@ -783,33 +844,64 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
         {/* Center: Search Bar Centered in Top Header (Flexibly shrinks to guarantee no row wrapping) */}
         <div
           ref={topSearchRef}
-          className="relative flex-1 min-w-[90px] max-w-[160px] sm:max-w-[220px] md:max-w-[280px] lg:max-w-[360px] mx-1 sm:mx-2"
+          className="relative flex-1 min-w-[140px] max-w-[200px] sm:max-w-[260px] md:max-w-[340px] lg:max-w-[420px] mx-1 sm:mx-2"
         >
-          <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 opacity-50 pointer-events-none" />
+          <button
+            type="button"
+            onClick={handleApplySearchFilter}
+            className="w-4 h-4 absolute left-2 top-1/2 -translate-y-1/2 opacity-60 hover:opacity-100 cursor-pointer flex items-center justify-center text-current"
+            title="Buscar artigos correspondentes (Enter)"
+          >
+            <Search className="w-3.5 h-3.5" />
+          </button>
           <input
             type="text"
             value={searchQuery}
             onFocus={() => setShowTopSearchDropdown(true)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                handleApplySearchFilter();
+              }
+            }}
             onChange={(e) => {
               setSearchQuery(e.target.value);
               setShowTopSearchDropdown(true);
             }}
-            placeholder="Buscar..."
-            className="w-full pl-7 pr-7 py-1.5 rounded-xl border border-current/15 bg-black/[0.03] dark:bg-white/[0.04] text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all placeholder:truncate"
+            placeholder="Buscar ou nº do Art..."
+            className="w-full pl-7 pr-20 py-1.5 rounded-xl border border-current/15 bg-black/[0.03] dark:bg-white/[0.04] text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all placeholder:truncate"
           />
-          {searchQuery && (
+          <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
             <button
               type="button"
-              onClick={() => {
-                setSearchQuery('');
-                setShowTopSearchDropdown(false);
-              }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/10 opacity-60 hover:opacity-100"
-              title="Limpar busca"
+              onClick={() => setSearchWithSynonyms((v) => !v)}
+              className={`px-1.5 py-0.5 rounded text-[10px] font-semibold transition-colors ${
+                searchWithSynonyms
+                  ? 'bg-indigo-600 text-white shadow-sm'
+                  : 'opacity-55 hover:opacity-100 border border-current/20'
+              }`}
+              title={
+                searchWithSynonyms
+                  ? 'Busca por sinônimos ativada (Clique para desativar)'
+                  : 'Ativar busca por sinônimos e termos jurídicos correlatos'
+              }
             >
-              <X className="w-3 h-3" />
+              Sinônimos
             </button>
-          )}
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchQuery('');
+                  setAppliedFilterQuery(null);
+                  setShowTopSearchDropdown(false);
+                }}
+                className="p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/10 opacity-60 hover:opacity-100"
+                title="Limpar busca"
+              >
+                <X className="w-3 h-3" />
+              </button>
+            )}
+          </div>
 
           {/* Live Search Results Dropdown for Centered Top Search Bar */}
           {showTopSearchDropdown && searchQuery.trim().length > 0 && (
@@ -887,7 +979,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
                 backgroundColor: themeColors.cardBg,
                 borderColor: themeColors.borderColor,
               }}
-              className={`pointer-events-none opacity-0 group-hover/compilado:opacity-100 transition-opacity duration-150 absolute left-0 top-full mt-2 w-80 sm:w-96 p-3 rounded-xl border shadow-xl text-[11px] leading-relaxed whitespace-normal break-words z-50 ${dropdownThemeClass}`}
+              className={`pointer-events-none opacity-0 group-hover/compilado:opacity-100 transition-opacity duration-150 absolute right-0 sm:right-auto sm:left-0 top-full mt-2 w-72 sm:w-80 p-3 rounded-xl border shadow-xl text-[11px] leading-relaxed whitespace-normal break-words z-[60] ${dropdownThemeClass}`}
             >
               <div
                 className={`font-bold mb-1 flex items-center gap-1 ${
@@ -930,7 +1022,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
             </button>
 
             {showAppearancePopover && (
-              <div className="absolute right-0 mt-2 z-50">
+              <div className="absolute right-0 mt-2 z-[70]">
                 <AppearancePopover
                   settings={appearance}
                   onChange={handleUpdateAppearance}
@@ -1090,7 +1182,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
                         href={link.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-medium border border-current/15 hover:border-indigo-500/50 hover:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 transition-colors"
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium border border-current/15 hover:border-indigo-500/50 hover:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 transition-colors"
                         title={link.text}
                       >
                         <span>{link.text}</span>
@@ -1228,8 +1320,86 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
               )}
             </div>
 
+            {/* Filter Banner when Search is active */}
+            {activeFilteredArticleIds && (
+              <div
+                style={{
+                  backgroundColor: themeColors.cardBg,
+                  borderColor: themeColors.borderColor,
+                }}
+                className="mb-6 p-4 rounded-2xl border shadow-sm flex flex-wrap items-center justify-between gap-3 text-xs"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="p-1.5 rounded-lg bg-indigo-500/15 text-indigo-600 dark:text-indigo-400">
+                    <Search className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="font-semibold">
+                      Exibindo {activeFilteredArticleIds.size} artigo(s) para "
+                      <span className="text-indigo-600 dark:text-indigo-400">
+                        {appliedFilterQuery}
+                      </span>
+                      "
+                    </span>
+                    {searchWithSynonyms && (
+                      <span className="ml-2 px-1.5 py-0.5 rounded-full text-[10px] bg-indigo-600 text-white font-semibold">
+                        Sinônimos ativos
+                      </span>
+                    )}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAppliedFilterQuery(null);
+                    setSearchQuery('');
+                  }}
+                  className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-xs transition-colors shrink-0 flex items-center gap-1"
+                >
+                  <X className="w-3.5 h-3.5" />
+                  <span>Limpar filtro e ver todos</span>
+                </button>
+              </div>
+            )}
+
+            {activeFilteredArticleIds && activeFilteredArticleIds.size === 0 && (
+              <div
+                style={{
+                  backgroundColor: themeColors.cardBg,
+                  borderColor: themeColors.borderColor,
+                }}
+                className="my-8 p-8 rounded-2xl border text-center space-y-3"
+              >
+                <p className="text-sm opacity-70">
+                  Nenhum artigo correspondente encontrado para "{appliedFilterQuery}".
+                </p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAppliedFilterQuery(null);
+                    setSearchQuery('');
+                  }}
+                  className="px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-500"
+                >
+                  Ver lei completa
+                </button>
+              </div>
+            )}
+
             {/* Structured Blocks (Headings + Articles + Text) */}
             {doc.blocks.map((block) => {
+              if (activeFilteredArticleIds) {
+                if (block.kind === 'article') {
+                  if (!activeFilteredArticleIds.has(block.article.id)) return null;
+                } else if (block.kind === 'heading') {
+                  const hasMatching = block.node.articles.some((a) =>
+                    activeFilteredArticleIds.has(a.id)
+                  );
+                  if (!hasMatching) return null;
+                } else {
+                  return null;
+                }
+              }
               if (block.kind === 'heading') {
                 const { node } = block;
                 const isMajor =

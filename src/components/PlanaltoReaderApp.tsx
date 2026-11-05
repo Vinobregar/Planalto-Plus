@@ -64,6 +64,7 @@ import {
   summarizeArticleJurisprudenceWithAI,
 } from '../services/aiService';
 import { TocSidebar } from './TocSidebar';
+import { ShortcutsModal } from './ShortcutsModal';
 import { normalizeArticleNumberKey } from '../utils/crossReferenceGraph';
 import {
   AppearancePopover,
@@ -196,10 +197,118 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
   const [isLoadingAI, setIsLoadingAI] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
 
+  
+  // Jump instantaneously (without smooth animation) to next/previous article
+  const handleJumpRelativeArticle = (direction: 1 | -1) => {
+    const list = doc.articles.filter((a) => !appearance.compiledMode || !a.isRevoked);
+    if (list.length === 0) return;
+
+    let currentIndex = list.findIndex((a) => a.id === focusedArticleId);
+    if (currentIndex === -1) {
+      currentIndex = direction === 1 ? -1 : list.length;
+    }
+
+    const nextIndex = Math.max(0, Math.min(list.length - 1, currentIndex + direction));
+    const target = list[nextIndex];
+    if (target) {
+      setFocusedArticleId(target.id);
+      const el = readerScrollRef.current?.querySelector(`#${target.id}`);
+      if (el) {
+        // Fast instantaneous jump as requested
+        el.scrollIntoView({ behavior: 'auto', block: 'start' });
+      }
+    }
+  };
+
+  // Global Keyboard Shortcuts (J, K, /, C, [, ], ?, Esc)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === 'INPUT' ||
+          target.tagName === 'TEXTAREA' ||
+          target.isContentEditable ||
+          target.closest('input, textarea, [contenteditable="true"]'))
+      ) {
+        if (e.key === 'Escape') {
+          target.blur();
+        }
+        return;
+      }
+
+      if (e.metaKey || e.ctrlKey || e.altKey) {
+        return;
+      }
+
+      const key = e.key.toLowerCase();
+
+      if (key === 'j') {
+        e.preventDefault();
+        handleJumpRelativeArticle(1);
+        return;
+      }
+
+      if (key === 'k') {
+        e.preventDefault();
+        handleJumpRelativeArticle(-1);
+        return;
+      }
+
+      if (e.key === '/') {
+        e.preventDefault();
+        topSearchInputRef.current?.focus();
+        topSearchInputRef.current?.select();
+        return;
+      }
+
+      if (key === 'c') {
+        e.preventDefault();
+        handleUpdateAppearance({
+          ...appearance,
+          compiledMode: !appearance.compiledMode,
+        });
+        return;
+      }
+
+      if (e.key === '[') {
+        e.preventDefault();
+        setLeftSidebarOpen((v) => !v);
+        return;
+      }
+
+      if (e.key === ']') {
+        e.preventDefault();
+        setRightDrawerOpen((v) => !v);
+        return;
+      }
+
+      if (e.key === '?') {
+        e.preventDefault();
+        setShowShortcutsModal((v) => !v);
+        return;
+      }
+
+      if (e.key === 'Escape') {
+        setShowShortcutsModal(false);
+        setShowTopSearchDropdown(false);
+        setShowAppearancePopover(false);
+        setShowLawsMenu(false);
+        setShowCrossRefModal(false);
+        return;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [focusedArticleId, appearance, doc.articles, leftSidebarOpen, rightDrawerOpen]);
+
   const readerScrollRef = useRef<HTMLDivElement | null>(null);
   const lawsMenuRef = useRef<HTMLDivElement | null>(null);
   const appearanceMenuRef = useRef<HTMLDivElement | null>(null);
   const topSearchRef = useRef<HTMLDivElement | null>(null);
+  const topSearchInputRef = useRef<HTMLInputElement | null>(null);
+  const [showShortcutsModal, setShowShortcutsModal] = useState(false);
 
   const crossRefGraph = useMemo(
     () => buildCrossReferenceGraph(doc.articles, annotations),
@@ -908,7 +1017,8 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
               setSearchQuery(e.target.value);
               setShowTopSearchDropdown(true);
             }}
-            placeholder="Buscar ou nº do Art..."
+            ref={topSearchInputRef}
+            placeholder="Buscar ou nº do Art... (/)"
             className="w-full pl-7 pr-20 py-1.5 rounded-xl border border-current/15 bg-black/[0.03] dark:bg-white/[0.04] text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all placeholder:truncate"
           />
           <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
@@ -1160,6 +1270,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
             onSelectHeading={handleSelectHeadingFromToc}
             onSelectArticle={handleSelectArticleFromToc}
             onCollapse={() => setLeftSidebarOpen(false)}
+            onOpenShortcuts={() => setShowShortcutsModal(true)}
           />
         )}
 

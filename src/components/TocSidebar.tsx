@@ -1,6 +1,7 @@
 import React, { useDeferredValue, useMemo, useState } from 'react';
 import {
   BookOpen,
+  Keyboard,
   ChevronDown,
   ChevronRight,
   ChevronsDownUp,
@@ -34,6 +35,7 @@ interface TocSidebarProps {
   onSelectHeading: (headingId: string) => void;
   onSelectArticle: (articleId: string) => void;
   onCollapse: () => void;
+  onOpenShortcuts?: () => void;
 }
 
 export const TocSidebar: React.FC<TocSidebarProps> = ({
@@ -48,6 +50,7 @@ export const TocSidebar: React.FC<TocSidebarProps> = ({
   onSelectHeading,
   onSelectArticle,
   onCollapse,
+  onOpenShortcuts,
 }) => {
   const [collapsedNodes, setCollapsedNodes] = useState<Record<string, boolean>>(
     {}
@@ -353,6 +356,29 @@ export const TocSidebar: React.FC<TocSidebarProps> = ({
           toc.map((node) => renderTreeNode(node, 0))
         )}
       </div>
+
+      {/* Footer com botão discreto de Atalhos */}
+      {onOpenShortcuts && (
+        <div
+          style={{ borderColor: surface.borderColor }}
+          className="p-2 border-t flex items-center justify-between text-xs"
+        >
+          <button
+            type="button"
+            onClick={onOpenShortcuts}
+            className="w-full py-1.5 px-2.5 rounded-lg border border-current/15 hover:bg-black/5 dark:hover:bg-white/5 opacity-75 hover:opacity-100 flex items-center justify-between transition-colors text-[11px] cursor-pointer"
+            title="Ver todos os atalhos de teclado (?)"
+          >
+            <span className="flex items-center gap-1.5">
+              <Keyboard className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+              <span>Atalhos de Teclado</span>
+            </span>
+            <kbd className="px-1.5 py-0.2 rounded border border-current/20 bg-black/5 dark:bg-white/10 font-mono text-[10px] font-bold">
+              ?
+            </kbd>
+          </button>
+        </div>
+      )}
     </aside>
   );
 };

@@ -1,10 +1,15 @@
 # Chrome Web Store Listing — Planalto Plus
 
 > Last Updated: 2026-11-04  
-> Version: 1.0.4  
+> Version: 1.0.5  
 > Package: `dist/planalto-moderno-chrome.zip` (772 KB)
 
 ---
+
+## Changelog v1.0.5
+• Atalhos de Teclado Globais: navegação rápida 'J'/'K' (próximo/artigo anterior), '/' (busca), 'C' (texto compilado), '[' e ']' (painéis) e '?' (guia de atalhos).
+• Botão de Atalhos no Sumário: acesso rápido ao modal de atalhos no rodapé da barra lateral esquerda.
+• Estilização para Impressão e PDF (Ctrl+P): formatação limpa de livro jurídico, sem menus ou botões, com quebras de página otimizadas.
 
 ## Changelog v1.0.4
 • Correção de layout e sobreposição de texto no botão Ocultar IA do menu de Aparência.

@@ -28,6 +28,7 @@ import {
   saveAIConfig,
   saveAppearanceSettings,
 } from '../storage/storageService';
+import { setPcdUserStatus } from '../services/auth.js';
 
 const QUICK_LAWS = [
   {
@@ -216,6 +217,45 @@ const PopupApp: React.FC = () => {
           )}
         </button>
       </form>
+
+      {/* Acessibilidade Universal: VLibras & Leitura PcD */}
+      <div className="p-3 rounded-xl bg-slate-800/60 border border-slate-800 space-y-2.5 text-xs">
+        <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+          Acessibilidade Universal
+        </div>
+        <label className="flex items-center justify-between gap-2 cursor-pointer">
+          <span className="text-slate-200 font-medium">
+            Exibir botão do VLibras na página
+          </span>
+          <input
+            type="checkbox"
+            checked={appearance.enableVlibras !== false}
+            onChange={(e) => {
+              const next = { ...appearance, enableVlibras: e.target.checked };
+              setAppearance(next);
+              saveAppearanceSettings(next);
+            }}
+            className="w-4 h-4 rounded accent-indigo-500 cursor-pointer"
+          />
+        </label>
+        <label className="flex items-start gap-2 pt-1.5 border-t border-slate-700/70 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={Boolean(appearance.isPcdAudioAccess)}
+            onChange={(e) => {
+              const flag = e.target.checked;
+              const next = { ...appearance, isPcdAudioAccess: flag };
+              setAppearance(next);
+              saveAppearanceSettings(next);
+              setPcdUserStatus(flag);
+            }}
+            className="mt-0.5 w-4 h-4 rounded accent-emerald-500 cursor-pointer shrink-0"
+          />
+          <span className="text-emerald-300 font-medium leading-snug">
+            Sou pessoa com deficiência visual e necessito de leitura por áudio (Gratuito — Lei 13.146/2015)
+          </span>
+        </label>
+      </div>
 
       {/* Quick Planalto Links */}
       <div className="space-y-1.5">

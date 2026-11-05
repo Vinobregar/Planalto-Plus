@@ -1,0 +1,72 @@
+{
+  "manifest_version": 3,
+  "name": "Planalto Plus — Leitura Jurídica & IA",
+  "short_name": "Planalto Plus",
+  "version": "1.0.13",
+  "description": "Moderniza o Planalto.gov.br com leitura limpa, sumário hierárquico, texto compilado, grifos, flashcards Anki e assistente de IA.",
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "identity"
+  ],
+  "host_permissions": [
+    "*://*.planalto.gov.br/*",
+    "https://*.supabase.co/*",
+    "https://vlibras.gov.br/*",
+    "https://generativelanguage.googleapis.com/*",
+    "https://api.openai.com/*",
+    "https://api.anthropic.com/*",
+    "https://openrouter.ai/*",
+    "https://api.groq.com/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "icons": {
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Planalto Plus — Configurações & IA",
+    "default_icon": {
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.planalto.gov.br/ccivil_03/*",
+        "*://*.planalto.gov.br/*lei*",
+        "*://*.planalto.gov.br/*decreto*",
+        "*://*.planalto.gov.br/*constituicao*"
+      ],
+      "exclude_matches": [
+        "*://*.planalto.gov.br/ccivil_03/constituicao/emendas/ecr/quadro_ecr.htm*",
+        "*://*.planalto.gov.br/ccivil_03/constituicao/emendas/emc/quadro_emc.htm*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "sql-wasm.wasm",
+        "assets/data/oab_incidence.json"
+      ],
+      "matches": [
+        "*://*.planalto.gov.br/*",
+        "http://localhost/*",
+        "http://127.0.0.1/*"
+      ]
+    }
+  ]
+}

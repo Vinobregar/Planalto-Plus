@@ -16,6 +16,8 @@ import {
   StickyNote,
   Tag,
   Trash2,
+  Volume2,
+  VolumeX,
   X,
 } from 'lucide-react';
 import {
@@ -24,6 +26,7 @@ import {
   ArticleBlock,
   HighlightColor,
   HighlightTag,
+  OabIncidenceItem,
   ThemeMode,
   TextHighlight,
 } from '../types/legislation';
@@ -52,6 +55,12 @@ interface ArticleItemProps {
   onExplainWithAI: (article: ArticleBlock) => void;
   onSummarizeJurisprudenceWithAI: (article: ArticleBlock) => void;
   onQuizWithAI: (article: ArticleBlock) => void;
+  onPlayAudio?: (article: ArticleBlock) => void;
+  isPlayingAudio?: boolean;
+  isPro?: boolean;
+  isPcd?: boolean;
+  oabIncidence?: OabIncidenceItem;
+  isReadInTrail?: boolean;
 }
 
 export function hexToRgba(hex: string, alpha: number): string {
@@ -553,6 +562,12 @@ export const ArticleItem: React.FC<ArticleItemProps> = ({
   onExplainWithAI,
   onSummarizeJurisprudenceWithAI,
   onQuizWithAI,
+  onPlayAudio,
+  isPlayingAudio = false,
+  isPro = false,
+  isPcd = false,
+  oabIncidence,
+  isReadInTrail = false,
 }) => {
   const [showHighlightPicker, setShowHighlightPicker] = useState(false);
   const [showJurisprudence, setShowJurisprudence] = useState(false);
@@ -846,6 +861,45 @@ export const ArticleItem: React.FC<ArticleItemProps> = ({
           <span className="hidden sm:inline">Jurisprudência</span>
         </button>
 
+        {/* Audio Article Button (PRO WaveNet / PcD Web Speech API Gratuita) */}
+        {onPlayAudio && (
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              onPlayAudio(article);
+            }}
+            className={`flex items-center gap-1 px-2 py-0.5 rounded-full hover:bg-indigo-500/10 transition-colors ${
+              isPlayingAudio
+                ? 'bg-indigo-600 text-white font-semibold'
+                : 'text-indigo-600 dark:text-indigo-400 font-medium'
+            }`}
+            title={
+              isPlayingAudio
+                ? 'Parar leitura em áudio deste artigo'
+                : isPcd
+                ? 'Ouvir artigo gratuitamente (Modo Acessibilidade PcD — Web Speech API)'
+                : isPro
+                ? 'Ouvir artigo com voz neural WaveNet (Cache Global PRO)'
+                : 'Ouvir artigo em áudio [PRO / Acessibilidade PcD Gratuita]'
+            }
+          >
+            {isPlayingAudio ? (
+              <VolumeX className="w-3.5 h-3.5" />
+            ) : (
+              <Volume2 className="w-3.5 h-3.5" />
+            )}
+            <span className="hidden sm:inline">
+              {isPlayingAudio ? 'Parar' : 'Ouvir'}
+            </span>
+            {!isPro && !isPcd && (
+              <span className="text-[9px] px-1 py-0.1 rounded bg-black/5 dark:bg-white/10 opacity-75 font-bold">
+                PRO
+              </span>
+            )}
+          </button>
+        )}
+
         {/* AI Explain Button (Hidden when appearance.hideAITools is true) */}
         {!appearance.hideAITools && (
           <button
@@ -1070,6 +1124,34 @@ export const ArticleItem: React.FC<ArticleItemProps> = ({
             )}
           </button>
         </span>
+
+        {/* OAB / FGV Incidence Discrete Badge with Recurrence Tooltip */}
+        {oabIncidence && (
+          <span className="relative group/oab inline-flex items-center mr-2 align-middle select-none">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 cursor-help">
+              <span>🎯 OAB {oabIncidence.recurrenceCount}x</span>
+            </span>
+            <span className="pointer-events-none opacity-0 group-hover/oab:opacity-100 transition-opacity duration-150 absolute bottom-full left-0 mb-1.5 w-72 p-2.5 rounded-xl border border-amber-500/30 bg-slate-900 text-slate-100 shadow-2xl text-[11px] font-sans font-normal leading-snug z-50 no-print">
+              <strong className="block text-amber-400 mb-0.5">
+                Alta Incidência FGV / Exame de Ordem ({oabIncidence.recurrenceCount}x)
+              </strong>
+              <span className="block opacity-90">{oabIncidence.summary}</span>
+              <span className="block text-[10px] opacity-70 mt-1">
+                Exames recentes: {oabIncidence.exams.join(', ')}
+              </span>
+            </span>
+          </span>
+        )}
+
+        {/* Read Indicator from Study Trail (subtle checkmark when article was read) */}
+        {isReadInTrail && (
+          <span
+            className="inline-flex items-center px-1.5 py-0.5 mr-1.5 rounded text-[10px] font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 align-middle select-none"
+            title="Artigo lido na sua Trilha do Edital"
+          >
+            ✓ Lido
+          </span>
+        )}
 
         {/* Explicit Revoked Incisos Notice Badge on Caput */}
         {hasRevokedIncisos && (

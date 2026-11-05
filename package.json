@@ -1,12 +1,13 @@
 {
   "name": "planalto-plus",
   "private": true,
-  "version": "1.0.12",
+  "version": "1.0.13",
   "license": "PolyForm-Noncommercial-1.0.0",
   "description": "Modernizes www.planalto.gov.br legislation pages with a clean reader, hierarchical TOC, notes, highlights, jurisprudence search, and AI (Explanations, OAB/Concursos Quiz & Chat).",
   "type": "module",
   "scripts": {
     "dev": "node ./node_modules/vite/bin/vite.js",
+    "bump": "node scripts/bump-version.mjs",
     "build": "node ./node_modules/typescript/bin/tsc && node scripts/build.mjs",
     "build:chrome": "node ./node_modules/typescript/bin/tsc && node scripts/build.mjs --target=chrome",
     "build:firefox": "node ./node_modules/typescript/bin/tsc && node scripts/build.mjs --target=firefox",

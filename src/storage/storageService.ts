@@ -24,6 +24,8 @@ export const DEFAULT_APPEARANCE: AppearanceSettings = {
   hideAITools: false,
   sepiaIntensity: 50,
   darkIntensity: 100,
+  enableVlibras: true,
+  isPcdAudioAccess: false,
 };
 
 /**
@@ -581,6 +583,12 @@ export async function saveLawAnnotations(
   annotations: Record<string, ArticleAnnotation>
 ): Promise<void> {
   await setRaw(`${ANNOTATIONS_PREFIX}${lawId}`, annotations);
+  // Sincronização Local-First em segundo plano para assinantes PRO (0ms de latência na UI)
+  import('../services/cloudSync.js')
+    .then(({ pushLawAnnotationsToCloud }) => {
+      pushLawAnnotationsToCloud(lawId, annotations).catch(() => {});
+    })
+    .catch(() => {});
 }
 
 export function exportAnnotationsToMarkdown(

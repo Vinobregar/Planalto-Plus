@@ -562,6 +562,50 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
         </button>
       </div>
 
+      {/* Acessibilidade Universal (VLibras Oficial + Leitura por Áudio PcD - Lei 13.146/2015) */}
+      <div className="pt-2.5 border-t border-current/10 space-y-2">
+        <div className="text-[11px] font-medium opacity-75 uppercase tracking-wider">
+          Acessibilidade Universal
+        </div>
+
+        {/* Toggle 1: Exibir botão do VLibras na página */}
+        <label className="flex items-center justify-between gap-2.5 p-2 rounded-xl border border-current/15 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition-colors">
+          <div className="min-w-0 flex-1">
+            <div className="font-semibold text-xs leading-tight">
+              Exibir botão do VLibras na página
+            </div>
+            <p className="text-[10px] opacity-70 leading-snug">
+              Tradutor oficial em Libras (Governo Federal)
+            </p>
+          </div>
+          <input
+            type="checkbox"
+            checked={settings.enableVlibras !== false}
+            onChange={(e) => update({ enableVlibras: e.target.checked })}
+            style={{ accentColor: currentAccent }}
+            className="w-4 h-4 rounded cursor-pointer shrink-0"
+          />
+        </label>
+
+        {/* Checkbox Ética: Lei Federal nº 13.146/2015 */}
+        <label className="flex items-start gap-2.5 p-2 rounded-xl border border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10 cursor-pointer transition-colors">
+          <input
+            type="checkbox"
+            checked={Boolean(settings.isPcdAudioAccess)}
+            onChange={(e) => update({ isPcdAudioAccess: e.target.checked })}
+            className="mt-0.5 w-4 h-4 rounded accent-emerald-600 cursor-pointer shrink-0"
+          />
+          <div className="min-w-0 flex-1">
+            <div className="font-semibold text-xs leading-tight text-emerald-700 dark:text-emerald-300">
+              Sou pessoa com deficiência visual e necessito de leitura por áudio
+            </div>
+            <p className="text-[10px] opacity-75 leading-snug mt-0.5">
+              Ativa leitura gratuita e ilimitada via Web Speech API (Lei nº 13.146/2015)
+            </p>
+          </div>
+        </label>
+      </div>
+
       {/* Opção para Ocultar / Exibir Recursos de IA (exclusiva do menu Aparência) */}
       <div className="pt-2.5 border-t border-current/10">
         <button

@@ -1,0 +1,351 @@
+{
+  "version": "1.0.0",
+  "source": "FGV / Exame de Ordem Unificado (OAB)",
+  "updatedAt": "2026-11-05",
+  "laws": {
+    "cf88": [
+      {
+        "articleNumber": "5",
+        "articleLabel": "Art. 5º",
+        "recurrenceCount": 68,
+        "exams": ["XXXVIII", "XXXIX", "XL", "XLI", "XLII"],
+        "summary": "Direitos e deveres individuais e coletivos: inviolabilidade do domicílio (XI), sigilo das comunicações (XII), remédios constitucionais (LXVIII a LXXIII).",
+        "priority": "altissima"
+      },
+      {
+        "articleNumber": "12",
+        "articleLabel": "Art. 12",
+        "recurrenceCount": 24,
+        "exams": ["XXXVII", "XXXIX", "XLI"],
+        "summary": "Nacionalidade brasileira: brasileiros natos e naturalizados, cargos privativos de brasileiro nato (§ 3º) e perda da nacionalidade (§ 4º).",
+        "priority": "altissima"
+      },
+      {
+        "articleNumber": "37",
+        "articleLabel": "Art. 37",
+        "recurrenceCount": 42,
+        "exams": ["XXXVI", "XXXVIII", "XL", "XLI"],
+        "summary": "Administração Pública: princípios LIMPE, acumulação de cargos (XVI), teto remuneratório (XI) e responsabilidade civil objetiva do Estado (§ 6º).",
+        "priority": "altissima"
+      },
+      {
+        "articleNumber": "60",
+        "articleLabel": "Art. 60",
+        "recurrenceCount": 19,
+        "exams": ["XXXVII", "XL", "XLII"],
+        "summary": "Processo legislativo das Emendas à Constituição e cláusulas pétreas (§ 4º).",
+        "priority": "alta"
+      },
+      {
+        "articleNumber": "102",
+        "articleLabel": "Art. 102",
+        "recurrenceCount": 31,
+        "exams": ["XXXVIII", "XXXIX", "XLI", "XLII"],
+        "summary": "Competências originárias e recursais do Supremo Tribunal Federal (ADI, ADC, ADPF e Recurso Extraordinário).",
+        "priority": "altissima"
+      },
+      {
+        "articleNumber": "103",
+        "articleLabel": "Art. 103",
+        "recurrenceCount": 27,
+        "exams": ["XXXVI", "XXXIX", "XL", "XLII"],
+        "summary": "Legitimados universais e especiais para propositura de ADI e ADC perante o STF.",
+        "priority": "altissima"
+      }
+    ],
+    "oab94": [
+      {
+        "articleNumber": "7",
+        "articleLabel": "Art. 7º",
+        "recurrenceCount": 54,
+        "exams": ["XXXVII", "XXXVIII", "XXXIX", "XL", "XLI", "XLII"],
+        "summary": "Prerrogativas e direitos do advogado: inviolabilidade do escritório, comunicação com cliente preso e desagravo público.",
+        "priority": "altissima"
+      },
+      {
+        "articleNumber": "22",
+        "articleLabel": "Art. 22",
+        "recurrenceCount": 33,
+        "exams": ["XXXVIII", "XL", "XLI", "XLII"],
+        "summary": "Honorários advocatícios convencionados, arbitrados judicialmente e de sucumbência.",
+        "priority": "altissima"
+      },
+      {
+        "articleNumber": "28",
+        "articleLabel": "Art. 28",
+        "recurrenceCount": 29,
+        "exams": ["XXXVII", "XXXIX", "XLI"],
+        "summary": "Incompatibilidades com o exercício da advocacia (proibição total).",
+        "priority": "altissima"
+      },
+      {
+        "articleNumber": "30",
+        "articleLabel": "Art. 30",
+        "recurrenceCount": 26,
+        "exams": ["XXXVIII", "XL", "XLII"],
+        "summary": "Impedimentos ao exercício da advocacia (proibição parcial contra a Fazenda Pública que o remunera).",
+        "priority": "alta"
+      },
+      {
+        "articleNumber": "34",
+        "articleLabel": "Art. 34",
+        "recurrenceCount": 47,
+        "exams": ["XXXVI", "XXXVIII", "XXXIX", "XL", "XLI", "XLII"],
+        "summary": "Infrações e sanções disciplinares na OAB (censura, suspensão, exclusão e multa).",
+        "priority": "altissima"
+      }
+    ],
+    "cc02": [
+      {
+        "articleNumber": "186",
+        "articleLabel": "Art. 186",
+        "recurrenceCount": 35,
+        "exams": ["XXXVII", "XXXIX", "XL", "XLII"],
+        "summary": "Ato ilícito e pressupostos da responsabilidade civil subjetiva (dano moral e material).",
+        "priority": "altissima"
+      },
+      {
+        "articleNumber": "927",
+        "articleLabel": "Art. 927",
+        "recurrenceCount": 38,
+        "exams": ["XXXVIII", "XXXIX", "XLI", "XLII"],
+        "summary": "Obrigação de indenizar e responsabilidade civil objetiva pelo risco da atividade (parágrafo único).",
+        "priority": "altissima"
+      },
+      {
+        "articleNumber": "1238",
+        "articleLabel": "Art. 1.238",
+        "recurrenceCount": 21,
+        "exams": ["XXXVII", "XL", "XLI"],
+        "summary": "Usucapião extraordinária e redução de prazo por moradia habitual ou obras produtivas.",
+        "priority": "alta"
+      }
+    ],
+    "cpc15": [
+      {
+        "articleNumber": "300",
+        "articleLabel": "Art. 300",
+        "recurrenceCount": 34,
+        "exams": ["XXXVIII", "XXXIX", "XL", "XLI", "XLII"],
+        "summary": "Tutela provisória de urgência: probabilidade do direito e perigo de dano ou risco ao resultado útil do processo.",
+        "priority": "altissima"
+      },
+      {
+        "articleNumber": "334",
+        "articleLabel": "Art. 334",
+        "recurrenceCount": 22,
+        "exams": ["XXXVII", "XXXIX", "XLI"],
+        "summary": "Audiência de conciliação ou de mediação: regras de dispensa e multa por ausência injustificada (§ 8º).",
+        "priority": "alta"
+      },
+      {
+        "articleNumber": "1015",
+        "articleLabel": "Art. 1.015",
+        "recurrenceCount": 29,
+        "exams": ["XXXVIII", "XL", "XLI", "XLII"],
+        "summary": "Hipóteses de cabimento do Agravo de Instrumento e taxatividade mitigada.",
+        "priority": "altissima"
+      }
+    ],
+    "cp40": [
+      {
+        "articleNumber": "14",
+        "articleLabel": "Art. 14",
+        "recurrenceCount": 28,
+        "exams": ["XXXVII", "XXXIX", "XL", "XLII"],
+        "summary": "Crime consumado e tentativa: redução de pena de 1/3 a 2/3.",
+        "priority": "altissima"
+      },
+      {
+        "articleNumber": "15",
+        "articleLabel": "Art. 15",
+        "recurrenceCount": 25,
+        "exams": ["XXXVIII", "XL", "XLI"],
+        "summary": "Desistência voluntária e arrependimento eficaz (ponte de ouro).",
+        "priority": "altissima"
+      },
+      {
+        "articleNumber": "16",
+        "articleLabel": "Art. 16",
+        "recurrenceCount": 23,
+        "exams": ["XXXVII", "XXXIX", "XLII"],
+        "summary": "Arrependimento posterior nos crimes sem violência ou grave ameaça até o recebimento da denúncia.",
+        "priority": "alta"
+      },
+      {
+        "articleNumber": "121",
+        "articleLabel": "Art. 121",
+        "recurrenceCount": 32,
+        "exams": ["XXXVIII", "XXXIX", "XLI", "XLII"],
+        "summary": "Homicídio simples, privilegiado (§ 1º), qualificado (§ 2º) e feminicídio.",
+        "priority": "altissima"
+      },
+      {
+        "articleNumber": "155",
+        "articleLabel": "Art. 155",
+        "recurrenceCount": 27,
+        "exams": ["XXXVI", "XXXIX", "XL", "XLI"],
+        "summary": "Furto simples, repouso noturno (§ 1º), furto privilegiado (§ 2º) e qualificadoras (§ 4º).",
+        "priority": "altissima"
+      },
+      {
+        "articleNumber": "157",
+        "articleLabel": "Art. 157",
+        "recurrenceCount": 30,
+        "exams": ["XXXVIII", "XL", "XLI", "XLII"],
+        "summary": "Roubo próprio, impróprio (§ 1º), majorantes de emprego de arma e latrocínio (§ 3º).",
+        "priority": "altissima"
+      }
+    ],
+    "cpp41": [
+      {
+        "articleNumber": "155",
+        "articleLabel": "Art. 155",
+        "recurrenceCount": 24,
+        "exams": ["XXXVIII", "XL", "XLI"],
+        "summary": "Proibição de condenação fundamentada exclusivamente em elementos informativos do inquérito policial.",
+        "priority": "altissima"
+      },
+      {
+        "articleNumber": "312",
+        "articleLabel": "Art. 312",
+        "recurrenceCount": 36,
+        "exams": ["XXXVII", "XXXIX", "XL", "XLI", "XLII"],
+        "summary": "Requisitos da prisão preventiva e contemporaneidade do perigo gerado pelo estado de liberdade.",
+        "priority": "altissima"
+      }
+    ],
+    "clt43": [
+      {
+        "articleNumber": "482",
+        "articleLabel": "Art. 482",
+        "recurrenceCount": 22,
+        "exams": ["XXXVIII", "XL", "XLII"],
+        "summary": "Hipóteses de demissão por justa causa do empregado.",
+        "priority": "alta"
+      },
+      {
+        "articleNumber": "483",
+        "articleLabel": "Art. 483",
+        "recurrenceCount": 20,
+        "exams": ["XXXVII", "XXXIX", "XLI"],
+        "summary": "Rescisão indireta do contrato de trabalho por falta grave do empregador.",
+        "priority": "alta"
+      }
+    ],
+    "ctn66": [
+      {
+        "articleNumber": "150",
+        "articleLabel": "Art. 150",
+        "recurrenceCount": 19,
+        "exams": ["XXXVIII", "XL", "XLI"],
+        "summary": "Lançamento por homologação e prazo decadencial de 5 anos (§ 4º).",
+        "priority": "alta"
+      },
+      {
+        "articleNumber": "151",
+        "articleLabel": "Art. 151",
+        "recurrenceCount": 31,
+        "exams": ["XXXVII", "XXXIX", "XL", "XLI", "XLII"],
+        "summary": "Causas de suspensão da exigibilidade do crédito tributário (moratória, depósito integral, liminar, parcelamento).",
+        "priority": "altissima"
+      }
+    ],
+    "cdc90": [
+      {
+        "articleNumber": "6",
+        "articleLabel": "Art. 6º",
+        "recurrenceCount": 28,
+        "exams": ["XXXVIII", "XXXIX", "XLI", "XLII"],
+        "summary": "Direitos básicos do consumidor e inversão do ônus da prova (inciso VIII).",
+        "priority": "altissima"
+      },
+      {
+        "articleNumber": "12",
+        "articleLabel": "Art. 12",
+        "recurrenceCount": 26,
+        "exams": ["XXXVII", "XL", "XLI"],
+        "summary": "Responsabilidade pelo fato do produto (acidente de consumo) e excludentes (§ 3º).",
+        "priority": "altissima"
+      },
+      {
+        "articleNumber": "49",
+        "articleLabel": "Art. 49",
+        "recurrenceCount": 23,
+        "exams": ["XXXVIII", "XL", "XLII"],
+        "summary": "Direito de arrependimento no prazo de 7 dias em compras fora do estabelecimento comercial.",
+        "priority": "altissima"
+      }
+    ],
+    "lei8112": [
+      {
+        "articleNumber": "116",
+        "articleLabel": "Art. 116",
+        "recurrenceCount": 18,
+        "exams": ["XXXVIII", "XL"],
+        "summary": "Deveres do servidor público civil federal.",
+        "priority": "alta"
+      },
+      {
+        "articleNumber": "117",
+        "articleLabel": "Art. 117",
+        "recurrenceCount": 24,
+        "exams": ["XXXVII", "XXXIX", "XLI"],
+        "summary": "Proibições ao servidor público federal.",
+        "priority": "altissima"
+      },
+      {
+        "articleNumber": "132",
+        "articleLabel": "Art. 132",
+        "recurrenceCount": 27,
+        "exams": ["XXXVIII", "XL", "XLI", "XLII"],
+        "summary": "Hipóteses de aplicação da penalidade de demissão ao servidor público.",
+        "priority": "altissima"
+      }
+    ],
+    "licitacoes21": [
+      {
+        "articleNumber": "74",
+        "articleLabel": "Art. 74",
+        "recurrenceCount": 21,
+        "exams": ["XXXIX", "XL", "XLI", "XLII"],
+        "summary": "Inexigibilidade de licitação quando inviável a competição (fornecedor exclusivo, notória especialização).",
+        "priority": "altissima"
+      },
+      {
+        "articleNumber": "75",
+        "articleLabel": "Art. 75",
+        "recurrenceCount": 25,
+        "exams": ["XXXVIII", "XXXIX", "XLI", "XLII"],
+        "summary": "Hipóteses taxativas de dispensa de licitação por valor ou emergência.",
+        "priority": "altissima"
+      }
+    ],
+    "improbidade92": [
+      {
+        "articleNumber": "9",
+        "articleLabel": "Art. 9º",
+        "recurrenceCount": 23,
+        "exams": ["XXXVIII", "XL", "XLI", "XLII"],
+        "summary": "Atos de improbidade administrativa que importam enriquecimento ilícito (exigência de dolo específico).",
+        "priority": "altissima"
+      },
+      {
+        "articleNumber": "10",
+        "articleLabel": "Art. 10",
+        "recurrenceCount": 22,
+        "exams": ["XXXIX", "XLI", "XLII"],
+        "summary": "Atos de improbidade administrativa que causam prejuízo ao erário (vedada modalidade culposa após Lei 14.230/21).",
+        "priority": "altissima"
+      },
+      {
+        "articleNumber": "11",
+        "articleLabel": "Art. 11",
+        "recurrenceCount": 26,
+        "exams": ["XXXVIII", "XXXIX", "XL", "XLI", "XLII"],
+        "summary": "Atos de improbidade administrativa que atentam contra os princípios da Administração Pública (rol taxativo).",
+        "priority": "altissima"
+      }
+    ]
+  }
+}

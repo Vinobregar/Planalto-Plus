@@ -157,7 +157,50 @@ export interface AppearanceSettings {
   hideAITools?: boolean; // Hide AI buttons and tabs when enabled
   sepiaIntensity?: number; // 0 - 100 (default 50)
   darkIntensity?: number; // 0 - 100 (default 100 for OLED black)
+  enableVlibras?: boolean; // Exibir botão do VLibras na página (default true)
+  isPcdAudioAccess?: boolean; // Sou pessoa com deficiência visual e necessito de leitura por áudio (Lei 13.146/2015)
 }
+
+export type SubscriptionTier = 'free' | 'pro';
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  name?: string;
+  avatarUrl?: string;
+  subscription_tier: SubscriptionTier;
+  is_pcd: boolean;
+  updated_at: string;
+}
+
+export interface AuthSession {
+  accessToken: string;
+  refreshToken?: string;
+  expiresAt: number; // timestamp ms
+  cachedAt: number; // timestamp ms for 24h offline TTL
+  profile: UserProfile;
+}
+
+export interface StudyProgressEntry {
+  lawId: string;
+  readArticleIds: string[];
+  targetDays: number;
+  dailyGoalArticles: number;
+  startedAt: string;
+  updatedAt: string;
+}
+
+export interface OabIncidenceItem {
+  articleId?: string;
+  articleNumber: string;
+  articleLabel: string;
+  recurrenceCount: number;
+  exams: string[];
+  summary: string;
+  priority: 'altissima' | 'alta' | 'media';
+  tooltipText?: string;
+}
+
 
 export type AIProviderId = 'gemini' | 'openai' | 'anthropic' | 'openrouter';
 
@@ -226,6 +269,11 @@ export interface ChatMessage {
   role: 'user' | 'assistant';
   content: string;
   articleContext?: string;
+  citedArticles?: Array<{
+    articleId: string;
+    articleLabel: string;
+    preview?: string;
+  }>;
   timestamp: string;
 }
 

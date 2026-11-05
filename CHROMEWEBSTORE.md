@@ -1,10 +1,17 @@
 # Chrome Web Store Listing — Planalto Plus
 
 > Last Updated: 2026-11-05  
-> Version: 1.0.12  
-> Package: `dist/planalto-moderno-chrome.zip` (772 KB)
+> Version: 1.0.13  
+> Package: `dist/planalto-moderno-chrome.zip`
 
 ---
+
+## Changelog v1.0.13
+• Camada PRO, Autenticação Google OAuth & Magic Link (Supabase) com TTL offline de 24h e isolamento visual total para usuários gratuitos (Peeking UI Drawer).
+• Acessibilidade Universal & Inclusão (Lei Federal nº 13.146/2015): integração do widget oficial do VLibras (com controle liga/desliga) e leitura por áudio 100% gratuita e ilimitada via Web Speech API nativa para pessoas com deficiência visual.
+• Motor Dual de Áudio & Podcast Panorâmico da Lei Inteira (15 min): síntese de artigos e episódio panorâmico com Google Cloud TTS WaveNet (`pt-BR-Wavenet-B`), Gemini Flash (1M tokens) e Cache Global no Supabase Storage.
+• Sincronização em Nuvem Local-First (`user_annotations` e `user_study_progress` com RLS `auth.uid()`).
+• Analisador de Editais Multi-Legislações (PRO), Busca Semântica Ancorada ("Pergunte à Lei"), Trilha do Edital com `IntersectionObserver` e Mapeador de Incidência OAB/FGV (`oab_incidence.json`).
 
 ## Changelog v1.0.12
 • Cache Local de Alta Capacidade com IndexedDB: armazenamento permanente e de latência zero para análises doutrinárias e panoramas de jurisprudência (STF/STJ) já consultados.
@@ -139,6 +146,9 @@ Copie e cole estas justificativas exatas nos campos correspondentes no painel de
 | `https://api.anthropic.com/*` | `host_permissions` | Permite a conexão direta entre o navegador e a API da Anthropic para usuários que optam pelo Claude como provedor de IA. | Allows direct communication between the browser and Anthropic API for users choosing Claude as their AI provider. |
 | `https://openrouter.ai/*` | `host_permissions` | Permite a conexão direta entre o navegador e a API do OpenRouter para usuários que utilizam chaves e modelos do OpenRouter. | Allows direct communication between the browser and OpenRouter API for users configuring OpenRouter models. |
 | `https://api.groq.com/*` | `host_permissions` | Permite a conexão direta entre o navegador e a API da Groq para inferência de alta velocidade com modelos Llama/Mixtral. | Allows direct communication between the browser and Groq API for high-speed inference with user-provided Groq keys. |
+| `identity` | `permissions` | Permite login social seguro em 1 clique com Google OAuth (`chrome.identity.launchWebAuthFlow`) para sincronização opcional do caderno de estudos. | Enables secure 1-click Google OAuth login (`chrome.identity.launchWebAuthFlow`) for optional study notebook cloud sync. |
+| `https://*.supabase.co/*` | `host_permissions` | Permite sincronização opcional em nuvem (Local-First) das anotações e progresso de estudo (`user_annotations` e `user_study_progress`), além de cache de áudio e podcast da lei para assinantes PRO. | Enables optional Local-First cloud synchronization of annotations and study progress, plus audio and law podcast caching for PRO subscribers. |
+| `https://vlibras.gov.br/*` | `host_permissions` | Permite carregar o widget oficial de acessibilidade em Libras do Governo Federal (VLibras) para todos os usuários. | Allows loading the official Brazilian Federal Government Libras accessibility widget (VLibras) for all users. |
 
 ---
 

@@ -9,14 +9,18 @@ import {
   ExternalLink,
   Eye,
   FileText,
+  Headphones,
   HelpCircle,
   Library,
   MessageSquare,
   PanelLeftOpen,
   PanelRightOpen,
+  Pause,
+  Play,
   Quote,
   Scale,
   Search,
+  Sparkles,
   Type,
   X,
 } from 'lucide-react';
@@ -25,14 +29,17 @@ import {
   AppearanceSettings,
   ArticleAnnotation,
   ArticleBlock,
+  AuthSession,
   ChatMessage,
   EditalArticleMatch,
   FlashcardGenerationParams,
   FlashcardItem,
   HighlightTag,
   LegislationDocument,
+  OabIncidenceItem,
   QuizGenerationParams,
   QuizQuestion,
+  StudyProgressEntry,
 } from '../types/legislation';
 import {
   DEFAULT_AI_CONFIG,
@@ -83,6 +90,39 @@ import {
 import { CadernoSubTab, RightDrawer, RightDrawerTab } from './RightDrawer';
 import { buildCrossReferenceGraph } from '../utils/crossReferenceGraph';
 import { CrossReferenceGraphModal } from './CrossReferenceGraphModal';
+import { ProDrawerModal } from './ProDrawerModal';
+import {
+  getAuthSession,
+  isPcdUser,
+  isProUser,
+  setPcdUserStatus,
+} from '../services/auth.js';
+import { pullLawAnnotationsFromCloud } from '../services/cloudSync.js';
+import {
+  playArticleAudio,
+  stopArticleAudio,
+  subscribeAudioPlayer,
+  speakWithNativeWebSpeech,
+} from '../features/audioPlayer.js';
+import {
+  PODCAST_SPEED_OPTIONS,
+  loadOrGenerateLawPodcast,
+} from '../features/lawPodcast.js';
+import {
+  getAutoHighlightsForCurrentLaw,
+  parseEditalAndHighlight,
+} from '../features/editalParser.js';
+import {
+  askLawQuestion,
+  extractCitedArticlesFromAnswer,
+} from '../features/askLaw.js';
+import {
+  attachStudyTrailObserver,
+  loadStudyTrailProgress,
+  markArticleAsRead,
+} from '../features/studyTrail.js';
+import { getOabIncidenceForDocument } from '../features/oabMapper.js';
+import { syncVlibrasWidget } from '../features/vlibras.js';
 
 interface PlanaltoReaderAppProps {
   doc: LegislationDocument;
@@ -227,6 +267,48 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
   const [editalMatches, setEditalMatches] = useState<EditalArticleMatch[]>([]);
   const [isLoadingAI, setIsLoadingAI] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
+
+  // Camada PRO, Acessibilidade PcD, Áudio, Podcast Panorâmico, Trilha & Incidência OAB
+  const [authSession, setAuthSession] = useState<AuthSession | null>(null);
+  const [isPro, setIsPro] = useState(false);
+  const [isPcd, setIsPcd] = useState(false);
+  const [proDrawerOpen, setProDrawerOpen] = useState(false);
+  const [proDrawerFeatureKey, setProDrawerFeatureKey] = useState('default');
+
+  const [playingArticleId, setPlayingArticleId] = useState<string | null>(null);
+  const [podcastOpen, setPodcastOpen] = useState(false);
+  const [podcastLoading, setPodcastLoading] = useState(false);
+  const [podcastData, setPodcastData] = useState<any | null>(null);
+  const [podcastPlaying, setPodcastPlaying] = useState(false);
+  const [podcastSpeed, setPodcastSpeed] = useState<number>(1.0);
+  const [podcastProgress, setPodcastProgress] = useState<number>(0);
+  const [showPodcastTranscript, setShowPodcastTranscript] = useState(false);
+  const podcastAudioRef = useRef<HTMLAudioElement | null>(null);
+  const podcastProgressTimerRef = useRef<number | null>(null);
+
+  const [studyProgress, setStudyProgress] = useState<StudyProgressEntry | null>(
+    null
+  );
+  const [oabByArticleId, setOabByArticleId] = useState<
+    Record<string, OabIncidenceItem>
+  >({});
+  const [oabItems, setOabItems] = useState<OabIncidenceItem[]>([]);
+
+  const handleOpenProDrawer = (featureKey = 'default') => {
+    setProDrawerFeatureKey(featureKey);
+    setProDrawerOpen(true);
+  };
+
+  const refreshAuthAndPermissions = async () => {
+    const [session, pro, pcd] = await Promise.all([
+      getAuthSession(),
+      isProUser(),
+      isPcdUser(),
+    ]);
+    setAuthSession(session);
+    setIsPro(Boolean(pro));
+    setIsPcd(Boolean(pcd));
+  };
 
   
   // Jump instantaneously (without smooth animation) to next/previous article
@@ -423,14 +505,97 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
   useEffect(() => {
     loadAppearanceSettings().then((loaded) => {
       setAppearance(loaded);
+      syncVlibrasWidget(loaded.enableVlibras !== false);
       if (loaded.hideAITools) {
         setRightDrawerTab('notes');
       }
     });
     loadAIConfig().then(setAiConfig);
     loadHighlightTags().then(setHighlightTags);
-    loadLawAnnotations(doc.lawId).then(setAnnotations);
+    loadLawAnnotations(doc.lawId).then(async (localAnns) => {
+      setAnnotations(localAnns);
+      // Sincronização em nuvem Local-First (pull dos dados mais recentes se PRO)
+      const cloudRes: any = await pullLawAnnotationsFromCloud(doc.lawId);
+      const merged = cloudRes?.annotations || cloudRes;
+      if (merged && typeof merged === 'object' && Object.keys(merged).length > 0) {
+        setAnnotations(merged as Record<string, ArticleAnnotation>);
+      }
+
+      // Auto-highlight Multi-Legislações para Usuários PRO (se houver edital mapeado)
+      const autoEdital = await getAutoHighlightsForCurrentLaw(doc);
+      if (autoEdital && autoEdital.matches && autoEdital.matches.length > 0) {
+        setEditalMatches(autoEdital.matches);
+        setAnnotations((prev) => {
+          const next = { ...prev };
+          let changed = false;
+          for (const m of autoEdital.matches) {
+            if (!next[m.articleId]?.wholeHighlightColor) {
+              changed = true;
+              const existing = next[m.articleId] || {
+                articleId: m.articleId,
+                articleLabel: m.articleLabel,
+                textHighlights: [],
+                note: '',
+                collapsed: false,
+                updatedAt: new Date().toISOString(),
+              };
+              const editalNoteLine = `[Edital — ${m.editalTopic}]: ${m.reason}`;
+              next[m.articleId] = {
+                ...existing,
+                wholeHighlightColor: autoEdital.targetTagId || 'orange',
+                note:
+                  autoEdital.addReasonToNotes &&
+                  !existing.note.includes(editalNoteLine)
+                    ? existing.note.trim()
+                      ? `${existing.note.trim()}\n\n${editalNoteLine}`
+                      : editalNoteLine
+                    : existing.note,
+                updatedAt: new Date().toISOString(),
+              };
+            }
+          }
+          if (changed) {
+            saveLawAnnotations(doc.lawId, next);
+          }
+          return next;
+        });
+      }
+    });
+
+    refreshAuthAndPermissions();
+    loadStudyTrailProgress(doc).then(setStudyProgress);
+    getOabIncidenceForDocument(doc).then((res: any) => {
+      setOabByArticleId((res?.byArticleId || {}) as Record<string, OabIncidenceItem>);
+      setOabItems((res?.items || []) as OabIncidenceItem[]);
+    });
   }, [doc.lawId]);
+
+  // Assina estado do motor de áudio de artigos
+  useEffect(() => {
+    const unsub = subscribeAudioPlayer((state: any) => {
+      setPlayingArticleId(state.isPlaying ? state.articleId : null);
+    });
+    return () => {
+      unsub();
+    };
+  }, []);
+
+  // IntersectionObserver para a Trilha do Edital (marca artigos lidos automaticamente ao avançar na leitura)
+  useEffect(() => {
+    if (!readerScrollRef.current) return;
+    const detach = attachStudyTrailObserver({
+      scrollRoot: readerScrollRef.current,
+      onArticleRead: async (articleId: string) => {
+        setStudyProgress((prev) => {
+          if (prev?.readArticleIds?.includes(articleId)) return prev;
+          markArticleAsRead(doc, prev, articleId).then(setStudyProgress);
+          return prev;
+        });
+      },
+      dwellTimeMs: 1800,
+    });
+    return () => detach();
+  }, [doc, activeFilteredArticleIds, appearance.compiledMode]);
 
   // Close floating menus when clicking outside (Shadow DOM aware via composedPath)
   useEffect(() => {
@@ -466,11 +631,118 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
   }, [showAppearancePopover, showLawsMenu, showTopSearchDropdown]);
 
   const handleUpdateAppearance = (next: AppearanceSettings) => {
+    syncVlibrasWidget(next.enableVlibras !== false);
+    if (next.isPcdAudioAccess !== appearance.isPcdAudioAccess) {
+      const enabled = Boolean(next.isPcdAudioAccess);
+      setPcdUserStatus(enabled);
+      setIsPcd(enabled);
+    }
     if (next.hideAITools !== appearance.hideAITools) {
       handleToggleHideAI(Boolean(next.hideAITools));
     } else {
       setAppearance(next);
       saveAppearanceSettings(next);
+    }
+  };
+
+  const handlePlayArticleAudio = async (article: ArticleBlock) => {
+    const res = await playArticleAudio(article, doc.lawId);
+    if (!res.allowed) {
+      handleOpenProDrawer('audio_article');
+    }
+  };
+
+  const handleOpenLawPodcast = async () => {
+    if (!isPro) {
+      handleOpenProDrawer('podcast');
+      return;
+    }
+    setPodcastOpen(true);
+    if (podcastData) return;
+
+    setPodcastLoading(true);
+    try {
+      const data = await loadOrGenerateLawPodcast(doc);
+      setPodcastData(data);
+    } finally {
+      setPodcastLoading(false);
+    }
+  };
+
+  const stopPodcastPlayback = () => {
+    stopArticleAudio();
+    if (podcastAudioRef.current) {
+      podcastAudioRef.current.pause();
+      podcastAudioRef.current = null;
+    }
+    if (podcastProgressTimerRef.current) {
+      window.clearInterval(podcastProgressTimerRef.current);
+      podcastProgressTimerRef.current = null;
+    }
+    setPodcastPlaying(false);
+  };
+
+  const handleTogglePodcastPlay = async () => {
+    if (podcastPlaying) {
+      stopPodcastPlayback();
+      return;
+    }
+    if (!podcastData) return;
+
+    setPodcastPlaying(true);
+
+    if (podcastData.audioUrl) {
+      try {
+        const audio = new Audio(podcastData.audioUrl);
+        audio.playbackRate = podcastSpeed;
+        podcastAudioRef.current = audio;
+        audio.ontimeupdate = () => {
+          if (audio.duration) {
+            setPodcastProgress(
+              Math.min(100, Math.round((audio.currentTime / audio.duration) * 100))
+            );
+          }
+        };
+        audio.onended = () => {
+          setPodcastPlaying(false);
+          setPodcastProgress(100);
+        };
+        await audio.play();
+        return;
+      } catch {
+        // Fallback para síntese local assistida do roteiro
+      }
+    }
+
+    // Reprodução assistida do roteiro completo (dividido nas 3 seções)
+    if (podcastProgressTimerRef.current) {
+      window.clearInterval(podcastProgressTimerRef.current);
+    }
+    setPodcastProgress((p) => (p >= 100 ? 0 : p));
+    podcastProgressTimerRef.current = window.setInterval(() => {
+      setPodcastProgress((p) => (p < 96 ? p + 1 : p));
+    }, 1500);
+
+    const transcript =
+      podcastData?.script?.fullTranscript ||
+      `Panorama da norma ${doc.epigraph}.`;
+    await speakWithNativeWebSpeech(
+      transcript,
+      `podcast-${doc.lawId}`,
+      podcastSpeed
+    );
+    if (podcastProgressTimerRef.current) {
+      window.clearInterval(podcastProgressTimerRef.current);
+      podcastProgressTimerRef.current = null;
+    }
+    setPodcastPlaying(false);
+    setPodcastProgress(100);
+  };
+
+  const handleChangePodcastSpeed = (speed: number) => {
+    setPodcastSpeed(speed);
+    if (podcastAudioRef.current) {
+      podcastAudioRef.current.playbackRate = speed;
     }
   };
 
@@ -825,14 +1097,17 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
     setIsLoadingAI(true);
 
     try {
-      const matches = await analyzeEditalAndSelectArticles(
+      const parsedRes = await parseEditalAndHighlight({
         aiConfig,
         doc,
-        fileName,
+        editalName: fileName,
         extractedText,
-        pdfBase64
-      );
+        pdfBase64,
+        targetTagId,
+        addReasonToNotes,
+      });
 
+      const matches = parsedRes.matches || [];
       setEditalMatches(matches);
 
       if (matches.length > 0) {
@@ -884,10 +1159,11 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
     setAiError(null);
 
     const hasKey = Boolean(aiConfig.apiKeys[aiConfig.provider]?.trim());
-    if (!hasKey) {
+    if (!hasKey && !isPro) {
       setAiError(
-        `Chave de API (${aiConfig.provider.toUpperCase()}) não configurada. Acesse o menu IA Chat > Chave API para inserir sua chave gratuita e enviar mensagens à IA.`
+        `Chave de API (${aiConfig.provider.toUpperCase()}) não configurada. Insira sua chave gratuita na aba Chave API (BYOK) ou ative o Planalto Plus PRO para usar o "Pergunte à Lei" sem chaves.`
       );
+      handleOpenProDrawer('ask_law');
       return;
     }
 
@@ -903,18 +1179,33 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
     setIsLoadingAI(true);
 
     try {
-      const reply = await sendLegalChatWithAI(
+      // Utiliza "Pergunte à Lei" ancorado na legislação aberta com extração de artigos citados
+      const askRes = await askLawQuestion({
+        question: text,
+        doc,
         aiConfig,
-        doc.epigraph,
-        focusedArticle,
-        nextHistory,
-        text
-      );
+      });
+
+      let reply = askRes.answer || '';
+      let citedArticles = askRes.citedArticles || [];
+
+      if (!reply && hasKey) {
+        reply = await sendLegalChatWithAI(
+          aiConfig,
+          doc.epigraph,
+          focusedArticle,
+          nextHistory,
+          text
+        );
+        citedArticles = extractCitedArticlesFromAnswer(reply, doc);
+      }
+
       const assistantMsg: ChatMessage = {
         id: `msg-${Date.now()}-a`,
         role: 'assistant',
         content: reply,
         articleContext: focusedArticle?.label,
+        citedArticles,
         timestamp: new Date().toISOString(),
       };
       setChatMessages((prev) => [...prev, assistantMsg]);
@@ -1407,6 +1698,21 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
             <span className="hidden 2xl:inline">Original</span>
           </button>
 
+          {/* Subtle PRO / Account Button (Zero Visual Pollution) */}
+          <button
+            type="button"
+            onClick={() => handleOpenProDrawer('default')}
+            className={`flex items-center gap-1 px-2 py-1.5 rounded-lg text-xs font-medium border transition-colors shrink-0 whitespace-nowrap ${
+              isPro
+                ? 'border-emerald-500/40 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-semibold'
+                : 'border-current/15 opacity-75 hover:opacity-100 hover:bg-black/5 dark:hover:bg-white/5'
+            }`}
+            title="Conta, Sincronização em Nuvem, Acessibilidade PcD e Recursos PRO"
+          >
+            <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+            <span>{isPro ? 'PRO Ativo' : 'PRO'}</span>
+          </button>
+
           {!rightDrawerOpen && (
             <button
               type="button"
@@ -1474,12 +1780,174 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
                   Presidência da República • Legislação Federal
                 </div>
 
-                {/* Article Count Badge Moved Above Ementa */}
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
-                  <FileText className="w-3.5 h-3.5" />
-                  {doc.articles.length} artigos nesta norma
-                </span>
+                <div className="flex flex-wrap items-center gap-2">
+                  {/* Discrete Button: [🎧 Ouvir Panorama da Lei (15 min)] (Recurso PRO Exclusivo) */}
+                  <button
+                    type="button"
+                    onClick={handleOpenLawPodcast}
+                    className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border border-current/15 hover:border-indigo-500/50 hover:bg-indigo-500/10 transition-colors"
+                    title="Ouvir episódio de podcast panorâmico de 15 minutos sobre esta lei (Gemini Flash 1M + Google Cloud TTS WaveNet)"
+                  >
+                    <Headphones className="w-3.5 h-3.5 text-indigo-500" />
+                    <span>🎧 Ouvir Panorama da Lei (15 min)</span>
+                    <span className="px-1.5 py-0.2 rounded text-[9px] font-bold uppercase tracking-wider bg-black/5 dark:bg-white/10 opacity-75">
+                      PRO
+                    </span>
+                  </button>
+
+                  {/* Article Count Badge Moved Above Ementa */}
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
+                    <FileText className="w-3.5 h-3.5" />
+                    {doc.articles.length} artigos nesta norma
+                  </span>
+                </div>
               </div>
+
+              {/* Dedicated Law Podcast Player (Progress Bar + Speed Selector 0.75x to 2x) */}
+              {podcastOpen && isPro && (
+                <div
+                  style={{
+                    backgroundColor: themeColors.cardBg,
+                    borderColor: themeColors.borderColor,
+                  }}
+                  className="my-3 p-4 rounded-2xl border shadow-sm space-y-3 text-xs"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-8 h-8 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0">
+                        <Headphones className="w-4 h-4" />
+                      </div>
+                      <div>
+                        <div className="font-bold text-xs sm:text-sm flex items-center gap-1.5">
+                          <span>
+                            {podcastData?.script?.title ||
+                              `Panorama da Lei — ${doc.epigraph}`}
+                          </span>
+                          <span className="px-1.5 py-0.2 rounded text-[9px] font-bold uppercase bg-emerald-500/15 text-emerald-600 dark:text-emerald-400">
+                            {podcastData?.cached
+                              ? 'Cache Global (0ms)'
+                              : 'WaveNet pt-BR'}
+                          </span>
+                        </div>
+                        <p className="text-[11px] opacity-70">
+                          1. Objetivo e Contexto • 2. Conceitos Extensivos • 3.
+                          Top 7 Artigos Mais Cobrados
+                        </p>
+                      </div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        stopPodcastPlayback();
+                        setPodcastOpen(false);
+                      }}
+                      className="p-1 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 opacity-70 hover:opacity-100"
+                      title="Fechar Player do Podcast"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                  {podcastLoading ? (
+                    <div className="py-3 text-center text-xs opacity-75">
+                      Verificando Cache Global no Supabase Storage (`
+                      {podcastData?.storagePath || 'podcasts/lei.mp3'}`)...
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex flex-wrap items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={handleTogglePodcastPlay}
+                          className="px-3.5 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs flex items-center gap-1.5 shadow-sm transition-colors shrink-0"
+                        >
+                          {podcastPlaying ? (
+                            <>
+                              <Pause className="w-3.5 h-3.5" />
+                              <span>Pausar</span>
+                            </>
+                          ) : (
+                            <>
+                              <Play className="w-3.5 h-3.5" />
+                              <span>Reproduzir Episódio</span>
+                            </>
+                          )}
+                        </button>
+
+                        {/* Barra de Progresso Dedicada */}
+                        <div className="flex-1 min-w-[140px] space-y-1">
+                          <div className="w-full h-2 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
+                            <div
+                              className="h-full bg-indigo-600 transition-all duration-300"
+                              style={{ width: `${podcastProgress}%` }}
+                            />
+                          </div>
+                          <div className="flex items-center justify-between text-[10px] opacity-65">
+                            <span>Progresso: {podcastProgress}%</span>
+                            <span>Duração estimada: ~15 min</span>
+                          </div>
+                        </div>
+
+                        {/* Seletor de Velocidade (0.75x a 2x) */}
+                        <div className="flex items-center gap-1 shrink-0">
+                          <span className="text-[10px] opacity-70 mr-0.5">
+                            Velocidade:
+                          </span>
+                          {PODCAST_SPEED_OPTIONS.map((spd: number) => (
+                            <button
+                              key={spd}
+                              type="button"
+                              onClick={() => handleChangePodcastSpeed(spd)}
+                              className={`px-1.5 py-0.5 rounded text-[10px] font-bold transition-colors ${
+                                podcastSpeed === spd
+                                  ? 'bg-indigo-600 text-white'
+                                  : 'border border-current/15 opacity-75 hover:opacity-100'
+                              }`}
+                            >
+                              {spd}x
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="pt-1 border-t border-current/10 flex items-center justify-between">
+                        <span className="text-[10px] opacity-65">
+                          Arquivo: `{podcastData?.storagePath}`
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setShowPodcastTranscript((v) => !v)}
+                          className="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline"
+                        >
+                          {showPodcastTranscript
+                            ? 'Ocultar roteiro estruturado'
+                            : 'Ver roteiro estruturado (3 partes)'}
+                        </button>
+                      </div>
+
+                      {showPodcastTranscript &&
+                        podcastData?.script?.sections && (
+                          <div className="space-y-2 pt-2 border-t border-current/10 max-h-56 overflow-y-auto pr-1">
+                            {podcastData.script.sections.map((sec: any) => (
+                              <div
+                                key={sec.id}
+                                className="p-2.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.03] space-y-1"
+                              >
+                                <div className="font-bold text-[11px] text-indigo-600 dark:text-indigo-400">
+                                  {sec.title}
+                                </div>
+                                <p className="text-[11px] opacity-85 leading-relaxed">
+                                  {sec.content}
+                                </p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                    </>
+                  )}
+                </div>
+              )}
 
               {/* Official Epigraph Title Preserved in the Body of the Law */}
               <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight mb-4">
@@ -1812,6 +2280,14 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
                       setRightDrawerOpen(true);
                       setRightDrawerTab('quiz');
                     }}
+                    onPlayAudio={handlePlayArticleAudio}
+                    isPlayingAudio={playingArticleId === article.id}
+                    isPro={isPro}
+                    isPcd={isPcd}
+                    oabIncidence={oabByArticleId[article.id]}
+                    isReadInTrail={Boolean(
+                      studyProgress?.readArticleIds?.includes(article.id)
+                    )}
                   />
                 );
               }
@@ -1880,9 +2356,32 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
             onAnalyzeEdital={handleAnalyzeEdital}
             isLoadingAI={isLoadingAI}
             aiError={aiError}
+            isPro={isPro}
+            studyProgress={studyProgress}
+            onUpdateStudyProgress={setStudyProgress}
+            oabItems={oabItems}
+            onOpenProDrawer={handleOpenProDrawer}
           />
         )}
       </div>
+
+      {/* Peeking UI & Pro Plans Lateral Drawer */}
+      <ProDrawerModal
+        isOpen={proDrawerOpen}
+        featureKey={proDrawerFeatureKey}
+        appearance={appearance}
+        authSession={authSession}
+        isPro={isPro}
+        isPcd={isPcd}
+        onClose={() => setProDrawerOpen(false)}
+        onAuthChange={refreshAuthAndPermissions}
+        onPcdChange={(enabled) => {
+          setIsPcd(enabled);
+          const nextApp = { ...appearance, isPcdAudioAccess: enabled };
+          setAppearance(nextApp);
+          saveAppearanceSettings(nextApp);
+        }}
+      />
 
       {/* Law Cross-Reference Graph Modal (Opened via Hover Card on Inline Article Mentions) */}
       {showCrossRefModal && (

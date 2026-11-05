@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Planalto Plus — Leitura Jurídica & IA",
   "short_name": "Planalto Plus",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "Moderniza o Planalto.gov.br com leitura limpa, sumário hierárquico, texto compilado, grifos, flashcards Anki e assistente de IA.",
   "browser_specific_settings": {
     "gecko": {
@@ -12,10 +12,13 @@
   },
   "permissions": [
     "storage",
-    "unlimitedStorage"
+    "unlimitedStorage",
+    "identity"
   ],
   "host_permissions": [
     "*://*.planalto.gov.br/*",
+    "https://*.supabase.co/*",
+    "https://vlibras.gov.br/*",
     "https://generativelanguage.googleapis.com/*",
     "https://api.openai.com/*",
     "https://api.anthropic.com/*",
@@ -64,7 +67,8 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "sql-wasm.wasm"
+        "sql-wasm.wasm",
+        "assets/data/oab_incidence.json"
       ],
       "matches": [
         "*://*.planalto.gov.br/*",

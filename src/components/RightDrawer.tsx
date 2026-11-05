@@ -2469,18 +2469,11 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
                     <button
                       type="button"
                       onClick={handleRestoreDefaultColors}
-                      className="text-[10px] opacity-65 hover:opacity-100 inline-flex items-center gap-1"
+                      className="text-[10px] opacity-65 hover:opacity-100 inline-flex items-center gap-1 px-1.5 py-0.5 rounded border border-current/15"
                       title="Restaurar as 6 cores padrões sem tags atribuídas"
                     >
                       <RotateCcw className="w-3 h-3" />
                       <span>Padrão</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowColorCustomizer((v) => !v)}
-                      className="text-[11px] text-indigo-500 hover:underline font-medium"
-                    >
-                      {showColorCustomizer ? 'Recolher' : 'Expandir'}
                     </button>
                   </div>
                 </div>

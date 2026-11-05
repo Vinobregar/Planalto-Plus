@@ -157,7 +157,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
 
   // Words to highlight in the article text when a term search is performed
   const searchHighlightWords = useMemo(() => {
-    const query = (appliedFilterQuery || searchQuery).trim();
+    const query = searchQuery.trim();
     if (!query) return [];
     // Do not highlight pure article numbers (e.g. "155", "art. 155")
     const cleanNum = query.replace(/[º°.]/g, '').trim();
@@ -166,7 +166,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
     }
     const parsed = parseBooleanQuery(query, searchWithSynonyms);
     return parsed.highlightTerms;
-  }, [appliedFilterQuery, searchQuery, searchWithSynonyms]);
+  }, [searchQuery, searchWithSynonyms]);
 
   const activeFilteredArticleIds = useMemo(() => {
     if (!appliedFilterQuery) return null;
@@ -359,7 +359,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
 
   // All articles in the law matching current search (compiledMode respected)
   const matchingArticles = useMemo(() => {
-    const q = (appliedFilterQuery || searchQuery).trim();
+    const q = searchQuery.trim();
     if (!q) return [];
 
     // Check if query is targeting an article number (e.g. "155", "art 155", "art. 155", "artigo 155", "155º", "155-A", "155a")
@@ -1074,8 +1074,14 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
               }
             }}
             onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setShowTopSearchDropdown(true);
+              const val = e.target.value;
+              setSearchQuery(val);
+              if (!val.trim()) {
+                setAppliedFilterQuery(null);
+                setShowTopSearchDropdown(false);
+              } else {
+                setShowTopSearchDropdown(true);
+              }
             }}
             ref={topSearchInputRef}
             placeholder="Buscar ou nº do Art... (/)"
@@ -1370,7 +1376,12 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
             appearance={appearance}
             searchQuery={searchQuery}
             searchWithSynonyms={searchWithSynonyms}
-            onSearchQueryChange={setSearchQuery}
+            onSearchQueryChange={(val) => {
+              setSearchQuery(val);
+              if (!val.trim()) {
+                setAppliedFilterQuery(null);
+              }
+            }}
             onSelectHeading={handleSelectHeadingFromToc}
             onSelectArticle={handleSelectArticleFromToc}
             onCollapse={() => setLeftSidebarOpen(false)}

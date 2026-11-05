@@ -1,10 +1,13 @@
 # Chrome Web Store Listing — Planalto Plus
 
 > Last Updated: 2026-11-05  
-> Version: 1.0.10  
+> Version: 1.0.11  
 > Package: `dist/planalto-moderno-chrome.zip` (772 KB)
 
 ---
+
+## Changelog v1.0.11
+• Desmarcação Imediata ao Limpar a Busca: ao apagar os termos na barra de pesquisa superior ou no sumário (seja com backspace, seleção ou botão limpar), todos os destaques nos artigos são instantaneamente removidos e a norma retorna ao estado de leitura limpa.
 
 ## Changelog v1.0.10
 • Contador de Resultados e Stepper na Barra Superior: indicador integrado `X de Y` e botões de navegação rápida `[↑]` e `[↓]` diretamente na barra de pesquisa superior, com suporte a `Enter` (próxima ocorrência) e `Shift + Enter` (ocorrência anterior).

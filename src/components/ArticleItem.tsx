@@ -764,16 +764,45 @@ export const ArticleItem: React.FC<ArticleItemProps> = ({
     (r) => !(appearance.compiledMode && r.isRevoked && !expandRevoked)
   );
 
-  // Check if caput is in force, but some or all incisos/items are revoked
-  const revokedIncisos = (article.subClauses || []).filter(
-    (sc) => (sc.type === 'inciso' || sc.type === 'item') && sc.isRevoked
-  );
-  const totalIncisos = (article.subClauses || []).filter(
-    (sc) => sc.type === 'inciso' || sc.type === 'item'
-  );
-  const hasRevokedIncisos = !article.isRevoked && revokedIncisos.length > 0;
+  // Build qualified labels for revoked incisos/items, distinguishing caput vs paragraph incisos
+  const qualifiedRevokedIncisos: {
+    id: string;
+    label: string;
+    fullLabel: string;
+    parentParagraph?: string;
+  }[] = [];
+  let currentParagraphContext: string | null = null;
+  let totalCaputIncisosCount = 0;
+  let revokedCaputIncisosCount = 0;
+
+  for (const sc of article.subClauses || []) {
+    if (sc.type === 'paragrafo') {
+      currentParagraphContext = sc.label; // e.g. "§ 1º", "§ 2º", "Parágrafo único"
+    } else if (sc.type === 'inciso' || sc.type === 'item') {
+      if (!currentParagraphContext) {
+        totalCaputIncisosCount++;
+        if (sc.isRevoked) revokedCaputIncisosCount++;
+      }
+      if (sc.isRevoked) {
+        const fullLabel = currentParagraphContext
+          ? `${currentParagraphContext}, Inciso ${sc.label}`
+          : `Inciso ${sc.label}`;
+        qualifiedRevokedIncisos.push({
+          id: sc.id,
+          label: sc.label,
+          fullLabel,
+          parentParagraph: currentParagraphContext || undefined,
+        });
+      }
+    }
+  }
+
+  const hasRevokedIncisos =
+    !article.isRevoked && qualifiedRevokedIncisos.length > 0;
   const allIncisosRevoked =
-    totalIncisos.length > 0 && revokedIncisos.length === totalIncisos.length;
+    totalCaputIncisosCount > 0 &&
+    revokedCaputIncisosCount === totalCaputIncisosCount &&
+    qualifiedRevokedIncisos.every((i) => !i.parentParagraph);
 
   return (
     <article
@@ -1180,17 +1209,19 @@ export const ArticleItem: React.FC<ArticleItemProps> = ({
             title={
               allIncisosRevoked
                 ? 'Atenção: O caput deste artigo está vigente, mas todos os seus incisos foram revogados.'
-                : `Atenção: O caput está vigente, mas os seguintes incisos foram revogados: ${revokedIncisos
-                    .map((i) => i.label)
+                : `Atenção: O caput está vigente, mas os seguintes dispositivos foram revogados: ${qualifiedRevokedIncisos
+                    .map((i) => i.fullLabel)
                     .join(', ')}.`
             }
           >
             <span>
               {allIncisosRevoked
                 ? 'Caput Vigente • Incisos Revogados'
-                : `Inciso${revokedIncisos.length > 1 ? 's' : ''} ${revokedIncisos
-                    .map((i) => i.label)
-                    .join(', ')} Revogado${revokedIncisos.length > 1 ? 's' : ''}`}
+                : `${qualifiedRevokedIncisos
+                    .map((i) => i.fullLabel)
+                    .join(', ')} Revogado${
+                    qualifiedRevokedIncisos.length > 1 ? 's' : ''
+                  }`}
             </span>
           </span>
         )}
@@ -1227,11 +1258,13 @@ export const ArticleItem: React.FC<ArticleItemProps> = ({
                 <strong>
                   {allIncisosRevoked
                     ? 'Todos os incisos deste artigo foram revogados'
-                    : `Inciso${revokedIncisos.length > 1 ? 's' : ''} ${revokedIncisos
-                        .map((i) => i.label)
-                        .join(', ')} revogado${revokedIncisos.length > 1 ? 's' : ''}`}
+                    : `${qualifiedRevokedIncisos
+                        .map((i) => i.fullLabel)
+                        .join(', ')} revogado${
+                        qualifiedRevokedIncisos.length > 1 ? 's' : ''
+                      }`}
                 </strong>{' '}
-                (oculto{revokedIncisos.length > 1 ? 's' : ''} no modo Texto Compilado)
+                (oculto{qualifiedRevokedIncisos.length > 1 ? 's' : ''} no modo Texto Compilado)
               </span>
               <button
                 type="button"

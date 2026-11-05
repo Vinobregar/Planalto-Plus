@@ -109,7 +109,7 @@ const PopupApp: React.FC = () => {
             <div className="flex items-center gap-1.5">
               <h1 className="font-bold text-sm leading-tight text-white">Planalto Plus</h1>
               <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                v1.1.5
+                v1.2.0
               </span>
             </div>
             <p className="text-[11px] text-slate-400">

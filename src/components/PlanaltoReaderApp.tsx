@@ -33,6 +33,7 @@ import {
   ArticleBlock,
   AuthSession,
   ChatMessage,
+  DocumentBlock,
   EditalArticleMatch,
   FlashcardGenerationParams,
   FlashcardItem,
@@ -42,6 +43,7 @@ import {
   QuizGenerationParams,
   QuizQuestion,
   StudyProgressEntry,
+  TocNode,
 } from '../types/legislation';
 import {
   DEFAULT_AI_CONFIG,
@@ -186,6 +188,9 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
   const deferredSearchQuery = useDeferredValue(searchQuery);
   const [appliedFilterQuery, setAppliedFilterQuery] = useState<string | null>(null);
   const [searchWithSynonyms, setSearchWithSynonyms] = useState(false);
+  const [expandedGroupNumbers, setExpandedGroupNumbers] = useState<Set<string>>(
+    new Set()
+  );
 
   const handleApplySearchFilter = () => {
     const q = searchQuery.trim();
@@ -548,6 +553,51 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
   const topSearchResults = useMemo(() => {
     return matchingArticles.slice(0, 20);
   }, [matchingArticles]);
+
+  // Group consecutive article blocks with identical number (e.g. multiple versions of Art. 30 in CLT)
+  const groupedRenderBlocks = useMemo(() => {
+    type GroupedBlock =
+      | Extract<DocumentBlock, { kind: 'heading' }>
+      | { kind: 'article_group'; number: string; articles: ArticleBlock[] }
+      | Extract<DocumentBlock, { kind: 'text' }>;
+
+    const result: GroupedBlock[] = [];
+    let currentGroup: {
+      kind: 'article_group';
+      number: string;
+      articles: ArticleBlock[];
+    } | null = null;
+
+    for (const block of doc.blocks) {
+      if (block.kind === 'article') {
+        const art = block.article;
+        if (currentGroup && currentGroup.number === art.number) {
+          currentGroup.articles.push(art);
+        } else {
+          if (currentGroup) {
+            result.push(currentGroup);
+          }
+          currentGroup = {
+            kind: 'article_group',
+            number: art.number,
+            articles: [art],
+          };
+        }
+      } else {
+        if (currentGroup) {
+          result.push(currentGroup);
+          currentGroup = null;
+        }
+        result.push(block);
+      }
+    }
+
+    if (currentGroup) {
+      result.push(currentGroup);
+    }
+
+    return result;
+  }, [doc.blocks]);
 
   const handleHideVlibras = useCallback(() => {
     setAppearance((prev) => {
@@ -2323,12 +2373,15 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
             )}
 
             {/* Structured Blocks (Headings + Articles + Text) */}
-            {doc.blocks.map((block) => {
+            {groupedRenderBlocks.map((block) => {
               if (activeFilteredArticleIds) {
-                if (block.kind === 'article') {
-                  if (!activeFilteredArticleIds.has(block.article.id)) return null;
+                if (block.kind === 'article_group') {
+                  const hasMatching = block.articles.some((a: ArticleBlock) =>
+                    activeFilteredArticleIds.has(a.id)
+                  );
+                  if (!hasMatching) return null;
                 } else if (block.kind === 'heading') {
-                  const hasMatching = block.node.articles.some((a) =>
+                  const hasMatching = block.node.articles.some((a: any) =>
                     activeFilteredArticleIds.has(a.id)
                   );
                   if (!hasMatching) return null;
@@ -2393,48 +2446,190 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
                 );
               }
 
-              if (block.kind === 'article') {
-                const { article } = block;
+              if (block.kind === 'article_group') {
+                const matchingArticles = activeFilteredArticleIds
+                  ? block.articles.filter((a) =>
+                      activeFilteredArticleIds.has(a.id)
+                    )
+                  : block.articles;
+
+                if (matchingArticles.length === 0) return null;
+
+                const allRevoked = matchingArticles.every((a) => a.isRevoked);
+
+                // Group multiple revoked versions in compiledMode into a single entry
+                if (
+                  matchingArticles.length > 1 &&
+                  appearance.compiledMode &&
+                  allRevoked
+                ) {
+                  const isExpanded = expandedGroupNumbers.has(block.number);
+
+                  if (!isExpanded) {
+                    return (
+                      <div
+                        key={`revoked-group-${block.number}`}
+                        id={matchingArticles[0].id}
+                        className="my-1.5 px-3.5 py-2 rounded-xl border border-dashed border-current/20 flex items-center justify-between text-xs opacity-60 hover:opacity-100 transition-opacity bg-black/[0.02] dark:bg-white/[0.02]"
+                      >
+                        <div className="flex items-center gap-2 min-w-0">
+                          <strong className="line-through opacity-85 shrink-0">
+                            {matchingArticles[0].label}
+                          </strong>
+                          <span className="text-[11px] opacity-75 truncate">
+                            ({matchingArticles.length} versões revogadas ocultas no modo Texto Compilado)
+                          </span>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setExpandedGroupNumbers((prev) => {
+                              const next = new Set(prev);
+                              next.add(block.number);
+                              return next;
+                            })
+                          }
+                          className="text-indigo-600 dark:text-indigo-400 hover:underline font-semibold text-[11px] ml-3 shrink-0 cursor-pointer"
+                        >
+                          Ver todas as versões ({matchingArticles.length})
+                        </button>
+                      </div>
+                    );
+                  }
+
+                  // Expanded multiple revoked versions view
+                  return (
+                    <div
+                      key={`revoked-group-expanded-${block.number}`}
+                      className="my-3 p-3 rounded-2xl border border-indigo-500/30 bg-indigo-500/5 space-y-3"
+                    >
+                      <div className="flex items-center justify-between px-2 py-1 border-b border-indigo-500/20 text-xs">
+                        <span className="font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-1.5">
+                          <strong className="line-through">{matchingArticles[0].label}</strong>
+                          <span>• Todas as {matchingArticles.length} versões históricas revogadas</span>
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setExpandedGroupNumbers((prev) => {
+                              const next = new Set(prev);
+                              next.delete(block.number);
+                              return next;
+                            })
+                          }
+                          className="text-[11px] font-semibold text-rose-500 hover:underline cursor-pointer"
+                        >
+                          Ocultar versões
+                        </button>
+                      </div>
+
+                      {matchingArticles.map((art, idx) => (
+                        <div key={art.id} className="space-y-1">
+                          <div className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 px-3 opacity-80 uppercase tracking-wide">
+                            Versão {idx + 1} de {matchingArticles.length}
+                            {art.modificationNote
+                              ? ` • ${art.modificationNote}`
+                              : idx === 0
+                              ? ' • Redação Original'
+                              : ''}
+                          </div>
+                          <ArticleItem
+                            article={art}
+                            forceExpandRevoked={true}
+                            onCollapseRevoked={() =>
+                              setExpandedGroupNumbers((prev) => {
+                                const next = new Set(prev);
+                                next.delete(block.number);
+                                return next;
+                              })
+                            }
+                            previousArticle={previousArticleById[art.id]}
+                            lawEpigraph={doc.epigraph}
+                            annotation={annotations[art.id]}
+                            highlightTags={highlightTags}
+                            appearance={appearance}
+                            searchHighlightWords={searchHighlightWords}
+                            crossRefGraph={crossRefGraph}
+                            isFocused={focusedArticleId === art.id}
+                            onFocus={() => setFocusedArticleId(art.id)}
+                            onJumpToArticle={handleSelectArticleFromToc}
+                            onOpenCrossRefGraphForArticle={(targetArt) => {
+                              setCrossRefModalArticle(targetArt);
+                              setShowCrossRefModal(true);
+                            }}
+                            onUpdateAnnotation={handleUpdateAnnotation}
+                            onOpenCustomizeTags={() => openCadernoSubTab('grifos')}
+                            onExplainWithAI={handleExplainArticle}
+                            onSummarizeJurisprudenceWithAI={
+                              handleSummarizeJurisprudence
+                            }
+                            onQuizWithAI={(targetArt) => {
+                              setFocusedArticleId(targetArt.id);
+                              setRightDrawerOpen(true);
+                              setRightDrawerTab('quiz');
+                            }}
+                            onPlayAudio={handlePlayArticleAudio}
+                            isPlayingAudio={playingArticleId === art.id}
+                            isPro={isPro}
+                            isPcd={isPcd}
+                            oabIncidence={oabByArticleId[art.id]}
+                            isReadInTrail={Boolean(
+                              studyProgress?.readArticleIds?.includes(art.id)
+                            )}
+                            showReadBadges={Boolean(isPro && studyProgress?.showReadBadges)}
+                            showOabBadges={Boolean(isPro && studyProgress?.showOabBadges)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  );
+                }
+
+                // If single article or not all revoked, render each matching article normally
                 return (
-                  <ArticleItem
-                    key={article.id}
-                    article={article}
-                    previousArticle={previousArticleById[article.id]}
-                    lawEpigraph={doc.epigraph}
-                    annotation={annotations[article.id]}
-                    highlightTags={highlightTags}
-                    appearance={appearance}
-                    searchHighlightWords={searchHighlightWords}
-                    crossRefGraph={crossRefGraph}
-                    isFocused={focusedArticleId === article.id}
-                    onFocus={() => setFocusedArticleId(article.id)}
-                    onJumpToArticle={handleSelectArticleFromToc}
-                    onOpenCrossRefGraphForArticle={(targetArt) => {
-                      setCrossRefModalArticle(targetArt);
-                      setShowCrossRefModal(true);
-                    }}
-                    onUpdateAnnotation={handleUpdateAnnotation}
-                    onOpenCustomizeTags={() => openCadernoSubTab('grifos')}
-                    onExplainWithAI={handleExplainArticle}
-                    onSummarizeJurisprudenceWithAI={
-                      handleSummarizeJurisprudence
-                    }
-                    onQuizWithAI={(art) => {
-                      setFocusedArticleId(art.id);
-                      setRightDrawerOpen(true);
-                      setRightDrawerTab('quiz');
-                    }}
-                    onPlayAudio={handlePlayArticleAudio}
-                    isPlayingAudio={playingArticleId === article.id}
-                    isPro={isPro}
-                    isPcd={isPcd}
-                    oabIncidence={oabByArticleId[article.id]}
-                    isReadInTrail={Boolean(
-                      studyProgress?.readArticleIds?.includes(article.id)
-                    )}
-                    showReadBadges={Boolean(isPro && studyProgress?.showReadBadges)}
-                    showOabBadges={Boolean(isPro && studyProgress?.showOabBadges)}
-                  />
+                  <React.Fragment key={`group-${block.number}`}>
+                    {matchingArticles.map((article) => (
+                      <ArticleItem
+                        key={article.id}
+                        article={article}
+                        previousArticle={previousArticleById[article.id]}
+                        lawEpigraph={doc.epigraph}
+                        annotation={annotations[article.id]}
+                        highlightTags={highlightTags}
+                        appearance={appearance}
+                        searchHighlightWords={searchHighlightWords}
+                        crossRefGraph={crossRefGraph}
+                        isFocused={focusedArticleId === article.id}
+                        onFocus={() => setFocusedArticleId(article.id)}
+                        onJumpToArticle={handleSelectArticleFromToc}
+                        onOpenCrossRefGraphForArticle={(targetArt) => {
+                          setCrossRefModalArticle(targetArt);
+                          setShowCrossRefModal(true);
+                        }}
+                        onUpdateAnnotation={handleUpdateAnnotation}
+                        onOpenCustomizeTags={() => openCadernoSubTab('grifos')}
+                        onExplainWithAI={handleExplainArticle}
+                        onSummarizeJurisprudenceWithAI={
+                          handleSummarizeJurisprudence
+                        }
+                        onQuizWithAI={(art) => {
+                          setFocusedArticleId(art.id);
+                          setRightDrawerOpen(true);
+                          setRightDrawerTab('quiz');
+                        }}
+                        onPlayAudio={handlePlayArticleAudio}
+                        isPlayingAudio={playingArticleId === article.id}
+                        isPro={isPro}
+                        isPcd={isPcd}
+                        oabIncidence={oabByArticleId[article.id]}
+                        isReadInTrail={Boolean(
+                          studyProgress?.readArticleIds?.includes(article.id)
+                        )}
+                        showReadBadges={Boolean(isPro && studyProgress?.showReadBadges)}
+                        showOabBadges={Boolean(isPro && studyProgress?.showOabBadges)}
+                      />
+                    ))}
+                  </React.Fragment>
                 );
               }
 

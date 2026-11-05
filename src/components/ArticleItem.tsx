@@ -63,6 +63,8 @@ interface ArticleItemProps {
   isReadInTrail?: boolean;
   showOabBadges?: boolean;
   showReadBadges?: boolean;
+  forceExpandRevoked?: boolean;
+  onCollapseRevoked?: () => void;
 }
 
 export function hexToRgba(hex: string, alpha: number): string {
@@ -582,13 +584,17 @@ export const ArticleItem: React.FC<ArticleItemProps> = ({
   isReadInTrail = false,
   showOabBadges = false,
   showReadBadges = false,
+  forceExpandRevoked = false,
+  onCollapseRevoked,
 }) => {
   const [showHighlightPicker, setShowHighlightPicker] = useState(false);
   const [showJurisprudence, setShowJurisprudence] = useState(false);
   const [isEditingNote, setIsEditingNote] = useState(false);
   const [noteDraft, setNoteDraft] = useState(annotation?.note || '');
   const [selectedQuote, setSelectedQuote] = useState<string>('');
-  const [expandRevoked, setExpandRevoked] = useState(false);
+  const [localExpandRevoked, setLocalExpandRevoked] = useState(false);
+  const expandRevoked = Boolean(forceExpandRevoked || localExpandRevoked);
+  const setExpandRevoked = setLocalExpandRevoked;
   const [copiedArticle, setCopiedArticle] = useState(false);
 
   const handleCopyArticleFull = (e: React.MouseEvent) => {
@@ -987,8 +993,11 @@ export const ArticleItem: React.FC<ArticleItemProps> = ({
             onClick={(e) => {
               e.stopPropagation();
               setExpandRevoked(false);
+              if (onCollapseRevoked) {
+                onCollapseRevoked();
+              }
             }}
-            className="px-2 py-0.5 rounded-full text-rose-500 hover:bg-rose-500/10"
+            className="px-2 py-0.5 rounded-full text-rose-500 hover:bg-rose-500/10 cursor-pointer font-medium text-[11px]"
           >
             Ocultar revogado
           </button>

@@ -956,3 +956,48 @@ export async function exportFlashcardsToAnkiApkg(
   URL.revokeObjectURL(url);
 }
 
+
+const AI_SESSION_BACKUP_KEY = 'planalto_ai_session_backup:';
+
+export interface AISessionBackup {
+  chatMessages: any[];
+  quizQuestions: any[];
+  editalMatches: any[];
+  savedAt: string;
+}
+
+export async function saveAISessionBackup(
+  lawId: string,
+  backup: AISessionBackup
+): Promise<void> {
+  await setRaw(`${AI_SESSION_BACKUP_KEY}${lawId}`, backup);
+}
+
+export async function loadAISessionBackup(
+  lawId: string
+): Promise<AISessionBackup | null> {
+  return await getRaw<AISessionBackup | null>(
+    `${AI_SESSION_BACKUP_KEY}${lawId}`,
+    null
+  );
+}
+
+export async function clearAISessionBackup(lawId: string): Promise<void> {
+  const storage = getExtensionStorage();
+  const key = `${AI_SESSION_BACKUP_KEY}${lawId}`;
+  if (storage) {
+    await new Promise<void>((resolve) => {
+      try {
+        storage.remove([key], () => resolve());
+      } catch {
+        resolve();
+      }
+    });
+  } else {
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      // ignore
+    }
+  }
+}

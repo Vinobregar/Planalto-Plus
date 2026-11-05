@@ -448,6 +448,8 @@ function renderHighlightedAndLinkedText(
       <mark
         key={i}
         style={{
+        contentVisibility: 'auto',
+        containIntrinsicSize: '0 140px',
           backgroundColor: hexToRgba(hex, isDark ? 0.35 : 0.42),
           borderBottom: `2px solid ${hex}`,
         }}

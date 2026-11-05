@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import {
   BookMarked,
   Check,
@@ -50,6 +50,8 @@ import {
   saveAppearanceSettings,
   saveHighlightTags,
   saveLawAnnotations,
+  saveAISessionBackup,
+  loadAISessionBackup,
 } from '../storage/storageService';
 import {
   DEFAULT_FLASHCARD_PARAMS,
@@ -105,6 +107,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
 
   // Shared search query between Sumário (left sidebar) and Centered Top Search Bar
   const [searchQuery, setSearchQuery] = useState('');
+  const deferredSearchQuery = useDeferredValue(searchQuery);
   const [appliedFilterQuery, setAppliedFilterQuery] = useState<string | null>(null);
   const [searchWithSynonyms, setSearchWithSynonyms] = useState(false);
 
@@ -217,7 +220,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
 
   // Top search bar matching articles
   const topSearchResults = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
+    const q = deferredSearchQuery.trim().toLowerCase();
     if (!q) return [];
 
     // Check if query is targeting an article number (e.g. "155", "art 155", "art. 155", "artigo 155", "155º", "155-A", "155a")
@@ -251,7 +254,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
         );
       })
       .slice(0, 20);
-  }, [searchQuery, doc.articles, appearance.compiledMode, annotations]);
+  }, [deferredSearchQuery, doc.articles, appearance.compiledMode, annotations]);
 
   // Load saved state on mount
   useEffect(() => {
@@ -300,16 +303,54 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
   }, [showAppearancePopover, showLawsMenu, showTopSearchDropdown]);
 
   const handleUpdateAppearance = (next: AppearanceSettings) => {
-    setAppearance(next);
-    saveAppearanceSettings(next);
+    if (next.hideAITools !== appearance.hideAITools) {
+      handleToggleHideAI(Boolean(next.hideAITools));
+    } else {
+      setAppearance(next);
+      saveAppearanceSettings(next);
+    }
   };
 
-  const handleToggleHideAI = (hide: boolean) => {
+  const handleToggleHideAI = async (hide: boolean) => {
     const next = { ...appearance, hideAITools: hide };
     setAppearance(next);
     saveAppearanceSettings(next);
-    if (hide && rightDrawerTab !== 'notes') {
-      setRightDrawerTab('notes');
+
+    if (hide) {
+      // 1. Salvar dados ativos no armazenamento local em segundo plano
+      if (chatMessages.length > 0 || quizQuestions.length > 0 || editalMatches.length > 0) {
+        await saveAISessionBackup(doc.lawId, {
+          chatMessages,
+          quizQuestions,
+          editalMatches,
+          savedAt: new Date().toISOString(),
+        });
+      }
+      // 2. PURGA ATIVA DA MEMÓRIA RAM: descarrega strings e componentes
+      setChatMessages([]);
+      setQuizQuestions([]);
+      setEditalMatches([]);
+      if (rightDrawerTab !== 'notes') {
+        setRightDrawerTab('notes');
+      }
+    } else {
+      // RESTAURAÇÃO: carrega do armazenamento local se houver sessão anterior
+      try {
+        const backup = await loadAISessionBackup(doc.lawId);
+        if (backup) {
+          if (backup.chatMessages && backup.chatMessages.length > 0) {
+            setChatMessages(backup.chatMessages);
+          }
+          if (backup.quizQuestions && backup.quizQuestions.length > 0) {
+            setQuizQuestions(backup.quizQuestions);
+          }
+          if (backup.editalMatches && backup.editalMatches.length > 0) {
+            setEditalMatches(backup.editalMatches);
+          }
+        }
+      } catch (err) {
+        console.warn('Erro ao restaurar sessão de IA descarregada:', err);
+      }
     }
   };
 

@@ -1,10 +1,15 @@
 # Chrome Web Store Listing — Planalto Plus
 
 > Last Updated: 2026-11-04  
-> Version: 1.0.2  
+> Version: 1.0.3  
 > Package: `dist/planalto-moderno-chrome.zip` (772 KB)
 
 ---
+
+## Changelog v1.0.3
+• Otimização de Memória RAM: purga ativa de dados de IA (chat, simulados e editais) ao ocultar IA, com persistência local em segundo plano.
+• Aceleração de Renderização: suporte nativo a 'content-visibility: auto' nos artigos, poupando até 70% de processamento e RAM em leis extensas (ex.: Código Civil).
+• Digitação Fluida a 60 FPS: transições com 'useDeferredValue' na busca do sumário e cabeçalho, eliminando microtravamentos ao pesquisar em grandes normas.
 
 ## Changelog v1.0.2
 • Opção de Ocultar / Reativar recursos de IA centralizada exclusivamente no menu de Aparência.

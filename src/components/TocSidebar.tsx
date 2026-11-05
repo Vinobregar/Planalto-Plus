@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useDeferredValue, useMemo, useState } from 'react';
 import {
   BookOpen,
   ChevronDown,
@@ -80,9 +80,11 @@ export const TocSidebar: React.FC<TocSidebarProps> = ({
         (annotations[articleId]?.textHighlights?.length ?? 0) > 0
     );
 
-  // Filtered flat articles when searching
+  // Filtered flat articles with useDeferredValue for 60fps typing
+  const deferredSearchQuery = useDeferredValue(searchQuery);
+
   const filteredArticles = useMemo(() => {
-    const q = searchQuery.trim().toLowerCase();
+    const q = deferredSearchQuery.trim().toLowerCase();
     if (!q) return [];
 
     // Check if query is targeting an article number (e.g. "155", "art 155", "art. 155", "artigo 155", "155º", "155-A", "155a")
@@ -114,7 +116,7 @@ export const TocSidebar: React.FC<TocSidebarProps> = ({
         annotations[art.id]?.note?.toLowerCase().includes(q) ?? false;
       return numMatch || textMatch || noteMatch;
     });
-  }, [articles, annotations, compiledMode, searchQuery]);
+  }, [articles, annotations, compiledMode, deferredSearchQuery]);
 
   const surface = computeThemeColors(appearance);
   const theme = appearance.theme;

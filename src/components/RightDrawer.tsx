@@ -309,10 +309,10 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
 
   const tooltipClass =
     theme === 'dark'
-      ? 'bg-zinc-900 border-zinc-700 text-zinc-100'
+      ? 'bg-zinc-950 border-zinc-800 text-zinc-100 shadow-2xl'
       : theme === 'sepia'
-      ? 'bg-[#faf8f4] border-[#dcd6ca] text-[#2c2825]'
-      : 'bg-slate-900 border-slate-700 text-white';
+      ? 'bg-[#faf8f4] border-[#dcd6ca] text-[#2c2825] shadow-xl'
+      : 'bg-white border-slate-200 text-slate-800 shadow-xl';
 
   const hasConfiguredKey = Boolean(
     aiConfig.apiKeys[aiConfig.provider]?.trim()
@@ -2356,7 +2356,12 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
 
               <button
                 type="button"
-                onClick={() => onCadernoSubTabChange('trilha')}
+                onClick={() => {
+                  onCadernoSubTabChange('trilha');
+                  if (!isPro && onOpenProDrawer) {
+                    onOpenProDrawer('oab_trail');
+                  }
+                }}
                 className={`py-1.5 px-2 rounded-lg text-[11px] font-semibold flex items-center justify-center gap-1 transition-all ${
                   cadernoSubTab === 'trilha'
                     ? 'bg-indigo-600 text-white shadow-sm'
@@ -2365,6 +2370,9 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
               >
                 <GraduationCap className="w-3 h-3 shrink-0" />
                 <span className="truncate">Trilha & OAB</span>
+                <span className="px-1 py-0.1 rounded text-[8px] font-bold uppercase bg-amber-500/20 text-amber-700 dark:text-amber-300">
+                  PRO
+                </span>
               </button>
             </div>
 
@@ -2873,164 +2881,190 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
             </div>
           )}
 
-          {/* SUB-TAB 3: TRILHA DO EDITAL & MAPEADOR DE INCIDÊNCIA OAB (FGV) */}
+          {/* SUB-TAB 3: TRILHA DO EDITAL & MAPEADOR DE INCIDÊNCIA OAB (FGV) - EXCLUSIVO PRO */}
           {cadernoSubTab === 'trilha' && (
             <div className="flex-1 overflow-y-auto p-3.5 space-y-3 text-xs">
-              {(() => {
-                const stats = calculateStudyTrailStats(doc, studyProgress);
-                return (
-                  <div
-                    style={cardStyle}
-                    className="p-3.5 rounded-2xl border space-y-3"
-                  >
-                    <div className="flex items-center justify-between">
-                      <span className="font-semibold flex items-center gap-1.5 text-indigo-500">
-                        <GraduationCap className="w-4 h-4" />
-                        <span>Trilha do Edital & Meta Diária</span>
-                      </span>
-                      <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
-                        {stats.percentage}% concluído
-                      </span>
-                    </div>
-
-                    {/* Barra de Progresso */}
-                    <div className="w-full h-2 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
-                      <div
-                        className="h-full bg-indigo-600 transition-all duration-300"
-                        style={{ width: `${stats.percentage}%` }}
-                      />
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-2">
-                      <div className="p-2.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.03] border border-current/10 text-center">
-                        <div className="text-base font-extrabold text-indigo-600 dark:text-indigo-400">
-                          {stats.readCount} / {stats.totalArticles}
-                        </div>
-                        <div className="text-[10px] opacity-70">
-                          Artigos Lidos (Auto-scroll)
-                        </div>
-                      </div>
-                      <div className="p-2.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.03] border border-current/10 text-center">
-                        <div className="text-base font-extrabold text-emerald-600 dark:text-emerald-400">
-                          {stats.dailyGoalArticles} art/dia
-                        </div>
-                        <div className="text-[10px] opacity-70">
-                          ~{stats.estimatedDailyMinutes} min/dia ({stats.targetDays}d)
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Seletor de Prazo (Meta de Dias) */}
-                    <div className="flex items-center justify-between gap-2 pt-1 border-t border-current/10">
-                      <span className="text-[11px] opacity-75">
-                        Prazo da meta:
-                      </span>
-                      <div className="flex items-center gap-1">
-                        {[7, 15, 30, 60].map((d) => (
-                          <button
-                            key={d}
-                            type="button"
-                            onClick={async () => {
-                              const next = await updateStudyTrailTargetDays(
-                                doc,
-                                studyProgress,
-                                d
-                              );
-                              onUpdateStudyProgress?.(next);
-                            }}
-                            className={`px-2 py-0.5 rounded-lg border text-[10.5px] font-semibold ${
-                              stats.targetDays === d
-                                ? 'bg-indigo-600 text-white border-indigo-600'
-                                : 'border-current/15 opacity-75 hover:opacity-100'
-                            }`}
-                          >
-                            {d}d
-                          </button>
-                        ))}
-                        <button
-                          type="button"
-                          onClick={async () => {
-                            const reset = await resetStudyTrailProgress(
-                              doc,
-                              studyProgress
-                            );
-                            onUpdateStudyProgress?.(reset);
-                          }}
-                          className="p-1 rounded hover:bg-rose-500/10 text-rose-500 opacity-70 hover:opacity-100 ml-1"
-                          title="Zerar leitura desta lei"
-                        >
-                          <RotateCcw className="w-3 h-3" />
-                        </button>
-                      </div>
-                    </div>
+              {!isPro ? (
+                <div
+                  style={cardStyle}
+                  className="p-5 rounded-2xl border text-center space-y-3 my-2"
+                >
+                  <div className="w-10 h-10 rounded-2xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto">
+                    <GraduationCap className="w-5 h-5" />
                   </div>
-                );
-              })()}
-
-              {/* Mapeador de Incidência OAB (FGV) */}
-              <div
-                style={cardStyle}
-                className="p-3.5 rounded-2xl border space-y-2.5"
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-semibold flex items-center gap-1.5 text-amber-600 dark:text-amber-400">
-                    <span>🎯 Mapeador de Incidência OAB / FGV</span>
-                  </span>
-                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 font-bold">
-                    {oabItems.length} artigos mapeados
-                  </span>
-                </div>
-
-                {oabItems.length === 0 ? (
-                  <p className="text-[11px] opacity-70 leading-relaxed">
-                    Esta norma não possui artigos listados no preset principal de
-                    alta recorrência da FGV/OAB ou é uma legislação complementar
-                    específica.
-                  </p>
-                ) : (
-                  <div className="space-y-2">
-                    {oabItems.map((item) => (
-                      <div
-                        key={item.articleNumber}
-                        onClick={() => {
-                          const targetArt = doc.articles.find(
-                            (a) =>
-                              a.number.replace(/[º°.\s]/g, '').toLowerCase() ===
-                              item.articleNumber.toLowerCase()
-                          );
-                          if (targetArt) onJumpToArticle(targetArt.id);
-                        }}
-                        className="p-2.5 rounded-xl border border-current/10 hover:border-amber-500/50 bg-black/[0.02] dark:bg-white/[0.02] cursor-pointer transition-all space-y-1"
-                      >
-                        <div className="flex items-center justify-between">
-                          <span className="font-bold text-indigo-600 dark:text-indigo-400">
-                            {item.articleLabel}
-                          </span>
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300">
-                            Cobrado {item.recurrenceCount}x na FGV
-                          </span>
-                        </div>
-                        <p className="text-[11px] opacity-85 leading-snug">
-                          {item.summary}
-                        </p>
-                        <div className="text-[10px] opacity-65">
-                          Exames: {item.exams.join(', ')}
-                        </div>
-                      </div>
-                    ))}
+                  <div className="space-y-1">
+                    <div className="flex items-center justify-center gap-1.5">
+                      <span className="font-bold text-sm">
+                        Trilha do Edital & Mapeador OAB
+                      </span>
+                      <span className="px-1.5 py-0.2 rounded text-[9px] font-bold uppercase bg-amber-500/20 text-amber-700 dark:text-amber-300">
+                        PRO
+                      </span>
+                    </div>
+                    <p className="text-[11.5px] opacity-75 max-w-xs mx-auto leading-relaxed">
+                      Acompanhe sua meta diária de artigos lidos com auto-scroll,
+                      tempo estimado de estudo e consulte a recorrência exata da FGV
+                      nos artigos cobrados na 1ª fase da OAB.
+                    </p>
                   </div>
-                )}
-
-                {!isPro && onOpenProDrawer && (
                   <button
                     type="button"
-                    onClick={() => onOpenProDrawer('oab_trail')}
-                    className="w-full py-1.5 px-3 rounded-xl border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-600 dark:text-indigo-300 font-semibold text-[11px] transition-colors"
+                    onClick={() => onOpenProDrawer && onOpenProDrawer('oab_trail')}
+                    className="w-full py-2.5 px-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors"
                   >
-                    Sincronizar progresso na nuvem [PRO]
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Conhecer Recursos PRO</span>
                   </button>
-                )}
-              </div>
+                </div>
+              ) : (
+                <>
+                  {(() => {
+                    const stats = calculateStudyTrailStats(doc, studyProgress);
+                    return (
+                      <div
+                        style={cardStyle}
+                        className="p-3.5 rounded-2xl border space-y-3"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-semibold flex items-center gap-1.5 text-indigo-500">
+                            <GraduationCap className="w-4 h-4" />
+                            <span>Trilha do Edital & Meta Diária</span>
+                          </span>
+                          <span className="text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+                            {stats.percentage}% concluído
+                          </span>
+                        </div>
+
+                        {/* Barra de Progresso */}
+                        <div className="w-full h-2 rounded-full bg-black/10 dark:bg-white/10 overflow-hidden">
+                          <div
+                            className="h-full bg-indigo-600 transition-all duration-300"
+                            style={{ width: `${stats.percentage}%` }}
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          <div className="p-2.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.03] border border-current/10 text-center">
+                            <div className="text-base font-extrabold text-indigo-600 dark:text-indigo-400">
+                              {stats.readCount} / {stats.totalArticles}
+                            </div>
+                            <div className="text-[10px] opacity-70">
+                              Artigos Lidos (Auto-scroll)
+                            </div>
+                          </div>
+                          <div className="p-2.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.03] border border-current/10 text-center">
+                            <div className="text-base font-extrabold text-emerald-600 dark:text-emerald-400">
+                              {stats.dailyGoalArticles} art/dia
+                            </div>
+                            <div className="text-[10px] opacity-70">
+                              ~{stats.estimatedDailyMinutes} min/dia ({stats.targetDays}d)
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Seletor de Prazo (Meta de Dias) */}
+                        <div className="flex items-center justify-between gap-2 pt-1 border-t border-current/10">
+                          <span className="text-[11px] opacity-75">
+                            Prazo da meta:
+                          </span>
+                          <div className="flex items-center gap-1">
+                            {[7, 15, 30, 60].map((d) => (
+                              <button
+                                key={d}
+                                type="button"
+                                onClick={async () => {
+                                  const next = await updateStudyTrailTargetDays(
+                                    doc,
+                                    studyProgress,
+                                    d
+                                  );
+                                  onUpdateStudyProgress?.(next);
+                                }}
+                                className={`px-2 py-0.5 rounded-lg border text-[10.5px] font-semibold ${
+                                  stats.targetDays === d
+                                    ? 'bg-indigo-600 text-white border-indigo-600'
+                                    : 'border-current/15 opacity-75 hover:opacity-100'
+                                }`}
+                              >
+                                {d}d
+                              </button>
+                            ))}
+                            <button
+                              type="button"
+                              onClick={async () => {
+                                const reset = await resetStudyTrailProgress(
+                                  doc,
+                                  studyProgress
+                                );
+                                onUpdateStudyProgress?.(reset);
+                              }}
+                              className="p-1 rounded hover:bg-rose-500/10 text-rose-500 opacity-70 hover:opacity-100 ml-1"
+                              title="Zerar leitura desta lei"
+                            >
+                              <RotateCcw className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })()}
+
+                  {/* Mapeador de Incidência OAB (FGV) */}
+                  <div
+                    style={cardStyle}
+                    className="p-3.5 rounded-2xl border space-y-2.5"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold flex items-center gap-1.5 text-amber-600 dark:text-amber-400">
+                        <span>🎯 Mapeador de Incidência OAB / FGV</span>
+                      </span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300 font-bold">
+                        {oabItems.length} artigos mapeados
+                      </span>
+                    </div>
+
+                    {oabItems.length === 0 ? (
+                      <p className="text-[11px] opacity-70 leading-relaxed">
+                        Esta norma não possui artigos listados no preset principal de
+                        alta recorrência da FGV/OAB ou é uma legislação complementar
+                        específica.
+                      </p>
+                    ) : (
+                      <div className="space-y-2">
+                        {oabItems.map((item) => (
+                          <div
+                            key={item.articleNumber}
+                            onClick={() => {
+                              const targetArt = doc.articles.find(
+                                (a) =>
+                                  a.number.replace(/[º°.\s]/g, '').toLowerCase() ===
+                                  item.articleNumber.toLowerCase()
+                              );
+                              if (targetArt) onJumpToArticle(targetArt.id);
+                            }}
+                            className="p-2.5 rounded-xl border border-current/10 hover:border-amber-500/50 bg-black/[0.02] dark:bg-white/[0.02] cursor-pointer transition-all space-y-1"
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="font-bold text-indigo-600 dark:text-indigo-400">
+                                {item.articleLabel}
+                              </span>
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-700 dark:text-amber-300">
+                                Cobrado {item.recurrenceCount}x na FGV
+                              </span>
+                            </div>
+                            <p className="text-[11px] opacity-85 leading-snug">
+                              {item.summary}
+                            </p>
+                            <div className="text-[10px] opacity-65">
+                              Exames: {item.exams.join(', ')}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
             </div>
           )}
         </div>

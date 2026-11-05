@@ -93,6 +93,10 @@
   textarea,
   [role="dialog"],
   .no-print,
+  #vlibras-access-wrapper,
+  #planalto-vlibras-close-btn,
+  #vlibras-app-root,
+  [vw],
   [class*="group-hover"],
   [class*="group/artref"],
   [class*="group/mod"],
@@ -110,6 +114,8 @@
   html,
   body,
   :host,
+  #planalto-moderno-host,
+  #planalto-moderno-root,
   .planalto-app-root {
     position: static !important;
     inset: auto !important;
@@ -123,6 +129,27 @@
     font-size: 11pt !important;
     line-height: 1.55 !important;
     display: block !important;
+    float: none !important;
+    transform: none !important;
+  }
+
+  /* Outer ContentController wrapper must not be position: fixed */
+  div.fixed.inset-0 {
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+  }
+
+  /* 3-Zone Workspace wrapper must not be flex with overflow: hidden */
+  .flex-1.flex.min-h-0.overflow-hidden {
+    display: block !important;
+    overflow: visible !important;
+    height: auto !important;
+    width: 100% !important;
+    position: static !important;
   }
 
   /* Reader scroll container must expand freely across all pages */
@@ -139,6 +166,7 @@
     padding: 0 !important;
     margin: 0 !important;
     display: block !important;
+    float: none !important;
   }
 
   /* Disable CSS containment / content-visibility to eliminate browser estimation shifts */
@@ -165,6 +193,7 @@
     padding: 0.35rem 0 !important;
     border: none !important;
     background: transparent !important;
+    display: block !important;
   }
 
   /* Keep individual subclauses intact when possible without forcing overflow */

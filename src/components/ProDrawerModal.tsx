@@ -3,7 +3,6 @@ import {
   Check,
   Cloud,
   ExternalLink,
-  Headphones,
   LogOut,
   Mail,
   PanelRightClose,
@@ -14,10 +13,6 @@ import {
 } from 'lucide-react';
 import { AppearanceSettings, AuthSession } from '../types/legislation';
 import { computeThemeColors } from './AppearancePopover';
-import {
-  PRO_PLANS,
-  getFeaturePreview,
-} from '../ui/proDrawer.js';
 import {
   loginWithGoogle,
   loginWithMagicLink,
@@ -56,13 +51,31 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
   if (!isOpen) return null;
 
   const surface = computeThemeColors(appearance);
-  const preview = getFeaturePreview(featureKey);
   const textClass =
     appearance.theme === 'dark'
       ? 'text-zinc-100'
       : appearance.theme === 'sepia'
       ? 'text-[#2c2825]'
       : 'text-slate-800';
+
+  const handleOpenProLandingPage = () => {
+    try {
+      const getUrl =
+        typeof chrome !== 'undefined' && chrome.runtime?.getURL
+          ? chrome.runtime.getURL.bind(chrome.runtime)
+          : typeof (globalThis as any).browser?.runtime?.getURL === 'function'
+          ? (globalThis as any).browser.runtime.getURL.bind((globalThis as any).browser.runtime)
+          : null;
+
+      if (getUrl) {
+        window.open(getUrl('docs/pro.html'), '_blank');
+        return;
+      }
+    } catch {
+      // Fallback abaixo
+    }
+    window.open('https://planalto-plus.com.br/pro', '_blank');
+  };
 
   const handleGoogleLogin = async () => {
     setIsLoadingAuth(true);
@@ -111,14 +124,14 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
       <div
         onClick={onClose}
         className="flex-1 h-full cursor-pointer"
-        aria-label="Fechar prévia"
+        aria-label="Fechar painel PRO"
       />
       <aside
         style={{
           backgroundColor: surface.panelBg,
           borderColor: surface.borderColor,
         }}
-        className={`w-[420px] max-w-[94vw] h-full border-l shadow-2xl flex flex-col overflow-hidden select-none z-[96] ${textClass}`}
+        className={`w-[410px] max-w-[94vw] h-full border-l shadow-2xl flex flex-col overflow-hidden select-none z-[96] ${textClass}`}
       >
         {/* Top Bar Minimalista */}
         <div
@@ -144,98 +157,38 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs">
-          {/* Peeking Contextual Feature Preview */}
+          {/* Convite PRO com Redirecionamento para a Página Explicativa dos Planos */}
           <div
             style={{
               backgroundColor: surface.cardBg,
               borderColor: surface.borderColor,
             }}
-            className="p-4 rounded-2xl border space-y-2.5 shadow-sm"
+            className="p-4 rounded-2xl border space-y-3 shadow-sm text-center"
           >
-            <div className="flex items-center justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
-                <Headphones className="w-3.5 h-3.5" />
-                <span>{preview.tag}</span>
-              </span>
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 font-medium opacity-75">
-                Prévia Contextual
-              </span>
-            </div>
-            <h3 className="font-bold text-sm leading-snug">{preview.title}</h3>
-            <p className="text-[11.5px] opacity-85 leading-relaxed">
-              {preview.description}
-            </p>
-            <ul className="space-y-1.5 pt-1">
-              {preview.previewPoints.map((pt: string, idx: number) => (
-                <li key={idx} className="flex items-start gap-2 text-[11px]">
-                  <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
-                  <span className="opacity-90">{pt}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* 3 Planos Comerciais Atualizados (Asaas Checkout) */}
-          <div className="space-y-2.5">
-            <div className="flex items-center justify-between px-0.5">
-              <span className="text-[11px] font-bold uppercase tracking-wider opacity-75">
-                Planos Transparentes (Liberação via PIX ou Cartão)
-              </span>
+            <div className="w-10 h-10 rounded-2xl bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto">
+              <Sparkles className="w-5 h-5" />
             </div>
 
-            {PRO_PLANS.map((plan) => (
-              <div
-                key={plan.id}
-                style={{
-                  backgroundColor: surface.cardBg,
-                  borderColor: plan.featured ? '#6366f1' : surface.borderColor,
-                }}
-                className={`p-3.5 rounded-2xl border transition-all space-y-2 ${
-                  plan.featured ? 'ring-1 ring-indigo-500/40 shadow-md' : ''
-                }`}
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-bold text-sm">{plan.name}</span>
-                      {plan.badge && (
-                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-500/15 text-indigo-600 dark:text-indigo-300">
-                          {plan.badge}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-[11px] opacity-75 mt-0.5">
-                      {plan.subtitle}
-                    </p>
-                  </div>
-                  <div className="text-right shrink-0">
-                    <div className="font-extrabold text-base text-indigo-600 dark:text-indigo-400">
-                      {plan.priceDisplay}
-                    </div>
-                    <div className="text-[10px] opacity-65">
-                      {plan.periodDisplay}
-                    </div>
-                  </div>
-                </div>
+            <div className="space-y-1">
+              <h3 className="font-bold text-sm">Planalto Plus PRO</h3>
+              <p className="text-[11.5px] opacity-80 leading-relaxed max-w-xs mx-auto">
+                Desbloqueie o Podcast Panorâmico da Lei, Trilha com meta diária,
+                Mapeador de Incidência OAB/FGV, Destaques Multi-Leis de Editais
+                e Sincronização em Nuvem.
+              </p>
+            </div>
 
-                <a
-                  href={plan.checkoutUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`w-full py-2 px-3 rounded-xl font-semibold text-xs flex items-center justify-center gap-1.5 transition-colors ${
-                    plan.featured
-                      ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-sm'
-                      : 'border border-current/20 hover:bg-black/5 dark:hover:bg-white/5'
-                  }`}
-                >
-                  <span>{plan.ctaLabel}</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              </div>
-            ))}
+            <button
+              type="button"
+              onClick={handleOpenProLandingPage}
+              className="w-full py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer"
+            >
+              <span>Conhecer Planos</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </button>
           </div>
 
-          {/* Ativação Direta e Gratuita de Acessibilidade PcD (Lei Federal nº 13.146/2015) */}
+          {/* Ativação Direta e Gratuita de Acessibilidade PcD */}
           <div
             style={{
               backgroundColor: surface.cardBg,
@@ -245,12 +198,12 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
           >
             <div className="flex items-center gap-1.5 font-bold text-emerald-600 dark:text-emerald-400">
               <Volume2 className="w-4 h-4 shrink-0" />
-              <span>Acessibilidade Gratuita — Lei Federal nº 13.146/2015</span>
+              <span>Acessibilidade Gratuita</span>
             </div>
             <p className="text-[11px] opacity-85 leading-relaxed">
               Pessoas com deficiência visual têm acesso gratuito e ilimitado à
-              leitura por áudio de qualquer artigo utilizando a síntese nativa
-              de latência zero.
+              leitura por áudio de qualquer artigo utilizando síntese nativa de
+              latência zero.
             </p>
             <label className="flex items-start gap-2.5 pt-1 cursor-pointer select-none">
               <input

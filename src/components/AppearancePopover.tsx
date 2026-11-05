@@ -7,7 +7,6 @@ import {
   Moon,
   Palette,
   Plus,
-  Printer,
   RotateCcw,
   Sliders,
   Sparkles,
@@ -534,60 +533,13 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
         </div>
       </div>
 
-      {/* Botão de Exportar / Imprimir PDF */}
-      <div className="pt-2.5 border-t border-current/10">
-        <button
-          type="button"
-          onClick={() => {
-            onClose();
-            setTimeout(() => window.print(), 120);
-          }}
-          className="w-full py-2 px-3 rounded-xl border border-current/15 hover:bg-black/5 dark:hover:bg-white/5 opacity-85 hover:opacity-100 text-xs font-semibold flex items-center justify-between gap-2.5 transition-colors cursor-pointer"
-          title="Imprime a norma limpa ou salva em PDF sem barras ou botões (Ctrl+P)"
-        >
-          <div className="flex items-center gap-2.5 min-w-0 flex-1">
-            <Printer className="w-4 h-4 text-indigo-500 shrink-0" />
-            <div className="text-left min-w-0 flex-1">
-              <div className="font-semibold text-xs leading-tight">
-                Imprimir ou Salvar PDF
-              </div>
-              <p className="text-[10px] font-normal opacity-70 leading-snug">
-                Formatação limpa estilo livro jurídico
-              </p>
-            </div>
-          </div>
-          <kbd className="px-1.5 py-0.5 rounded border border-current/20 bg-black/5 dark:bg-white/10 font-mono text-[10px] font-bold">
-            Ctrl+P
-          </kbd>
-        </button>
-      </div>
-
-      {/* Acessibilidade Universal (VLibras Oficial + Leitura por Áudio PcD - Lei 13.146/2015) */}
+      {/* Acessibilidade Universal (Leitura por Áudio PcD) */}
       <div className="pt-2.5 border-t border-current/10 space-y-2">
         <div className="text-[11px] font-medium opacity-75 uppercase tracking-wider">
-          Acessibilidade Universal
+          Acessibilidade
         </div>
 
-        {/* Toggle 1: Exibir botão do VLibras na página */}
-        <label className="flex items-center justify-between gap-2.5 p-2 rounded-xl border border-current/15 hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition-colors">
-          <div className="min-w-0 flex-1">
-            <div className="font-semibold text-xs leading-tight">
-              Exibir botão do VLibras na página
-            </div>
-            <p className="text-[10px] opacity-70 leading-snug">
-              Tradutor oficial em Libras (Governo Federal)
-            </p>
-          </div>
-          <input
-            type="checkbox"
-            checked={settings.enableVlibras !== false}
-            onChange={(e) => update({ enableVlibras: e.target.checked })}
-            style={{ accentColor: currentAccent }}
-            className="w-4 h-4 rounded cursor-pointer shrink-0"
-          />
-        </label>
-
-        {/* Checkbox Ética: Lei Federal nº 13.146/2015 */}
+        {/* Checkbox Ética PcD */}
         <label className="flex items-start gap-2.5 p-2 rounded-xl border border-emerald-500/30 bg-emerald-500/5 hover:bg-emerald-500/10 cursor-pointer transition-colors">
           <input
             type="checkbox"
@@ -600,7 +552,7 @@ export const AppearancePopover: React.FC<AppearancePopoverProps> = ({
               Sou pessoa com deficiência visual e necessito de leitura por áudio
             </div>
             <p className="text-[10px] opacity-75 leading-snug mt-0.5">
-              Ativa leitura gratuita e ilimitada via Web Speech API (Lei nº 13.146/2015)
+              Ativa leitura gratuita e ilimitada por voz nativa
             </p>
           </div>
         </label>

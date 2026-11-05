@@ -1,10 +1,18 @@
 # Chrome Web Store Listing — Planalto Plus
 
 > Last Updated: 2026-11-05  
-> Version: 1.0.13  
+> Version: 1.0.14  
 > Package: `dist/planalto-moderno-chrome.zip`
 
 ---
+
+## Changelog v1.0.14
+• Correção da Paginação na Impressão e PDF: eliminação definitiva do acúmulo e sobreposição de textos entre páginas sucessivas ao imprimir com Ctrl+P.
+• Widget do VLibras: carregamento resiliente via CDN oficial com botão flutuante discreto "X" para ocultação instantânea sem poluir o menu de aparência.
+• Ajuste de Temas & Harmonia Visual: tooltip da Chave de API e botão ativo do IA Chat perfeitamente adaptados ao tema ativo (Claro, Sépia e Escuro).
+• Aba Trilha & OAB Integrada ao Plano PRO: exibição do selo e trava de acesso PRO com convite contextual para conhecer recursos exclusivos.
+• Redirecionamento da Página PRO: botão "Conhecer Planos" no drawer direciona para a página oficial completa de apresentação, mantendo o painel lateral minimalista e limpo.
+• Acessibilidade PcD: simplificação da identificação da leitura por áudio gratuita sem menções burocráticas a siglas.
 
 ## Changelog v1.0.13
 • Camada PRO, Autenticação Google OAuth & Magic Link (Supabase) com TTL offline de 24h e isolamento visual total para usuários gratuitos (Peeking UI Drawer).

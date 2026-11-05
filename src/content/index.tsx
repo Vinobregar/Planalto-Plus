@@ -34,6 +34,37 @@ function injectWebFonts() {
       font-style: normal;
       font-display: swap;
     }
+
+    /* Print overrides in main document to ensure multi-page flow without overlaps */
+    @media print {
+      html, body {
+        overflow: visible !important;
+        position: static !important;
+        height: auto !important;
+        max-height: none !important;
+      }
+      #planalto-moderno-host {
+        position: static !important;
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
+      .planalto-content-wrapper {
+        position: static !important;
+        inset: auto !important;
+        display: block !important;
+        width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+      }
+      #vlibras-access-wrapper,
+      #planalto-vlibras-close-btn,
+      #vlibras-app-root,
+      [vw] {
+        display: none !important;
+      }
+    }
   `;
   document.head.appendChild(dyslexicStyle);
 }
@@ -53,7 +84,29 @@ const ContentController: React.FC<{ doc: LegislationDocument }> = ({ doc }) => {
       document.body.style.overflow = prevBodyOverflow;
     }
 
+    // Ao imprimir, destrava overflow de html e body para permitir paginação natural de 100+ páginas
+    const handleBeforePrint = () => {
+      document.documentElement.style.overflow = 'visible';
+      document.body.style.overflow = 'visible';
+      document.documentElement.classList.add('planalto-print-active');
+      document.body.classList.add('planalto-print-active');
+    };
+
+    const handleAfterPrint = () => {
+      document.documentElement.classList.remove('planalto-print-active');
+      document.body.classList.remove('planalto-print-active');
+      if (modernActive) {
+        document.documentElement.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden';
+      }
+    };
+
+    window.addEventListener('beforeprint', handleBeforePrint);
+    window.addEventListener('afterprint', handleAfterPrint);
+
     return () => {
+      window.removeEventListener('beforeprint', handleBeforePrint);
+      window.removeEventListener('afterprint', handleAfterPrint);
       document.documentElement.style.overflow = prevOverflow;
       document.body.style.overflow = prevBodyOverflow;
     };
@@ -75,7 +128,7 @@ const ContentController: React.FC<{ doc: LegislationDocument }> = ({ doc }) => {
   }
 
   return (
-    <div className="fixed inset-0 z-[2147483646]">
+    <div className="fixed inset-0 z-[2147483646] planalto-content-wrapper">
       <PlanaltoReaderApp
         doc={doc}
         onToggleOriginalView={() => setModernActive(false)}

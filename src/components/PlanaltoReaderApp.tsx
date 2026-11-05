@@ -505,7 +505,11 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
   useEffect(() => {
     loadAppearanceSettings().then((loaded) => {
       setAppearance(loaded);
-      syncVlibrasWidget(loaded.enableVlibras !== false);
+      syncVlibrasWidget(loaded.enableVlibras !== false, () => {
+        const next = { ...loaded, enableVlibras: false };
+        setAppearance(next);
+        saveAppearanceSettings(next);
+      });
       if (loaded.hideAITools) {
         setRightDrawerTab('notes');
       }
@@ -631,7 +635,11 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
   }, [showAppearancePopover, showLawsMenu, showTopSearchDropdown]);
 
   const handleUpdateAppearance = (next: AppearanceSettings) => {
-    syncVlibrasWidget(next.enableVlibras !== false);
+    syncVlibrasWidget(next.enableVlibras !== false, () => {
+      const updated = { ...next, enableVlibras: false };
+      setAppearance(updated);
+      saveAppearanceSettings(updated);
+    });
     if (next.isPcdAudioAccess !== appearance.isPcdAudioAccess) {
       const enabled = Boolean(next.isPcdAudioAccess);
       setPcdUserStatus(enabled);
@@ -1651,8 +1659,8 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
             }}
             className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors shrink-0 whitespace-nowrap ${
               rightDrawerOpen && rightDrawerTab === 'notes'
-                ? 'bg-indigo-600 text-white border-indigo-600'
-                : 'border-current/15 hover:bg-black/5 dark:hover:bg-white/5'
+                ? 'border-amber-500 bg-amber-500/15 text-amber-700 dark:text-amber-300 font-semibold'
+                : 'border-current/15 hover:bg-black/5 dark:hover:bg-white/5 opacity-85 hover:opacity-100'
             }`}
             title="Caderno (Grifos & Tags e Anotações)"
           >
@@ -1677,8 +1685,8 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
               }}
               className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1.5 rounded-lg text-xs font-medium border transition-colors shrink-0 whitespace-nowrap ${
                 rightDrawerOpen && rightDrawerTab === 'chat'
-                  ? 'bg-indigo-600 text-white border-indigo-600'
-                  : 'border-current/15 hover:bg-black/5 dark:hover:bg-white/5'
+                  ? 'border-indigo-500 bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-semibold'
+                  : 'border-current/15 hover:bg-black/5 dark:hover:bg-white/5 opacity-85 hover:opacity-100'
               }`}
               title="Abrir IA Chat (Conversa, Importar Edital e Chave API)"
             >

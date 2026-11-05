@@ -1,10 +1,13 @@
 # Chrome Web Store Listing — Planalto Plus
 
 > Last Updated: 2026-11-05  
-> Version: 1.0.9  
+> Version: 1.0.10  
 > Package: `dist/planalto-moderno-chrome.zip` (772 KB)
 
 ---
+
+## Changelog v1.0.10
+• Contador de Resultados e Stepper na Barra Superior: indicador integrado `X de Y` e botões de navegação rápida `[↑]` e `[↓]` diretamente na barra de pesquisa superior, com suporte a `Enter` (próxima ocorrência) e `Shift + Enter` (ocorrência anterior).
 
 ## Changelog v1.0.9
 • Ativação do Modal de Atalhos de Teclado: correção do botão no Sumário e tecla '?' para exibir o painel completo de atalhos rápidos de navegação.

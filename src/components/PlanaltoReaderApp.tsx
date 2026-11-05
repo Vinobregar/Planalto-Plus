@@ -4,6 +4,7 @@ import {
   Check,
   CheckCheck,
   ChevronDown,
+  ChevronUp,
   Copy,
   ExternalLink,
   Eye,
@@ -356,9 +357,9 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
     return map;
   }, [doc.articles]);
 
-  // Top search bar matching articles
-  const topSearchResults = useMemo(() => {
-    const q = deferredSearchQuery.trim();
+  // All articles in the law matching current search (compiledMode respected)
+  const matchingArticles = useMemo(() => {
+    const q = (appliedFilterQuery || searchQuery).trim();
     if (!q) return [];
 
     // Check if query is targeting an article number (e.g. "155", "art 155", "art. 155", "artigo 155", "155º", "155-A", "155a")
@@ -369,25 +370,53 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
     if (numMatch) {
       const target = normalizeArticleNumberKey(numMatch[1]);
       const cleanTarget = target.replace(/-/g, '');
-      return doc.articles
-        .filter((art) => {
-          if (appearance.compiledMode && art.isRevoked) return false;
-          const artKey = normalizeArticleNumberKey(art.number);
-          const cleanArtKey = artKey.replace(/-/g, '');
-          return artKey === target || cleanArtKey === cleanTarget;
-        })
-        .slice(0, 20);
+      return doc.articles.filter((art) => {
+        if (appearance.compiledMode && art.isRevoked) return false;
+        const artKey = normalizeArticleNumberKey(art.number);
+        const cleanArtKey = artKey.replace(/-/g, '');
+        return artKey === target || cleanArtKey === cleanTarget;
+      });
     }
 
     const parsed = parseBooleanQuery(q, searchWithSynonyms);
-    return doc.articles
-      .filter((art) => {
-        if (appearance.compiledMode && art.isRevoked) return false;
-        const fullText = `${art.number} ${art.label} ${art.caputText} ${art.subClauses.map((sc) => sc.text).join(' ')} ${annotations[art.id]?.note || ''}`;
-        return evaluateBooleanSearch(fullText, parsed, searchWithSynonyms);
-      })
-      .slice(0, 20);
-  }, [deferredSearchQuery, searchWithSynonyms, doc.articles, appearance.compiledMode, annotations]);
+    return doc.articles.filter((art) => {
+      if (appearance.compiledMode && art.isRevoked) return false;
+      const fullText = `${art.number} ${art.label} ${art.caputText} ${art.subClauses.map((sc) => sc.text).join(' ')} ${annotations[art.id]?.note || ''}`;
+      return evaluateBooleanSearch(fullText, parsed, searchWithSynonyms);
+    });
+  }, [appliedFilterQuery, searchQuery, searchWithSynonyms, doc.articles, appearance.compiledMode, annotations]);
+
+  // Stepper tracking for top search bar
+  const currentTopMatchIndex = useMemo(() => {
+    if (matchingArticles.length === 0 || !focusedArticleId) return 0;
+    const idx = matchingArticles.findIndex((a) => a.id === focusedArticleId);
+    return idx >= 0 ? idx : 0;
+  }, [matchingArticles, focusedArticleId]);
+
+  const handleJumpToNextMatch = () => {
+    if (matchingArticles.length === 0) return;
+    const nextIdx = currentTopMatchIndex < matchingArticles.length - 1 ? currentTopMatchIndex + 1 : 0;
+    const target = matchingArticles[nextIdx];
+    if (target) {
+      setFocusedArticleId(target.id);
+      scrollToElementId(target.id);
+    }
+  };
+
+  const handleJumpToPrevMatch = () => {
+    if (matchingArticles.length === 0) return;
+    const prevIdx = currentTopMatchIndex > 0 ? currentTopMatchIndex - 1 : matchingArticles.length - 1;
+    const target = matchingArticles[prevIdx];
+    if (target) {
+      setFocusedArticleId(target.id);
+      scrollToElementId(target.id);
+    }
+  };
+
+  // Top search bar matching articles (dropdown preview top 20)
+  const topSearchResults = useMemo(() => {
+    return matchingArticles.slice(0, 20);
+  }, [matchingArticles]);
 
   // Load saved state on mount
   useEffect(() => {
@@ -1015,10 +1044,10 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
           </div>
         </div>
 
-        {/* Center: Search Bar Centered in Top Header (Flexibly shrinks to guarantee no row wrapping) */}
+        {/* Center: Search Bar Centered in Top Header (With Integrated Match Counter & Stepper) */}
         <div
           ref={topSearchRef}
-          className="relative flex-1 min-w-[140px] max-w-[200px] sm:max-w-[260px] md:max-w-[340px] lg:max-w-[420px] mx-1 sm:mx-2"
+          className="relative flex-1 min-w-[170px] max-w-[240px] sm:max-w-[340px] md:max-w-[440px] lg:max-w-[540px] mx-1 sm:mx-2"
         >
           <button
             type="button"
@@ -1034,7 +1063,14 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
             onFocus={() => setShowTopSearchDropdown(true)}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                handleApplySearchFilter();
+                e.preventDefault();
+                if (!appliedFilterQuery && searchQuery.trim()) {
+                  handleApplySearchFilter();
+                } else if (e.shiftKey) {
+                  handleJumpToPrevMatch();
+                } else {
+                  handleJumpToNextMatch();
+                }
               }
             }}
             onChange={(e) => {
@@ -1043,9 +1079,52 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
             }}
             ref={topSearchInputRef}
             placeholder="Buscar ou nº do Art... (/)"
-            className="w-full pl-7 pr-20 py-1.5 rounded-xl border border-current/15 bg-black/[0.03] dark:bg-white/[0.04] text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all placeholder:truncate"
+            className={`w-full pl-7 ${
+              searchQuery.trim().length > 0
+                ? 'pr-[155px] sm:pr-[170px]'
+                : 'pr-20'
+            } py-1.5 rounded-xl border border-current/15 bg-black/[0.03] dark:bg-white/[0.04] text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-all placeholder:truncate`}
           />
           <div className="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-1">
+            {/* Integrated Match Counter & Stepper Buttons */}
+            {searchQuery.trim().length > 0 && (
+              <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-black/5 dark:bg-white/10 text-[10px] font-mono shrink-0 select-none">
+                {matchingArticles.length > 0 ? (
+                  <>
+                    <span className="font-semibold text-indigo-600 dark:text-indigo-400 tabular-nums">
+                      {currentTopMatchIndex + 1}/{matchingArticles.length}
+                    </span>
+                    <div className="flex items-center gap-0.5 border-l border-current/15 pl-1">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleJumpToPrevMatch();
+                        }}
+                        className="p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/15 opacity-70 hover:opacity-100 transition-colors"
+                        title="Ocorrência anterior (Shift + Enter)"
+                      >
+                        <ChevronUp className="w-3 h-3" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleJumpToNextMatch();
+                        }}
+                        className="p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/15 opacity-70 hover:opacity-100 transition-colors"
+                        title="Próxima ocorrência (Enter)"
+                      >
+                        <ChevronDown className="w-3 h-3" />
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <span className="text-rose-500 font-semibold px-0.5">0/0</span>
+                )}
+              </div>
+            )}
+
             <button
               type="button"
               onClick={() => setSearchWithSynonyms((v) => !v)}

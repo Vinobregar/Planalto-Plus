@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
   BookOpen,
+  Bot,
   Check,
   Contrast,
   ExternalLink,
@@ -10,12 +11,14 @@ import {
   HelpCircle,
   Keyboard,
   KeyRound,
+  Lock,
   Moon,
   Scale,
   ShieldCheck,
   Sparkles,
   Sun,
   Sunset,
+  Unlock,
   Volume2,
 } from 'lucide-react';
 import '../styles/tailwind.css';
@@ -63,6 +66,21 @@ const QUICK_LAWS = [
   },
 ];
 
+const notifyActiveTab = (nextSettings: AppearanceSettings) => {
+  if (typeof chrome !== 'undefined' && chrome.tabs?.query) {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]?.id) {
+        chrome.tabs.sendMessage(tabs[0].id, {
+          type: 'PLANALTO_APPEARANCE_UPDATED',
+          appearance: nextSettings,
+        }).catch(() => {
+          // Tab may not be a planalto page or content script is loading
+        });
+      }
+    });
+  }
+};
+
 const PopupApp: React.FC = () => {
   const [appearance, setAppearance] = useState<AppearanceSettings>(() =>
     computeProportionalAppearance()
@@ -80,6 +98,7 @@ const PopupApp: React.FC = () => {
     const next = { ...appearance, theme };
     setAppearance(next);
     saveAppearanceSettings(next);
+    notifyActiveTab(next);
   };
 
   const handleSaveKey = (e: React.FormEvent) => {
@@ -90,10 +109,23 @@ const PopupApp: React.FC = () => {
   };
 
   const openProPage = () => {
-    if (typeof chrome !== 'undefined' && chrome.runtime?.getURL) {
-      window.open(chrome.runtime.getURL('docs/pro.html'), '_blank');
+    const url =
+      typeof chrome !== 'undefined' && chrome.runtime?.getURL
+        ? chrome.runtime.getURL('docs/pro.html')
+        : 'https://github.com/Vinobregar/Planalto-Plus';
+
+    if (typeof chrome !== 'undefined' && chrome.tabs?.create) {
+      chrome.tabs.create({ url });
     } else {
-      window.open('https://github.com/Vinobregar/Planalto-Plus', '_blank');
+      window.open(url, '_blank');
+    }
+  };
+
+  const handleOpenLaw = (url: string) => {
+    if (typeof chrome !== 'undefined' && chrome.tabs?.create) {
+      chrome.tabs.create({ url });
+    } else {
+      window.open(url, '_blank');
     }
   };
 
@@ -109,7 +141,7 @@ const PopupApp: React.FC = () => {
             <div className="flex items-center gap-1.5">
               <h1 className="font-bold text-sm leading-tight text-white">Planalto Plus</h1>
               <span className="px-1.5 py-0.2 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
-                v1.2.0
+                v1.2.1
               </span>
             </div>
             <p className="text-[11px] text-slate-400">
@@ -185,10 +217,14 @@ const PopupApp: React.FC = () => {
                   <div>
                     <strong className="block text-emerald-400 font-semibold mb-0.5">Como obter?</strong>
                     <p className="opacity-90 mb-1">Crie gratuitamente no Google AI Studio (recomendado, sem custo):</p>
-                    <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1 font-semibold text-indigo-400 hover:underline">
+                    <button
+                      type="button"
+                      onClick={() => handleOpenLaw('https://aistudio.google.com/app/apikey')}
+                      className="inline-flex items-center gap-1 font-semibold text-indigo-400 hover:underline cursor-pointer"
+                    >
                       <span>Google AI Studio</span>
                       <ExternalLink className="w-2.5 h-2.5" />
-                    </a>
+                    </button>
                   </div>
                   <div className="pt-1.5 border-t border-slate-700 flex items-start gap-1.5">
                     <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
@@ -277,6 +313,7 @@ const PopupApp: React.FC = () => {
               const next = { ...appearance, enableVlibras: !appearance.enableVlibras };
               setAppearance(next);
               saveAppearanceSettings(next);
+              notifyActiveTab(next);
             }}
             className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-colors shrink-0 cursor-pointer ${
               appearance.enableVlibras !== false
@@ -299,6 +336,7 @@ const PopupApp: React.FC = () => {
               setAppearance(next);
               saveAppearanceSettings(next);
               setPcdUserStatus(flag);
+              notifyActiveTab(next);
             }}
             className="mt-1 w-5 h-5 rounded accent-indigo-500 cursor-pointer shrink-0"
           />
@@ -322,6 +360,7 @@ const PopupApp: React.FC = () => {
               const next = { ...appearance, highContrast: flag };
               setAppearance(next);
               saveAppearanceSettings(next);
+              notifyActiveTab(next);
             }}
             className="mt-1 w-5 h-5 rounded accent-indigo-500 cursor-pointer shrink-0"
           />
@@ -339,19 +378,22 @@ const PopupApp: React.FC = () => {
         </label>
       </div>
 
-      {/* Preferências Rápidas de Leitura */}
-      <div className="p-3.5 rounded-xl bg-slate-800/60 border border-slate-800 space-y-2 text-xs">
+      {/* Preferências Rápidas de Leitura & Layout */}
+      <div className="p-3.5 rounded-xl bg-slate-800/60 border border-slate-800 space-y-2.5 text-xs">
         <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-          Preferências Rápidas
+          Preferências Rápidas de Leitura
         </div>
+
+        {/* 1. Texto Compilado */}
         <div className="flex items-center justify-between">
-          <span className="text-slate-200 font-medium">Texto Compilado por padrão</span>
+          <span className="text-slate-200 font-medium">Texto Compilado (ocultar revogados)</span>
           <button
             type="button"
             onClick={() => {
               const next = { ...appearance, compiledMode: !appearance.compiledMode };
               setAppearance(next);
               saveAppearanceSettings(next);
+              notifyActiveTab(next);
             }}
             className={`px-3 py-1 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
               appearance.compiledMode
@@ -360,6 +402,58 @@ const PopupApp: React.FC = () => {
             }`}
           >
             {appearance.compiledMode ? 'Ativado' : 'Desativado'}
+          </button>
+        </div>
+
+        {/* 2. Fixar Largura da Coluna */}
+        <div className="flex items-center justify-between pt-1 border-t border-slate-800/80">
+          <div className="flex items-center gap-1.5 text-slate-200 font-medium">
+            {appearance.lockColumnWidth ? (
+              <Lock className="w-3.5 h-3.5 text-amber-400" />
+            ) : (
+              <Unlock className="w-3.5 h-3.5 text-slate-400" />
+            )}
+            <span>Fixar largura da coluna</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              const next = { ...appearance, lockColumnWidth: !appearance.lockColumnWidth };
+              setAppearance(next);
+              saveAppearanceSettings(next);
+              notifyActiveTab(next);
+            }}
+            className={`px-3 py-1 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
+              appearance.lockColumnWidth
+                ? 'bg-amber-600 text-white border-amber-500 shadow-sm'
+                : 'bg-slate-700/60 text-slate-300 border-slate-600 hover:bg-slate-700'
+            }`}
+          >
+            {appearance.lockColumnWidth ? 'Fixada' : 'Dinâmica'}
+          </button>
+        </div>
+
+        {/* 3. Painel de Ferramentas IA */}
+        <div className="flex items-center justify-between pt-1 border-t border-slate-800/80">
+          <div className="flex items-center gap-1.5 text-slate-200 font-medium">
+            <Bot className="w-3.5 h-3.5 text-indigo-400" />
+            <span>Ferramentas de IA no texto</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              const next = { ...appearance, hideAITools: !appearance.hideAITools };
+              setAppearance(next);
+              saveAppearanceSettings(next);
+              notifyActiveTab(next);
+            }}
+            className={`px-3 py-1 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
+              !appearance.hideAITools
+                ? 'bg-indigo-600 text-white border-indigo-500 shadow-sm'
+                : 'bg-slate-700/60 text-slate-300 border-slate-600 hover:bg-slate-700'
+            }`}
+          >
+            {!appearance.hideAITools ? 'Visíveis' : 'Ocultas'}
           </button>
         </div>
       </div>
@@ -410,16 +504,15 @@ const PopupApp: React.FC = () => {
         </label>
         <div className="grid grid-cols-1 gap-1">
           {QUICK_LAWS.map((law) => (
-            <a
+            <button
               key={law.url}
-              href={law.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-slate-800/40 hover:bg-slate-800 border border-slate-800 text-xs text-slate-200 transition-colors"
+              type="button"
+              onClick={() => handleOpenLaw(law.url)}
+              className="w-full text-left flex items-center justify-between px-3 py-1.5 rounded-lg bg-slate-800/40 hover:bg-slate-800 border border-slate-800 text-xs text-slate-200 transition-colors cursor-pointer"
             >
               <span className="truncate">{law.name}</span>
-              <ExternalLink className="w-3 h-3 text-slate-400 shrink-0" />
-            </a>
+              <ExternalLink className="w-3 h-3 text-slate-400 shrink-0 ml-2" />
+            </button>
           ))}
         </div>
       </div>

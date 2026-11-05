@@ -23,6 +23,7 @@ export interface CrossReferenceGraph {
 export function normalizeArticleNumberKey(numStr: string): string {
   return numStr
     .toLowerCase()
+    .replace(/^art(?:igo)?\.?\s*/i, '')
     .replace(/\./g, '')
     .replace(/[º°]/g, '')
     .trim();

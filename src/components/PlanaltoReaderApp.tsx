@@ -554,7 +554,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
     return matchingArticles.slice(0, 20);
   }, [matchingArticles]);
 
-  // Group consecutive article blocks with identical number (e.g. multiple versions of Art. 30 in CLT)
+  // Group consecutive article blocks with identical number (e.g. multiple versions of Art. 16 or Art. 30 in CLT)
   const groupedRenderBlocks = useMemo(() => {
     type GroupedBlock =
       | Extract<DocumentBlock, { kind: 'heading' }>
@@ -567,35 +567,76 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
       number: string;
       articles: ArticleBlock[];
     } | null = null;
+    let bufferedTexts: Extract<DocumentBlock, { kind: 'text' }>[] = [];
 
-    for (const block of doc.blocks) {
+    const flushCurrentGroup = () => {
+      if (currentGroup) {
+        result.push(currentGroup);
+        currentGroup = null;
+      }
+      if (bufferedTexts.length > 0) {
+        for (const t of bufferedTexts) {
+          result.push(t);
+        }
+        bufferedTexts = [];
+      }
+    };
+
+    for (let i = 0; i < doc.blocks.length; i++) {
+      const block = doc.blocks[i];
       if (block.kind === 'article') {
         const art = block.article;
-        if (currentGroup && currentGroup.number === art.number) {
+        const artKey = normalizeArticleNumberKey(art.number);
+
+        if (
+          currentGroup &&
+          normalizeArticleNumberKey(currentGroup.number) === artKey
+        ) {
           currentGroup.articles.push(art);
+          bufferedTexts = [];
         } else {
-          if (currentGroup) {
-            result.push(currentGroup);
-          }
+          flushCurrentGroup();
           currentGroup = {
             kind: 'article_group',
             number: art.number,
             articles: [art],
           };
         }
-      } else {
-        if (currentGroup) {
-          result.push(currentGroup);
-          currentGroup = null;
-        }
+      } else if (block.kind === 'heading') {
+        flushCurrentGroup();
         result.push(block);
+      } else if (block.kind === 'text') {
+        if (currentGroup) {
+          const currentKey = normalizeArticleNumberKey(currentGroup.number);
+          let foundSameArticleAhead = false;
+          for (let j = i + 1; j < doc.blocks.length; j++) {
+            const nextBlock = doc.blocks[j];
+            if (nextBlock.kind === 'article') {
+              if (
+                normalizeArticleNumberKey(nextBlock.article.number) ===
+                currentKey
+              ) {
+                foundSameArticleAhead = true;
+              }
+              break;
+            } else if (nextBlock.kind === 'heading') {
+              break;
+            }
+          }
+
+          if (foundSameArticleAhead) {
+            bufferedTexts.push(block);
+          } else {
+            flushCurrentGroup();
+            result.push(block);
+          }
+        } else {
+          result.push(block);
+        }
       }
     }
 
-    if (currentGroup) {
-      result.push(currentGroup);
-    }
-
+    flushCurrentGroup();
     return result;
   }, [doc.blocks]);
 
@@ -607,8 +648,41 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
     });
   }, []);
 
-  // Load saved state on mount
+  // Load saved state on mount + listen to live popup updates
   useEffect(() => {
+    const handleStorageChange = (
+      changes: { [key: string]: any },
+      areaName: string
+    ) => {
+      if (areaName === 'local' && changes['planalto_moderno_appearance_v1']) {
+        const next = changes['planalto_moderno_appearance_v1'].newValue as AppearanceSettings;
+        if (next) {
+          setAppearance(next);
+          syncVlibrasWidget(next.enableVlibras !== false, handleHideVlibras);
+          setIsPcd(Boolean(next.isPcdAudioAccess));
+        }
+      }
+    };
+
+    const handleMessage = (message: any, _sender: any, sendResponse: any) => {
+      if (message?.type === 'PLANALTO_APPEARANCE_UPDATED' && message.appearance) {
+        const next = message.appearance as AppearanceSettings;
+        setAppearance(next);
+        syncVlibrasWidget(next.enableVlibras !== false, handleHideVlibras);
+        setIsPcd(Boolean(next.isPcdAudioAccess));
+        sendResponse?.({ status: 'ok' });
+      }
+    };
+
+    if (typeof chrome !== 'undefined') {
+      if (chrome.storage?.onChanged) {
+        chrome.storage.onChanged.addListener(handleStorageChange);
+      }
+      if (chrome.runtime?.onMessage) {
+        chrome.runtime.onMessage.addListener(handleMessage);
+      }
+    }
+
     loadAppearanceSettings().then((loaded) => {
       setAppearance(loaded);
       syncVlibrasWidget(loaded.enableVlibras !== false, handleHideVlibras);
@@ -2463,7 +2537,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
                   appearance.compiledMode &&
                   allRevoked
                 ) {
-                  const isExpanded = expandedGroupNumbers.has(block.number);
+                  const isExpanded = expandedGroupNumbers.has(normalizeArticleNumberKey(block.number));
 
                   if (!isExpanded) {
                     return (
@@ -2485,7 +2559,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
                           onClick={() =>
                             setExpandedGroupNumbers((prev) => {
                               const next = new Set(prev);
-                              next.add(block.number);
+                              next.add(normalizeArticleNumberKey(block.number));
                               return next;
                             })
                           }
@@ -2513,7 +2587,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
                           onClick={() =>
                             setExpandedGroupNumbers((prev) => {
                               const next = new Set(prev);
-                              next.delete(block.number);
+                              next.delete(normalizeArticleNumberKey(block.number));
                               return next;
                             })
                           }
@@ -2539,7 +2613,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
                             onCollapseRevoked={() =>
                               setExpandedGroupNumbers((prev) => {
                                 const next = new Set(prev);
-                                next.delete(block.number);
+                                next.delete(normalizeArticleNumberKey(block.number));
                                 return next;
                               })
                             }

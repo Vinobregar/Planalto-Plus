@@ -410,37 +410,29 @@ export const ProDrawerModal: React.FC<ProDrawerModalProps> = ({
                 backgroundColor: surface.cardBg,
                 borderColor: surface.borderColor,
               }}
-              className="p-3.5 rounded-2xl border space-y-2 shadow-sm"
+              className="p-3.5 rounded-2xl border space-y-2.5 shadow-sm"
             >
               <div className="flex items-center justify-between">
                 <span className="font-bold text-xs flex items-center gap-1.5 text-indigo-600 dark:text-indigo-400">
                   <MessageSquare className="w-4 h-4 text-indigo-500 shrink-0" />
-                  <span>"Pergunte à Lei" • Demonstração</span>
+                  <span>"Pergunte à Lei" • Consulta Panorâmica</span>
                 </span>
                 <span className="px-2 py-0.5 rounded-full text-[9px] font-bold uppercase bg-indigo-500/15 text-indigo-600 dark:text-indigo-400">
                   Norma Inteira
                 </span>
               </div>
 
-              <p className="text-[11px] opacity-80 leading-relaxed">
-                Consulte a IA sobre toda a norma jurídica de uma só vez, cruzando capítulos, exceções e prazos espalhados.
-              </p>
-
-              <div className="p-2.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.03] border border-current/10 space-y-2 text-[11px]">
-                <div className="font-semibold text-indigo-600 dark:text-indigo-400 flex items-center gap-1">
-                  <span>💬 Pergunta de exemplo:</span>
+              {/* Caixa Simplificada de Exemplo Direto */}
+              <div className="p-3 rounded-xl bg-indigo-500/5 border border-indigo-500/20 text-[11px] space-y-2 leading-relaxed">
+                <div className="flex items-start gap-2 text-indigo-600 dark:text-indigo-300 font-medium">
+                  <span className="font-bold shrink-0">💬</span>
+                  <span className="italic">"Quais são os prazos de sanção e veto presidencial?"</span>
                 </div>
-                <p className="opacity-95 italic text-[11px] font-medium">
-                  "Quais são todos os prazos em dias previstos para a sanção e o veto presidencial nesta Constituição?"
-                </p>
-                <div className="p-2.5 rounded-xl border border-current/15 bg-black/[0.03] dark:bg-white/[0.04] text-[11px] leading-relaxed space-y-1">
-                  <div className="font-bold flex items-center gap-1 text-indigo-600 dark:text-indigo-400">
-                    <Sparkles className="w-3.5 h-3.5" />
-                    <span>Resposta da IA (visão panorâmica da norma):</span>
+                <div className="flex items-start gap-2 pt-2 border-t border-indigo-500/15 opacity-90">
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-500 shrink-0 mt-0.5" />
+                  <div>
+                    <strong>Art. 66:</strong> Veto em <strong>15 dias úteis</strong> (comunicação em 48h). Sanção tácita após 15 dias de silêncio. Apreciação legislativa em <strong>30 dias</strong>.
                   </div>
-                  <p className="opacity-90">
-                    Conforme o <strong>Art. 66, § 1º</strong>, o Presidente dispõe de <strong>15 dias úteis</strong> para vetar o projeto, comunicando os motivos em <strong>48 horas</strong> ao Presidente do Senado. Se não se manifestar em 15 dias, opera-se a sanção tácita (<strong>§ 3º</strong>). O veto será apreciado pelo Congresso em <strong>30 dias</strong> (<strong>§ 4º</strong>).
-                  </p>
                 </div>
               </div>
             </div>

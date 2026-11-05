@@ -258,6 +258,7 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
 
   const [chatInput, setChatInput] = useState('');
   const [showKey, setShowKey] = useState(false);
+  const [showPergunteLeiInfo, setShowPergunteLeiInfo] = useState(false);
   const [configSavedBanner, setConfigSavedBanner] = useState(false);
   const [cacheStats, setCacheStats] = useState<{ count: number; estimatedSizeKb: number }>({ count: 0, estimatedSizeKb: 0 });
 
@@ -716,39 +717,6 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
             </div>
           </div>
 
-          {/* Focused Article Context Banner inside IA Chat */}
-          {focusedArticle && aiSection === 'conversation' && (
-            <div
-              style={{ borderColor: surface.borderColor }}
-              className="px-3.5 py-2 border-b bg-indigo-500/5 flex items-center justify-between gap-2 text-xs"
-            >
-              <div className="truncate">
-                <span className="opacity-65 mr-1.5">Em foco:</span>
-                <strong className="text-indigo-600 dark:text-indigo-400">
-                  {focusedArticle.label}
-                </strong>
-              </div>
-              <div className="flex items-center gap-1 shrink-0">
-                <button
-                  type="button"
-                  onClick={() => onTriggerExplainArticle(focusedArticle)}
-                  disabled={isLoadingAI}
-                  className="px-2 py-0.5 rounded bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-600 dark:text-indigo-300 font-medium text-[11px]"
-                >
-                  Explicar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => onTriggerJurisprudenceAI(focusedArticle)}
-                  disabled={isLoadingAI}
-                  className="px-2 py-0.5 rounded bg-indigo-500/15 hover:bg-indigo-500/25 text-indigo-600 dark:text-indigo-300 font-medium text-[11px]"
-                >
-                  Jurisprudência com IA
-                </button>
-              </div>
-            </div>
-          )}
-
           {/* Error or Missing Key Prompt */}
           {aiError && (
             <div className="m-3 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-300 text-xs space-y-1.5">
@@ -891,8 +859,105 @@ export const RightDrawer: React.FC<RightDrawerProps> = ({
               <form
                 onSubmit={handleChatSubmit}
                 style={{ borderColor: surface.borderColor }}
-                className="p-3 border-t space-y-2"
+                className="p-3 border-t space-y-2 select-text"
               >
+                {/* Em foco: Art. X — Acima do Chatbox (Ao clicar, informa sobre a função Pergunte à Lei PRO) */}
+                <div className="flex items-center justify-between text-xs px-0.5">
+                  <button
+                    type="button"
+                    onClick={() => setShowPergunteLeiInfo((v) => !v)}
+                    className="inline-flex items-center gap-1.5 px-2 py-1 rounded-lg border border-indigo-500/25 bg-indigo-500/5 hover:bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 font-medium transition-colors cursor-pointer group text-left max-w-full"
+                    title="Clique para saber como funciona a consulta à norma inteira com 'Pergunte à Lei' (Plano PRO)"
+                  >
+                    <span className="opacity-65 text-[11px]">Em foco:</span>
+                    <strong className="font-bold underline decoration-indigo-400/50 underline-offset-2 text-[11.5px]">
+                      {focusedArticle ? focusedArticle.label : 'Norma Inteira'}
+                    </strong>
+                    <span className="px-1 py-0.2 rounded text-[8.5px] font-bold uppercase bg-amber-500/20 text-amber-700 dark:text-amber-300">
+                      PRO
+                    </span>
+                    <HelpCircle className="w-3 h-3 opacity-60 group-hover:opacity-100 shrink-0" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowPergunteLeiInfo((v) => !v)}
+                    className="text-[10.5px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1 opacity-80 hover:opacity-100 shrink-0 cursor-pointer"
+                  >
+                    <Sparkles className="w-3 h-3 text-amber-500" />
+                    <span>Pergunte à Lei</span>
+                  </button>
+                </div>
+
+                {/* Popup / Card Explicativo: Função "Pergunte à Lei" (Plano PRO) */}
+                {showPergunteLeiInfo && (
+                  <div
+                    style={cardStyle}
+                    className="p-3.5 rounded-2xl border border-indigo-500/40 bg-indigo-500/5 shadow-xl space-y-2 text-xs relative animate-in fade-in zoom-in-95 duration-150 select-text"
+                  >
+                    <div className="flex items-start justify-between gap-2 border-b border-current/10 pb-1.5">
+                      <div className="flex items-center gap-1.5 font-bold text-indigo-600 dark:text-indigo-400">
+                        <Sparkles className="w-4 h-4 text-amber-500 shrink-0" />
+                        <span>Função "Pergunte à Lei" • Plano PRO</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setShowPergunteLeiInfo(false)}
+                        className="p-1 rounded-lg hover:bg-black/10 dark:hover:bg-white/10 opacity-70 hover:opacity-100 cursor-pointer"
+                        title="Fechar"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+
+                    <p className="text-[11px] opacity-90 leading-relaxed">
+                      A função <strong>"Pergunte à Lei"</strong> permite consultar a Inteligência Artificial sobre <strong>todo o conteúdo da lei federal em que você se encontra</strong>, e não apenas sobre um artigo isolado.
+                    </p>
+
+                    <div className="p-2 rounded-xl bg-black/[0.03] dark:bg-white/[0.03] border border-current/10 space-y-1 text-[10.5px]">
+                      <div className="font-semibold text-indigo-600 dark:text-indigo-400">
+                        O que você pode perguntar à norma inteira:
+                      </div>
+                      <ul className="list-disc list-inside space-y-0.5 opacity-85">
+                        <li>Cruzar múltiplos artigos, exceções e regras de transição.</li>
+                        <li>Identificar prazos prescricionais ou decadenciais espalhados na lei.</li>
+                        <li>Solicitar mapas conceituais de títulos e capítulos inteiros.</li>
+                        <li>Tirar dúvidas jurídicas complexas com fundamentação normativa completa.</li>
+                      </ul>
+                    </div>
+
+                    <div className="pt-1 flex items-center justify-between gap-2">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowPergunteLeiInfo(false);
+                          try {
+                            const getUrl = typeof chrome !== 'undefined' && chrome.runtime?.getURL
+                              ? chrome.runtime.getURL.bind(chrome.runtime)
+                              : null;
+                            if (getUrl) {
+                              window.open(getUrl('docs/pro.html'), '_blank');
+                              return;
+                            }
+                          } catch {}
+                          if (onOpenProDrawer) onOpenProDrawer('pergunte_lei');
+                        }}
+                        className="px-3 py-1.5 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-[11px] flex items-center gap-1.5 shadow-sm transition-colors cursor-pointer"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>Conhecer Recursos PRO</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowPergunteLeiInfo(false)}
+                        className="text-[10.5px] opacity-70 hover:opacity-100 underline cursor-pointer"
+                      >
+                        Entendido
+                      </button>
+                    </div>
+                  </div>
+                )}
                 <div className="flex items-center gap-1.5">
                   <input
                     type="text"

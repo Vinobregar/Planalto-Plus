@@ -822,21 +822,22 @@
               <span>Podcast da Lei • Player Integrado</span>
             </div>
             <div class="mockup-body">
-              <div class="player-widget">
+              <div class="player-widget" id="demo-player-box">
+                <audio id="demo-neural-audio" src="../assets/audio/demo-art1-neural.m4a" preload="metadata"></audio>
                 <div class="player-top">
-                  <div class="play-circle">▶</div>
+                  <button type="button" class="play-circle" id="demo-audio-play-btn" style="border:none; cursor:pointer;" title="Reproduzir / Pausar áudio">▶</button>
                   <div class="player-info">
-                    <h4>Art. 5º, XI — Inviolabilidade de Domicílio</h4>
-                    <p>Constituição Federal • Áudio Neural</p>
+                    <h4>Art. 1º — Princípios Fundamentais</h4>
+                    <p>Constituição Federal • Narração Neural Realista</p>
                   </div>
                 </div>
-                <div class="player-progress">
-                  <div class="player-bar"></div>
+                <div class="player-progress" id="demo-audio-progress-bar" style="cursor:pointer;" title="Clique para avançar">
+                  <div class="player-bar" id="demo-audio-bar" style="width: 0%;"></div>
                 </div>
                 <div class="player-meta">
-                  <span>01:14</span>
-                  <span>Velocidade: 1.5x</span>
-                  <span>-02:30</span>
+                  <span id="demo-audio-time">00:00</span>
+                  <span id="demo-audio-speed" style="cursor:pointer;" title="Alternar velocidade">Velocidade: 1.0x</span>
+                  <span id="demo-audio-duration">00:29</span>
                 </div>
               </div>
             </div>
@@ -1031,6 +1032,82 @@
     </footer>
 
   </div>
+
+  <script>
+    (function() {
+      const audio = document.getElementById('demo-neural-audio');
+      const playBtn = document.getElementById('demo-audio-play-btn');
+      const progressBar = document.getElementById('demo-audio-progress-bar');
+      const bar = document.getElementById('demo-audio-bar');
+      const timeSpan = document.getElementById('demo-audio-time');
+      const durationSpan = document.getElementById('demo-audio-duration');
+      const speedSpan = document.getElementById('demo-audio-speed');
+
+      if (!audio || !playBtn) return;
+
+      const speeds = [1.0, 1.25, 1.5, 2.0];
+      let speedIdx = 0;
+
+      function fmtTime(sec) {
+        if (isNaN(sec) || sec < 0) return '00:00';
+        const m = Math.floor(sec / 60);
+        const s = Math.floor(sec % 60);
+        return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+      }
+
+      playBtn.addEventListener('click', function() {
+        if (audio.paused) {
+          audio.play().then(function() {
+            playBtn.textContent = '⏸';
+          }).catch(function(err) {
+            console.warn('Erro ao tocar áudio:', err);
+          });
+        } else {
+          audio.pause();
+          playBtn.textContent = '▶';
+        }
+      });
+
+      audio.addEventListener('timeupdate', function() {
+        if (audio.duration) {
+          const pct = (audio.currentTime / audio.duration) * 100;
+          if (bar) bar.style.width = pct + '%';
+          if (timeSpan) timeSpan.textContent = fmtTime(audio.currentTime);
+        }
+      });
+
+      audio.addEventListener('loadedmetadata', function() {
+        if (durationSpan && audio.duration) {
+          durationSpan.textContent = fmtTime(audio.duration);
+        }
+      });
+
+      audio.addEventListener('ended', function() {
+        playBtn.textContent = '▶';
+        if (bar) bar.style.width = '0%';
+        if (timeSpan) timeSpan.textContent = '00:00';
+      });
+
+      if (progressBar) {
+        progressBar.addEventListener('click', function(e) {
+          if (!audio.duration) return;
+          const rect = progressBar.getBoundingClientRect();
+          const clickX = e.clientX - rect.left;
+          const ratio = Math.max(0, Math.min(1, clickX / rect.width));
+          audio.currentTime = ratio * audio.duration;
+        });
+      }
+
+      if (speedSpan) {
+        speedSpan.addEventListener('click', function() {
+          speedIdx = (speedIdx + 1) % speeds.length;
+          const spd = speeds[speedIdx];
+          audio.playbackRate = spd;
+          speedSpan.textContent = 'Velocidade: ' + spd.toFixed(1) + 'x';
+        });
+      }
+    })();
+  </script>
 
 </body>
 </html>

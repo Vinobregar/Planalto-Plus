@@ -72,6 +72,7 @@ import {
   computeThemeColors,
 } from './AppearancePopover';
 import { getSynonymsForQuery } from '../utils/legalSynonyms';
+import { parseBooleanQuery, evaluateBooleanSearch } from '../utils/booleanSearch';
 import {
   ArticleItem,
   ModificationNoteBadge,
@@ -116,13 +117,43 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
     const q = searchQuery.trim();
     if (!q) {
       setAppliedFilterQuery(null);
-    } else {
-      setAppliedFilterQuery(q);
+      setShowTopSearchDropdown(false);
+      return;
     }
+    setAppliedFilterQuery(q);
     setShowTopSearchDropdown(false);
+
+    // Desce a página até a primeira incidência do termo buscado
+    const cleanQuery = q.replace(/[º°.]/g, '').trim();
+    const numMatch = /^(?:art(?:igo)?\s*)?(\d+[\w-]*)$/i.exec(cleanQuery);
+    let firstMatch: ArticleBlock | undefined;
+
+    if (numMatch) {
+      const target = normalizeArticleNumberKey(numMatch[1]);
+      const cleanTarget = target.replace(/-/g, '');
+      firstMatch = doc.articles.find((art) => {
+        if (appearance.compiledMode && art.isRevoked) return false;
+        const artKey = normalizeArticleNumberKey(art.number);
+        const cleanArtKey = artKey.replace(/-/g, '');
+        return artKey === target || cleanArtKey === cleanTarget;
+      });
+    } else {
+      const parsed = parseBooleanQuery(q, searchWithSynonyms);
+      firstMatch = doc.articles.find((art) => {
+        if (appearance.compiledMode && art.isRevoked) return false;
+        const fullText = `${art.number} ${art.label} ${art.caputText} ${art.subClauses.map((sc) => sc.text).join(' ')} ${annotations[art.id]?.note || ''}`;
+        return evaluateBooleanSearch(fullText, parsed, searchWithSynonyms);
+      });
+    }
+
+    if (firstMatch) {
+      setFocusedArticleId(firstMatch.id);
+      setTimeout(() => {
+        scrollToElementId(firstMatch!.id);
+      }, 50);
+    }
   };
 
-  
   // Words to highlight in the article text when a term search is performed
   const searchHighlightWords = useMemo(() => {
     const query = (appliedFilterQuery || searchQuery).trim();
@@ -132,26 +163,13 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
     if (/^(?:art(?:igo)?\s*)?\d+[\w-]*$/i.test(cleanNum)) {
       return [];
     }
-    const words = query.split(/\s+/).filter((w) => w.length >= 2);
-    const set = new Set<string>();
-    for (const w of words) {
-      set.add(w.toLowerCase());
-      if (searchWithSynonyms) {
-        const syns = getSynonymsForQuery(w);
-        for (const s of syns) {
-          if (s.length >= 3) set.add(s.toLowerCase());
-        }
-      }
-    }
-    if (words.length > 1) {
-      set.add(query.toLowerCase());
-    }
-    return Array.from(set).sort((a, b) => b.length - a.length);
+    const parsed = parseBooleanQuery(query, searchWithSynonyms);
+    return parsed.highlightTerms;
   }, [appliedFilterQuery, searchQuery, searchWithSynonyms]);
 
   const activeFilteredArticleIds = useMemo(() => {
     if (!appliedFilterQuery) return null;
-    const q = appliedFilterQuery.toLowerCase().trim();
+    const q = appliedFilterQuery.trim();
     const cleanQuery = q.replace(/[º°.]/g, '').trim();
     const numMatch = /^(?:art(?:igo)?\s*)?(\d+[\w-]*)$/i.exec(cleanQuery);
     if (numMatch) {
@@ -169,28 +187,12 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
       return ids;
     }
 
-    const searchTerms = searchWithSynonyms
-      ? q.split(/\s+/).flatMap((w) => getSynonymsForQuery(w))
-      : [q];
-
+    const parsed = parseBooleanQuery(q, searchWithSynonyms);
     const ids = new Set<string>();
     for (const art of doc.articles) {
       if (appearance.compiledMode && art.isRevoked) continue;
-      const num = art.number.toLowerCase();
-      const label = art.label.toLowerCase();
-      const caput = art.caputText.toLowerCase();
-      const subs = art.subClauses.map((sc) => sc.text.toLowerCase()).join(' ');
-      const note = annotations[art.id]?.note?.toLowerCase() || '';
-
-      const matches = searchTerms.some(
-        (term) =>
-          num.includes(term) ||
-          label.includes(term) ||
-          caput.includes(term) ||
-          subs.includes(term) ||
-          note.includes(term)
-      );
-      if (matches) {
+      const fullText = `${art.number} ${art.label} ${art.caputText} ${art.subClauses.map((sc) => sc.text).join(' ')} ${annotations[art.id]?.note || ''}`;
+      if (evaluateBooleanSearch(fullText, parsed, searchWithSynonyms)) {
         ids.add(art.id);
       }
     }
@@ -356,7 +358,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
 
   // Top search bar matching articles
   const topSearchResults = useMemo(() => {
-    const q = deferredSearchQuery.trim().toLowerCase();
+    const q = deferredSearchQuery.trim();
     if (!q) return [];
 
     // Check if query is targeting an article number (e.g. "155", "art 155", "art. 155", "artigo 155", "155º", "155-A", "155a")
@@ -377,20 +379,15 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
         .slice(0, 20);
     }
 
+    const parsed = parseBooleanQuery(q, searchWithSynonyms);
     return doc.articles
       .filter((art) => {
         if (appearance.compiledMode && art.isRevoked) return false;
-        const noteText = annotations[art.id]?.note?.toLowerCase() || '';
-        return (
-          art.label.toLowerCase().includes(q) ||
-          art.number.toLowerCase().includes(q) ||
-          art.caputText.toLowerCase().includes(q) ||
-          art.subClauses.some((sub) => sub.text.toLowerCase().includes(q)) ||
-          noteText.includes(q)
-        );
+        const fullText = `${art.number} ${art.label} ${art.caputText} ${art.subClauses.map((sc) => sc.text).join(' ')} ${annotations[art.id]?.note || ''}`;
+        return evaluateBooleanSearch(fullText, parsed, searchWithSynonyms);
       })
       .slice(0, 20);
-  }, [deferredSearchQuery, doc.articles, appearance.compiledMode, annotations]);
+  }, [deferredSearchQuery, searchWithSynonyms, doc.articles, appearance.compiledMode, annotations]);
 
   // Load saved state on mount
   useEffect(() => {
@@ -1293,6 +1290,7 @@ export const PlanaltoReaderApp: React.FC<PlanaltoReaderAppProps> = ({
             compiledMode={appearance.compiledMode}
             appearance={appearance}
             searchQuery={searchQuery}
+            searchWithSynonyms={searchWithSynonyms}
             onSearchQueryChange={setSearchQuery}
             onSelectHeading={handleSelectHeadingFromToc}
             onSelectArticle={handleSelectArticleFromToc}

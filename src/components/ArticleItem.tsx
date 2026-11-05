@@ -261,18 +261,32 @@ const ArticleMentionLink: React.FC<ArticleMentionLinkProps> = ({
  * into interactive ArticleMentionLink hyperlinks.
  */
 
+function toAccentInsensitiveRegexPattern(str: string): string {
+  return str
+    .replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+    .replace(/[aáàãâä]/gi, '[aáàãâä]')
+    .replace(/[eéèêë]/gi, '[eéèêë]')
+    .replace(/[iíìîï]/gi, '[iíìîï]')
+    .replace(/[oóòõôö]/gi, '[oóòõôö]')
+    .replace(/[uúùûü]/gi, '[uúùûü]')
+    .replace(/[cç]/gi, '[cç]');
+}
+
 function highlightSearchWords(
   text: string,
   words?: string[],
   theme: ThemeMode = 'light'
 ): React.ReactNode {
   if (!words || words.length === 0 || !text) return text;
-  const escaped = words
-    .map((w) => w.replace(/[.*+?^$\{}()|[\]\\]/g, (m) => '\\' + m))
-    .filter(Boolean);
-  if (escaped.length === 0) return text;
+  const validWords = words
+    .map((w) => w.trim())
+    .filter((w) => w.length >= 2);
+  if (validWords.length === 0) return text;
 
-  const regex = new RegExp(`(${escaped.join('|')})`, 'gi');
+  const sorted = [...new Set(validWords)].sort((a, b) => b.length - a.length);
+  const patterns = sorted.map(toAccentInsensitiveRegexPattern);
+
+  const regex = new RegExp('(' + patterns.join('|') + ')', 'gi');
   const tokens = text.split(regex);
   if (tokens.length <= 1) return text;
 
@@ -296,7 +310,10 @@ function highlightSearchWords(
         };
 
   return tokens.map((tok, i) => {
-    const isMatch = words.some((w) => w.toLowerCase() === tok.toLowerCase());
+    const isMatch = sorted.some((w) => {
+      const p = new RegExp('^' + toAccentInsensitiveRegexPattern(w) + '$', 'i');
+      return p.test(tok);
+    });
     if (isMatch) {
       return (
         <mark
@@ -1194,7 +1211,8 @@ export const ArticleItem: React.FC<ArticleItemProps> = ({
                     crossRefGraph,
                     appearance.theme,
                     onJumpToArticle,
-                    onOpenCrossRefGraphForArticle
+                    onOpenCrossRefGraphForArticle,
+                    searchHighlightWords
                   )}
                 </span>
                 {sc.isRevoked && (

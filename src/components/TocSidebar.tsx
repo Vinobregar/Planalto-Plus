@@ -3,6 +3,7 @@ import {
   BookOpen,
   Keyboard,
   ChevronDown,
+  ChevronUp,
   ChevronRight,
   ChevronsDownUp,
   ChevronsUpDown,
@@ -22,6 +23,7 @@ import {
 } from '../types/legislation';
 import { computeThemeColors } from './AppearancePopover';
 import { normalizeArticleNumberKey } from '../utils/crossReferenceGraph';
+import { parseBooleanQuery, evaluateBooleanSearch } from '../utils/booleanSearch';
 
 interface TocSidebarProps {
   toc: TocNode[];
@@ -31,6 +33,7 @@ interface TocSidebarProps {
   compiledMode: boolean;
   appearance: AppearanceSettings;
   searchQuery: string;
+  searchWithSynonyms?: boolean;
   onSearchQueryChange: (q: string) => void;
   onSelectHeading: (headingId: string) => void;
   onSelectArticle: (articleId: string) => void;
@@ -46,6 +49,7 @@ export const TocSidebar: React.FC<TocSidebarProps> = ({
   compiledMode,
   appearance,
   searchQuery,
+  searchWithSynonyms = false,
   onSearchQueryChange,
   onSelectHeading,
   onSelectArticle,
@@ -87,7 +91,7 @@ export const TocSidebar: React.FC<TocSidebarProps> = ({
   const deferredSearchQuery = useDeferredValue(searchQuery);
 
   const filteredArticles = useMemo(() => {
-    const q = deferredSearchQuery.trim().toLowerCase();
+    const q = deferredSearchQuery.trim();
     if (!q) return [];
 
     // Check if query is targeting an article number (e.g. "155", "art 155", "art. 155", "artigo 155", "155º", "155-A", "155a")
@@ -106,20 +110,41 @@ export const TocSidebar: React.FC<TocSidebarProps> = ({
       });
     }
 
-    // Otherwise, perform full-text search across article label, text and user notes
+    // Otherwise, perform full boolean search (AND/OR/NOT/quotes/synonyms)
+    const parsed = parseBooleanQuery(q, searchWithSynonyms);
     return articles.filter((art) => {
       if (compiledMode && art.isRevoked) return false;
-      const numMatch =
-        art.number.toLowerCase().includes(q) ||
-        art.label.toLowerCase().includes(q);
-      const textMatch =
-        art.caputText.toLowerCase().includes(q) ||
-        art.subClauses.some((sc) => sc.text.toLowerCase().includes(q));
-      const noteMatch =
-        annotations[art.id]?.note?.toLowerCase().includes(q) ?? false;
-      return numMatch || textMatch || noteMatch;
+      const fullText = `${art.number} ${art.label} ${art.caputText} ${art.subClauses.map((sc) => sc.text).join(' ')} ${annotations[art.id]?.note || ''}`;
+      return evaluateBooleanSearch(fullText, parsed, searchWithSynonyms);
     });
-  }, [articles, annotations, compiledMode, deferredSearchQuery]);
+  }, [articles, annotations, compiledMode, deferredSearchQuery, searchWithSynonyms]);
+
+  // Stepper navigation within search results
+  const currentMatchIndex = useMemo(() => {
+    if (filteredArticles.length === 0 || !activeArticleId) return 0;
+    const idx = filteredArticles.findIndex((a) => a.id === activeArticleId);
+    return idx >= 0 ? idx : 0;
+  }, [filteredArticles, activeArticleId]);
+
+  const handlePrevMatch = () => {
+    if (filteredArticles.length === 0) return;
+    const nextIdx =
+      currentMatchIndex > 0 ? currentMatchIndex - 1 : filteredArticles.length - 1;
+    const target = filteredArticles[nextIdx];
+    if (target) {
+      onSelectArticle(target.id);
+    }
+  };
+
+  const handleNextMatch = () => {
+    if (filteredArticles.length === 0) return;
+    const nextIdx =
+      currentMatchIndex < filteredArticles.length - 1 ? currentMatchIndex + 1 : 0;
+    const target = filteredArticles[nextIdx];
+    if (target) {
+      onSelectArticle(target.id);
+    }
+  };
 
   const surface = computeThemeColors(appearance);
   const theme = appearance.theme;
@@ -178,60 +203,46 @@ export const TocSidebar: React.FC<TocSidebarProps> = ({
           </div>
         )}
         <div
+          className={`flex items-center gap-1.5 px-2 py-1.5 rounded-md text-xs hover:bg-black/5 dark:hover:bg-white/5 cursor-pointer transition-colors ${
+            depth === 0 ? 'font-bold' : depth === 1 ? 'font-semibold' : 'font-medium'
+          }`}
+          style={{ paddingLeft: `${Math.max(8, depth * 14 + 8)}px` }}
           onClick={() => onSelectHeading(node.id)}
-          style={{ paddingLeft: `${Math.min(depth * 12 + 8, 56)}px` }}
-          className="flex items-start gap-1.5 py-1.5 pr-2 rounded-lg cursor-pointer hover:bg-black/5 dark:hover:bg-white/5 transition-colors group"
         >
           {hasExpandableContent ? (
             <button
               type="button"
               onClick={(e) => toggleNode(node.id, e)}
-              className="p-0.5 mt-0.5 rounded hover:bg-black/10 dark:hover:bg-white/10 opacity-70 hover:opacity-100"
-              title={isCollapsed ? 'Expandir seção' : 'Recolher seção'}
+              className="p-0.5 rounded hover:bg-black/10 dark:hover:bg-white/10 shrink-0 opacity-70 hover:opacity-100"
             >
               {isCollapsed ? (
-                <ChevronRight className="w-3.5 h-3.5" />
+                <ChevronRight className="w-3 h-3" />
               ) : (
-                <ChevronDown className="w-3.5 h-3.5" />
+                <ChevronDown className="w-3 h-3" />
               )}
             </button>
           ) : (
             <span className="w-4 shrink-0" />
           )}
 
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between gap-1">
-              <span className="text-xs font-semibold tracking-tight truncate">
-                {node.title}
-              </span>
-              {visibleArticles.length > 0 && (
-                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-black/5 dark:bg-white/10 opacity-70 shrink-0">
-                  {visibleArticles.length}
-                </span>
-              )}
-            </div>
-            {/* Parte Geral and Parte Especial never display subtitles in the Sumário */}
-            {node.subtitle && node.level !== 'parte' && (
-              <p className="text-[11px] opacity-70 truncate leading-snug">
-                {node.subtitle}
-              </p>
-            )}
-          </div>
+          <span className="truncate flex-1" title={node.title}>
+            {node.title}
+          </span>
+
+          
         </div>
 
         {!isCollapsed && (
-          <div className="mt-0.5 space-y-0.5">
+          <div>
+            {node.children.map((child) => renderTreeNode(child, depth + 1))}
             {showArticlesInTree && visibleArticles.length > 0 && (
               <div
-                style={{
-                  paddingLeft: `${Math.min((depth + 1) * 12 + 12, 64)}px`,
-                }}
-                className="space-y-0.5 border-l border-current/10 ml-3 pl-1.5 my-1"
+                className="space-y-0.5 border-l border-current/10 ml-4 my-0.5 pl-1.5"
+                style={{ marginLeft: `${depth * 14 + 18}px` }}
               >
-                {visibleArticles.map(renderArticleRow)}
+                {visibleArticles.map((art) => renderArticleRow(art))}
               </div>
             )}
-            {node.children.map((child) => renderTreeNode(child, depth + 1))}
           </div>
         )}
       </div>
@@ -244,61 +255,65 @@ export const TocSidebar: React.FC<TocSidebarProps> = ({
         backgroundColor: surface.panelBg,
         borderColor: surface.borderColor,
       }}
-      className={`w-80 shrink-0 h-full border-r flex flex-col select-none ${textClass}`}
+      className={`w-72 sm:w-80 border-r flex flex-col shrink-0 transition-all select-none ${textClass}`}
     >
-      {/* Header renamed to "Sumário" */}
+      {/* Sidebar Header */}
       <div
         style={{ borderColor: surface.borderColor }}
-        className="px-3.5 py-3 border-b flex items-center justify-between gap-2"
+        className="p-3 border-b flex items-center justify-between"
       >
-        <div className="flex items-center gap-2 min-w-0">
-          <BookOpen className="w-4 h-4 text-indigo-500 shrink-0" />
-          <span className="font-semibold text-xs uppercase tracking-wider truncate">
-            Sumário
-          </span>
+        <div className="flex items-center gap-2">
+          <BookOpen className="w-4 h-4 text-indigo-500" />
+          <h2 className="font-bold text-xs uppercase tracking-wider">
+            Sumário da Lei
+          </h2>
         </div>
 
         <div className="flex items-center gap-1">
           <button
             type="button"
-            onClick={() => setShowArticlesInTree((v) => !v)}
-            className={`px-2 py-1 rounded text-[10px] font-medium transition-colors ${
-              showArticlesInTree
-                ? 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400'
-                : 'hover:bg-black/5 dark:hover:bg-white/5 opacity-70'
-            }`}
-            title="Mostrar/ocultar artigos dentro da árvore"
-          >
-            Artigos
-          </button>
-          <button
-            type="button"
-            onClick={() => setAllCollapsed(false)}
-            className="p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 opacity-75 hover:opacity-100"
-            title="Expandir tudo"
-          >
-            <ChevronsUpDown className="w-3.5 h-3.5" />
-          </button>
-          <button
-            type="button"
             onClick={() => setAllCollapsed(true)}
-            className="p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 opacity-75 hover:opacity-100"
-            title="Recolher tudo"
+            title="Recolher toda a árvore"
+            className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/5 opacity-70 hover:opacity-100"
           >
             <ChevronsDownUp className="w-3.5 h-3.5" />
           </button>
           <button
             type="button"
-            onClick={onCollapse}
-            className="p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 opacity-75 hover:opacity-100"
-            title="Esconder barra lateral"
+            onClick={() => setAllCollapsed(false)}
+            title="Expandir toda a árvore"
+            className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/5 opacity-70 hover:opacity-100"
           >
-            <PanelLeftClose className="w-4 h-4" />
+            <ChevronsUpDown className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowArticlesInTree((v) => !v)}
+            title={
+              showArticlesInTree
+                ? 'Ocultar artigos na árvore (apenas títulos)'
+                : 'Mostrar artigos na árvore'
+            }
+            className={`px-1.5 py-0.5 text-[10px] rounded border ${
+              showArticlesInTree
+                ? 'bg-indigo-600/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/30'
+                : 'opacity-60 border-current/20'
+            }`}
+          >
+            Artigos
+          </button>
+          <button
+            type="button"
+            onClick={onCollapse}
+            title="Fechar sumário ([)"
+            className="p-1 rounded hover:bg-black/5 dark:hover:bg-white/5 opacity-70 hover:opacity-100 ml-1"
+          >
+            <PanelLeftClose className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
 
-      {/* Search Control (synchronized with top centered search bar; Notas & Grifos tabs removed) */}
+      {/* Search Control (synchronized with top centered search bar) */}
       <div
         style={{ borderColor: surface.borderColor }}
         className="p-3 border-b"
@@ -337,9 +352,42 @@ export const TocSidebar: React.FC<TocSidebarProps> = ({
             </div>
           ) : (
             <div className="space-y-1">
-              <div className="px-2 py-1 text-[11px] opacity-60 font-medium">
-                {filteredArticles.length} artigo(s) encontrado(s)
+              {/* Stepper Header for cycling between matching articles */}
+              <div
+                style={{
+                  backgroundColor: surface.cardBg,
+                  borderColor: surface.borderColor,
+                }}
+                className="px-2.5 py-1.5 rounded-lg border flex items-center justify-between text-[11px] font-medium shadow-sm mb-1.5"
+              >
+                <span className="opacity-80 font-semibold">
+                  {filteredArticles.length} artigo{filteredArticles.length === 1 ? '' : 's'}
+                </span>
+                <div className="flex items-center gap-1.5">
+                  <span className="opacity-60 text-[10px] tabular-nums font-mono">
+                    {currentMatchIndex + 1} de {filteredArticles.length}
+                  </span>
+                  <div className="flex items-center gap-0.5 border-l border-current/15 pl-1.5">
+                    <button
+                      type="button"
+                      onClick={handlePrevMatch}
+                      className="p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 opacity-70 hover:opacity-100 transition-colors"
+                      title="Artigo anterior nos resultados (↑)"
+                    >
+                      <ChevronUp className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleNextMatch}
+                      className="p-1 rounded hover:bg-black/10 dark:hover:bg-white/10 opacity-70 hover:opacity-100 transition-colors"
+                      title="Próximo artigo nos resultados (↓)"
+                    >
+                      <ChevronDown className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
               </div>
+
               {filteredArticles.map((art) =>
                 renderArticleRow({
                   id: art.id,

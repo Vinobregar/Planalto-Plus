@@ -1,10 +1,17 @@
 # Chrome Web Store Listing — Planalto Plus
 
 > Last Updated: 2026-11-04  
-> Version: 1.0.7  
+> Version: 1.0.8  
 > Package: `dist/planalto-moderno-chrome.zip` (772 KB)
 
 ---
+
+## Changelog v1.0.8
+• Busca Booleana Completa: suporte nativo a expressões exatas entre aspas `""`, operadores lógicos `OU` / `OR`, `E` / `AND` e negação `NÃO` / `NAO` / `NOT` / `-`.
+• Destaque em Incisos e Subitens: correção do highlight de termos pesquisados em incisos, parágrafos, alíneas e penas, com tolerância total a acentos e flexões (singular/plural, gênero).
+• Rastreamento e Rolagem ao Pressionar Enter: ao submeter a busca com Enter, a página rola suavemente até a primeira incidência do termo correspondente.
+• Botão de Rolagem no Sumário (Stepper): navegação sequencial com botões [↑] e [↓] no sumário indicando o índice atual de correspondências (`1 de X`), permitindo alternar rapidamente entre todos os artigos encontrados.
+• Dicionário Ampliado de Sinônimos Jurídicos: expansão com termos constitucionais brasileiros (ex.: `brasileiro` -> `nacional`, `cidadão`, `nato`, `naturalizado`, `povo`), com normalização morfológica.
 
 ## Changelog v1.0.7
 • Ajuste Fino de Contraste no Highlight de Busca: cores adaptadas dinamicamente aos temas Claro, Sépia e Escuro, garantindo legibilidade perfeita e sem contraste lavado.

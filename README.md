@@ -1,4 +1,4 @@
-# Planalto Moderno — Extensão para Leitura Jurídica & IA (Chrome & Firefox)
+# Planalto Plus — Extensão para Leitura Jurídica & IA (Chrome & Firefox)
 
 Extensão multiplataforma para **Google Chrome** e **Mozilla Firefox** que moderniza a visualização de legislações no portal oficial [www.planalto.gov.br](https://www.planalto.gov.br).
 
@@ -13,8 +13,8 @@ npm run build
 ```
 
 O comando compila o projeto e gera automaticamente as versões completas e otimizadas para ambos os navegadores na pasta `dist/`:
-* **Chrome**: pasta descompactada `dist/chrome/` e pacote pronto para a Chrome Web Store `dist/planalto-moderno-chrome.zip`
-* **Firefox**: pasta `dist/firefox/`, pacotes `dist/planalto-moderno-firefox.zip` / `dist/planalto-moderno-firefox.xpi`, e o código-fonte para revisão do AMO `dist/planalto-moderno-source.zip`
+* **Chrome**: pasta descompactada `dist/chrome/` e pacote pronto para a Chrome Web Store `dist/planalto-plus-chrome.zip`
+* **Firefox**: pasta `dist/firefox/`, pacotes `dist/planalto-plus-firefox.zip` / `dist/planalto-plus-firefox.xpi`, e o código-fonte para revisão do AMO `dist/planalto-plus-source.zip`
 
 Você também pode compilar alvos específicos:
 ```bash
@@ -32,7 +32,7 @@ npm run build:all      # Ambas as versões
    about:debugging#/runtime/this-firefox
    ```
 2. Na seção **Extensões temporárias** (*Temporary Extensions*), clique em **Carregar extensão temporária...** (*Load Temporary Add-on...*).
-3. Selecione o arquivo `manifest.json` dentro da pasta **`dist/firefox`** (ou selecione diretamente o pacote **`dist/planalto-moderno-firefox.zip`** / **`.xpi`**).
+3. Selecione o arquivo `manifest.json` dentro da pasta **`dist/firefox`** (ou selecione diretamente o pacote **`dist/planalto-plus-firefox.zip`** / **`.xpi`**).
 4. Pronto! A extensão estará ativa no Firefox com todas as permissões, scripts e recursos WebAssembly configurados.
 
 ---
@@ -51,7 +51,7 @@ npm run build:all      # Ambas as versões
 
 ## Principais Funcionalidades (Idênticas no Chrome e Firefox)
 
-1. **Leitor Jurídico Moderno & Modo Texto Compilado**
+1. **Leitor Jurídico plus & Modo Texto Compilado**
    - Converte automaticamente páginas de leis, decretos, códigos e a Constituição Federal em blocos tipográficos estruturados (`Epígrafe`, `Ementa`, `Parte > Livro > Título > Capítulo > Seção > Subseção`, `Artigos`, `Parágrafos`, `Incisos`, `Alíneas` e `Penas`).
    - Botão **Texto Compilado** na barra superior para ocultar/recolher instantaneamente dispositivos revogados (`<strike>`) e indicar expressamente incisos revogados cujo caput continua em vigor.
    - Remissões legislativas (ex.: `(Redação dada pela Lei nº 13.146, de 2015)`) transformadas em links de tooltip discretos.
